@@ -1,0 +1,39 @@
+{
+  "name": "multi-vendor-ecommerce-system",
+  "version": "1.0.0",
+  "description": "Multi Vendor Ecommerce System",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayaz-khatri/multi-vendor-ecommerce-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ayaz-khatri/multi-vendor-ecommerce-system/issues"
+  },
+  "homepage": "https://github.com/ayaz-khatri/multi-vendor-ecommerce-system#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.1",
+    "mongoose-paginate-v2": "^1.9.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.11",
+    "slugify": "^1.6.6"
+  }
+}
