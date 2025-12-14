@@ -1,19 +1,15 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import expressLayouts from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import path from 'path';
+import __dirname from './utils/dirname.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 // import vendorRoutes from './routes/vendor.js';
 // import customerRoutes from './routes/customer.js';
 dotenv.config();
-
-// Fix __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /* ------------------------- Initialize Express App ------------------------- */
 const app = express();
@@ -33,6 +29,11 @@ mongoose.connect(process.env.MONGODB_URI)
 .catch(err => console.log(err));
 
 /* --------------------------------- Routes --------------------------------- */
+// app.use('/', (req, res, next)=>{
+//   res.send(path.join(__dirname, 'public'));
+//   next();
+// })
+
 app.use('/admin', (req, res, next)=>{
   res.locals.layout = 'layouts/adminLayout';
   next();
