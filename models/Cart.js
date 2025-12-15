@@ -27,10 +27,15 @@ const cartSchema = new mongoose.Schema(
         min: 0
     },
     
-    isActive: {
+    isDeleted: {
         type: Boolean,
-        default: true
-    }
+        default: false
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 },
 {
     timestamps: true

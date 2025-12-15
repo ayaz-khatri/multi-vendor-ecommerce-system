@@ -35,9 +35,14 @@ const userSchema = new mongoose.Schema(
         default: 'customer'
     },
 
-    isActive: {
+    isDeleted: {
         type: Boolean,
-        default: true
+        default: false
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null
     },
 
     lastLogin: {

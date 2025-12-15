@@ -5,7 +5,7 @@ import { validationResult } from "express-validator";
 const index = async (req, res, next) => {
     try 
     {
-        const vendors = await Vendor.find({ role: 'vendor' })
+        const vendors = await Vendor.find({ role: 'vendor', isDeleted: false })
                                         .select('-password')            
                                         .sort({ createdAt: -1 });
         // res.send({ vendors });
@@ -18,7 +18,7 @@ const index = async (req, res, next) => {
 
 
 const create = async (req, res) => {
-    res.render('admin/vendors/create', {title: 'Create' });
+    res.render('admin/vendors/create', {title: 'Create Vendor' });
 };
 
 
@@ -43,8 +43,8 @@ const store = async (req, res, next) => {
 const edit = async (req, res, next) => {
     try {
         const vendor = await Vendor.findById(req.params.id);
-        if (!vendor) return next(errorMessage('Vendor not found.', 404));
-        res.render('admin/vendors/edit', { vendor, title: 'Edit' });
+        if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
+        res.render('admin/vendors/edit', { vendor, title: 'Edit Vendor' });
     } catch (error) {
         next(errorMessage(error.message, 500));
     }
@@ -62,8 +62,8 @@ const update = async (req, res, next) => {
     }
     const { name, email, phone, password } = req.body;
     try {
-        const vendor = await Vendor.findById(req.params.id).select('+password');;
-        if (!vendor) return next(errorMessage('Vendor not found.', 404));
+        const vendor = await Vendor.findById(req.params.id).select('+password');
+        if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
         vendor.name = name || vendor.name;
         vendor.email = email || vendor.email;
         vendor.phone = phone || vendor.phone;
@@ -78,14 +78,20 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const vendor = await Vendor.findById(req.params.id);
-        if (!vendor) return next(errorMessage('Vendor not found.', 404));
-        await Vendor.deleteOne({ _id: req.params.id });
+       const vendor = await Vendor.findById(req.params.id);
+        if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
+
+        // Soft delete
+        vendor.isDeleted = true;
+        vendor.deletedAt = new Date();
+        await vendor.save();
+
         res.json({ success: true });
     } catch (error) {
         next(errorMessage(error.message, 500));
     }
 };
+
 
 
 export default {

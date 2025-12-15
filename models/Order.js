@@ -53,10 +53,15 @@ const orderSchema = new mongoose.Schema(
         default: 'pending'
     },
     
-    isActive: {
+    isDeleted: {
         type: Boolean,
-        default: true
-    }
+        default: false
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 }, 
 {
     timestamps: true

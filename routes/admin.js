@@ -12,12 +12,12 @@ router.get('/', (req, res)=> {
     res.render('admin/dashboard', { title: 'Dashboard' });
 });
 
-router.get('/vendors', vendorController.index);        // list vendors
-router.get('/vendors/create', vendorController.create); // form
-router.post('/vendors', isValid.vendorValidation, vendorController.store);       // save new vendor
-router.get('/vendors/edit/:id', vendorController.edit);// edit form
-router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.update);   // update vendor
-router.delete('/vendors/:id', vendorController.destroy);// delete vendor
+router.get('/vendors', vendorController.index);
+router.get('/vendors/create', vendorController.create);
+router.post('/vendors', isValid.vendorValidation, vendorController.store);
+router.get('/vendors/edit/:id', vendorController.edit);
+router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.update);
+router.delete('/vendors/:id', vendorController.destroy);
 
 
 // router.get('/users', isLoggedIn, isAdmin, userController.allUsers);

@@ -29,10 +29,15 @@ const categorySchema = new mongoose.Schema(
         default: null 
     },
 
-    isActive: {
+    isDeleted: {
         type: Boolean,
-        default: true
-    }
+        default: false
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 },
 {
     timestamps: true
