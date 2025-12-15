@@ -9,7 +9,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard</title>
+    <title><%= typeof title !== 'undefined' ? title : 'Ecommerce' %></title>
+
+
+    <%- typeof tabulatorCSS == 'undefined' ? '' : tabulatorCSS %>
+    <%- typeof summerNoteCSS == 'undefined' ? '' : summerNoteCSS %>    
 
     <!-- Custom fonts for this template-->
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

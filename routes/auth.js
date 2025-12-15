@@ -39,14 +39,14 @@ router.use('', (req, res, next) => {
 
 
 // Error Handling Middleware
-// router.use(isLoggedIn,(err, req, res, next) => {
-//     console.log(err.stack);
-//     const status = err.status || 500;
-//     res.status(status).render('admin/error',{
-//         status: status,
-//         message: err.message || 'Something went wrong!',
-//         role: req.role
-//     });
-// });
+router.use('',(err, req, res, next) => {
+    console.log(err.stack);
+    const status = err.status || 500;
+    res.status(status).render('admin/error',{
+        status: status,
+        message: err.message || 'Something went wrong!',
+        role: req.role
+    });
+});
 
 export default router;

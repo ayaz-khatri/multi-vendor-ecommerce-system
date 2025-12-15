@@ -1,5 +1,26 @@
 import {body} from 'express-validator';
 
+const vendorValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Vendor name is required.')
+    .isLength({ min: 3, max: 50 }).withMessage('Vendor name must be at least 3 and at most 50 characters long.'),
+
+    body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required.')
+    .isEmail().withMessage('Invalid email format.'),
+
+    body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required.'),
+    
+    body('password')
+    .trim()
+    .notEmpty().withMessage('Password is required.')
+    .isLength({ min: 8, max: 20 }).withMessage('Password must be at least 8 and at most 20 characters long.')
+];
+
 const loginValidation = [
   body('username')
     .trim()
@@ -84,5 +105,6 @@ export default {
     userValidation,
     userUpdateValidation,
     categoryValidation,
-    articleValidation
+    articleValidation,
+    vendorValidation
 };

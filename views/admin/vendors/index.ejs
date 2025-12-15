@@ -1,0 +1,91 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <a href="/admin/vendors/create" class="btn btn-primary btn-sm mt-1">Add New</a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+
+<script src="/js/tabulator.min.js"></script>
+
+<script>
+    const tableData = <%- JSON.stringify(vendors || []) %>;
+    
+    var table = new Tabulator("#crudTable", {
+    data: tableData,
+    layout: "fitColumns",
+    responsiveLayout: "collapse",
+    pagination: true,
+    paginationSize: 10,
+    paginationSizeSelector: [5, 10, 20, 50],
+    paginationCounter: "rows",
+
+    movableColumns: true,
+    resizableColumns: true,
+    height: "500px",
+
+    columnDefaults: {
+        headerSort: true,
+        headerHozAlign: "center",
+        hozAlign: "left",
+        vertAlign: "middle",
+    },
+
+    columns: [
+        {
+            title: "S.No.",
+            formatter: "rownum",
+            width: 80,
+            hozAlign: "center",
+            headerSort: false
+        },
+        { title: "Name", field: "name", headerFilter: "input" },
+        { title: "Email", field: "email", headerFilter: "input" },
+        { title: "Phone", field: "phone", headerFilter: "input" },
+        {title: "Actions", formatter: function(cell, formatterParams, onRendered){
+            return `
+                <a href="/admin/vendors/edit/${cell.getData()._id}" class="btn btn-sm btn-success text-white mx-1" title="Edit"><i class="fas fa-edit"></i></a> 
+                <button onclick="deleteEntity('${cell.getData()._id}')" class="btn btn-sm btn-danger delete" title="Delete" ><i class="fas fa-trash"></i></button>
+            `;
+        }}
+    ],
+});
+
+    // async function deleteEntity(id) {
+    //     if (confirm("Are you sure you want to delete this article?")) {
+    //         const response = await fetch(`/admin/articles/delete/${id}`, {
+    //             method: 'DELETE',
+    //         })
+    //         .then(response => {
+    //             if (response.ok) {
+    //                 window.location.reload();
+    //             } else {
+    //                 alert('Failed to delete article.');
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             alert('An error occurred while deleting the article.');
+    //         });
+    //     }
+    // }
+
+</script>
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+

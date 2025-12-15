@@ -1,0 +1,7 @@
+/* Tabulator text color override */
+.tabulator,
+.tabulator .tabulator-header,
+.tabulator .tabulator-row,
+.tabulator .tabulator-cell {
+    color: #000 !important;
+}

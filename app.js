@@ -59,6 +59,7 @@ app.use(authRoutes);
 //     res.send("Hello World! Welcome to Multi Vendor Ecommerce System.");
 // });
 
+
 /* ---------------------------- Start the server ---------------------------- */
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
