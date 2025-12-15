@@ -61,24 +61,24 @@
     ],
 });
 
-    // async function deleteEntity(id) {
-    //     if (confirm("Are you sure you want to delete this article?")) {
-    //         const response = await fetch(`/admin/articles/delete/${id}`, {
-    //             method: 'DELETE',
-    //         })
-    //         .then(response => {
-    //             if (response.ok) {
-    //                 window.location.reload();
-    //             } else {
-    //                 alert('Failed to delete article.');
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Error:', error);
-    //             alert('An error occurred while deleting the article.');
-    //         });
-    //     }
-    // }
+    async function deleteEntity(id) {
+        if (confirm("Are you sure you want to delete this vendor?")) {
+            const response = await fetch(`/admin/vendors/${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete article.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the article.');
+            });
+        }
+    }
 
 </script>
 

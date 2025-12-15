@@ -55,20 +55,19 @@ const update = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const vendor = await Vendor.findById(req.params.id);
-        return res.render('admin/vendors/update', {
+        return res.render('admin/vendors/edit', {
             vendor,
             errors: errors.array()
         });
     }
-    const { name, email, phone, password, role } = req.body;
+    const { name, email, phone, password } = req.body;
     try {
-        const vendor = await User.findById(req.params.id);
+        const vendor = await Vendor.findById(req.params.id).select('+password');;
         if (!vendor) return next(errorMessage('Vendor not found.', 404));
         vendor.name = name || vendor.name;
         vendor.email = email || vendor.email;
         vendor.phone = phone || vendor.phone;
         vendor.password = password || vendor.password;
-        vendor.role = role || vendor.role;
         const saved = await vendor.save();
         res.redirect('/admin/vendors');
     } catch (error) {
@@ -79,9 +78,9 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const vendor = await User.findById(req.params.id);
+        const vendor = await Vendor.findById(req.params.id);
         if (!vendor) return next(errorMessage('Vendor not found.', 404));
-        await Category.deleteOne({ _id: req.params.id });
+        await Vendor.deleteOne({ _id: req.params.id });
         res.json({ success: true });
     } catch (error) {
         next(errorMessage(error.message, 500));

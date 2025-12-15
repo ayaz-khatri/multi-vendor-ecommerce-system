@@ -16,7 +16,7 @@ router.get('/vendors', vendorController.index);        // list vendors
 router.get('/vendors/create', vendorController.create); // form
 router.post('/vendors', isValid.vendorValidation, vendorController.store);       // save new vendor
 router.get('/vendors/edit/:id', vendorController.edit);// edit form
-router.put('/vendors/:id', isValid.vendorValidation, vendorController.update);   // update vendor
+router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.update);   // update vendor
 router.delete('/vendors/:id', vendorController.destroy);// delete vendor
 
 
