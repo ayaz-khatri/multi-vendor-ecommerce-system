@@ -13,11 +13,14 @@ router.get('/', (req, res)=> {
 });
 
 router.get('/vendors', vendorController.index);
+router.get('/vendors/view/:id', vendorController.view);
 router.get('/vendors/create', vendorController.create);
 router.post('/vendors', isValid.vendorValidation, vendorController.store);
 router.get('/vendors/edit/:id', vendorController.edit);
 router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.update);
 router.delete('/vendors/:id', vendorController.destroy);
+router.get('/vendors/trashed', vendorController.trashed);
+router.post('/vendors/restore/:id', vendorController.restore);
 
 
 // router.get('/users', isLoggedIn, isAdmin, userController.allUsers);

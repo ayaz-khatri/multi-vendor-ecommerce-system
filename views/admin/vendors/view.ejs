@@ -1,0 +1,29 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/admin/vendors" class="btn btn-outline-primary btn-sm mt-1">Vendors</a>
+            <a href="/admin/vendors/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <p><strong>Email:</strong> <%= vendor.email %></p>
+            <p><strong>Phone:</strong> <%= vendor.phone %></p>
+            <p><strong>Created At:</strong> <%= vendor.createdAt.toDateString() %> (<%= timeAgo(vendor.createdAt) %>)</p>
+            <p><strong>Updated At:</strong> <%= vendor.updatedAt.toDateString() %> (<%= timeAgo(vendor.updatedAt) %>)</p>
+        </div>
+    </div>
+    <!--/Form -->
+
+</div>
+<!-- /.container-fluid -->
+

@@ -9,7 +9,8 @@ export function initTabulator({
     pageSize = 10,
     pageSizeSelector = [5, 10, 20, 50],
     actions = null,
-    deleteUrl = null
+    url = null,
+    method = "DELETE",
 }) {
 
     /* -----------------------------
@@ -45,7 +46,7 @@ export function initTabulator({
     ----------------------------- */
 
     const enhancedColumns = columns.map(col => {
-        if (["createdAt", "updatedAt"].includes(col.field)) {
+        if (["createdAt", "updatedAt", "deletedAt"].includes(col.field)) {
             return {
                 ...col,
                 formatter: cell => timeAgo(cell.getValue()),
@@ -102,42 +103,42 @@ export function initTabulator({
        Bootstrap Modal Delete Logic
     ----------------------------- */
 
-    if (deleteUrl) {
-        let deleteId = null;
+    if (url) {
+        let itemId = null;
 
-        window.openDeleteModal = function (id) {
-            deleteId = id;
+        window.openModal = function (id) {
+            itemId = id;
             new bootstrap.Modal(
-                document.getElementById("deleteConfirmModal")
+                document.getElementById("ConfirmModal")
             ).show();
         };
 
-        const confirmBtn = document.getElementById("confirmDeleteBtn");
+        const confirmBtn = document.getElementById("confirmBtn");
 
         if (confirmBtn) {
             confirmBtn.onclick = async () => {
-                if (!deleteId) return;
+                if (!itemId) return;
 
                 try {
-                    const res = await fetch(`${deleteUrl}/${deleteId}`, {
-                        method: "DELETE",
+                    const res = await fetch(`${url}/${itemId}`, {
+                        method: method,
                         headers: { "Content-Type": "application/json" }
                     });
 
                     if (res.ok) {
                         window.location.reload();
                     } else {
-                        alert("Failed to delete item.");
+                        alert("Failed to perform action.");
                     }
                 } catch (err) {
                     console.error(err);
                     alert("An error occurred while deleting.");
                 }
 
-                deleteId = null;
+                itemId = null;
 
                 bootstrap.Modal.getInstance(
-                    document.getElementById("deleteConfirmModal")
+                    document.getElementById("ConfirmModal")
                 ).hide();
             };
         }
