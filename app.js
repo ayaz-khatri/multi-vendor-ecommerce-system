@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import expressLayouts from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
+import session from "express-session";
+import flash from "connect-flash";
 import dotenv from 'dotenv';
 import path from 'path';
 import __dirname from './utils/dirname.js';
@@ -27,6 +29,22 @@ app.set('view engine', 'ejs');
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("Database Connected."))
 .catch(err => console.log(err));
+
+/* ------------------------------ connect-flash ----------------------------- */
+app.use(session({
+    secret: "mySecretKey",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(flash());
+
+// Make flash available in all views
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+});
 
 /* --------------------------------- Routes --------------------------------- */
 // app.use('/', (req, res, next)=>{

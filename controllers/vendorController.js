@@ -8,13 +8,12 @@ const index = async (req, res, next) => {
         const vendors = await Vendor.find({ role: 'vendor', isDeleted: false })
                                         .select('-password')            
                                         .sort({ createdAt: -1 });
-        // res.send({ vendors });
         res.render('admin/vendors', { vendors, title: 'Vendors' });
     } catch (err) {
-        next(errorMessage(err.message, 500));
+        next(errorMessage("Something went wrong", 500));
+        // next(errorMessage(err.message, 500));
     }
 };
-
 
 
 const create = async (req, res) => {
@@ -25,17 +24,24 @@ const create = async (req, res) => {
 const store = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.render('admin/vendors/create', {
-            errors: errors.array()
-        });
+        req.flash("error", errors.array().map(e => e.msg));
+        return res.redirect("/admin/vendors/create");
     }
     try {
+        const user = await Vendor.findOne({ email: req.body.email });
+        if (user) {
+            req.flash("error", "Email already exists.");
+            return res.redirect("/admin/vendors/create");
+        }
+
         const vendor = new Vendor(req.body);
         vendor.role = 'vendor';
         const saved = await vendor.save();
-        res.redirect('/admin/vendors');
+        req.flash("success", "Vendor created successfully.");
+        res.redirect("/admin/vendors");
+
     } catch (error) {
-        next(errorMessage(error.message, 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -46,32 +52,44 @@ const edit = async (req, res, next) => {
         if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
         res.render('admin/vendors/edit', { vendor, title: 'Edit Vendor' });
     } catch (error) {
-        next(errorMessage(error.message, 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
 
 const update = async (req, res, next) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
-        const vendor = await Vendor.findById(req.params.id);
-        return res.render('admin/vendors/edit', {
-            vendor,
-            errors: errors.array()
-        });
+        req.flash("error", errors.array().map(e => e.msg));
+        return res.redirect(`/admin/vendors/edit/${req.params.id}`);
     }
+
     const { name, email, phone, password } = req.body;
+
     try {
-        const vendor = await Vendor.findById(req.params.id).select('+password');
+        const vendor = await Vendor.findById(req.params.id).select("+password");
         if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
-        vendor.name = name || vendor.name;
-        vendor.email = email || vendor.email;
-        vendor.phone = phone || vendor.phone;
-        vendor.password = password || vendor.password;
+
+        if(email && email !== vendor.email){
+            const user = await Vendor.findOne({ email: req.body.email });
+            if (user) {
+                req.flash("error", "Email already exists.");
+                return res.redirect(`/admin/vendors/edit/${req.params.id}`);
+            }
+        }
+
+        vendor.name = name || vendor.name; 
+        vendor.email = email || vendor.email; 
+        vendor.phone = phone || vendor.phone; 
+        vendor.password = password || vendor.password; 
         const saved = await vendor.save();
-        res.redirect('/admin/vendors');
+
+        req.flash("success", "Vendor updated successfully.");
+        res.redirect("/admin/vendors");
+
     } catch (error) {
-        next(errorMessage(error.message, 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -86,6 +104,7 @@ const destroy = async (req, res, next) => {
         vendor.deletedAt = new Date();
         await vendor.save();
 
+        req.flash("success", "Vendor deleted successfully.");
         res.json({ success: true });
     } catch (error) {
         next(errorMessage(error.message, 500));

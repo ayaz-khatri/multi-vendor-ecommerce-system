@@ -154,8 +154,10 @@
 
                 </nav>
                 <!-- End of Topbar -->
+                
+                <%- include('../partials/flash') %>
 
-               <%- body %>
+                <%- body %>
 
             </div>
             <!-- End of Main Content -->
@@ -211,12 +213,18 @@
     <!-- Custom scripts for all pages-->
     <script src="/js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="/vendor/chart.js/Chart.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            document.querySelectorAll(".flash-alert").forEach(alert => {
+                alert.classList.add("fade");
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 7000); // 7 seconds
+    });
+</script>
 
-    <!-- Page level custom scripts -->
-    <script src="/js/demo/chart-area-demo.js"></script>
-    <script src="/js/demo/chart-pie-demo.js"></script>
 
 </body>
 

@@ -5,7 +5,7 @@ export function initTabulator({
     tableId,
     data,
     columns,
-    height = "500px",
+    height = "550px",
     pageSize = 10,
     pageSizeSelector = [5, 10, 20, 50],
     actions = null,
