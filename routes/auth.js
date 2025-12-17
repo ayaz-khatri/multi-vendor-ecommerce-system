@@ -19,6 +19,8 @@ router.post('/forgot-password', redirectIfLoggedIn, authController.forgotPasswor
 
 router.get('/logout', authController.logout);
 
+router.get('/verify-email/:token', authController.verifyEmail);
+
 // router.get('/', redirectIfLoggedIn, userController.loginPage);
 // router.post('/index', isValid.loginValidation, userController.adminLogin);
 // router.get('/logout', userController.logout);

@@ -1,7 +1,9 @@
 import User from "../models/User.js";
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import sendEmail from '../utils/sendEmail.js';
 import path from "path";
 import errorMessage from "../utils/error-message.js";
 import dotenv from "dotenv";
@@ -33,6 +35,11 @@ const login = async (req, res, next) => {
             req.flash("error", "Email not found.");
             req.flash("old", req.body);
             return res.redirect("/login");
+        }
+
+        if (!user.isEmailVerified) {
+            req.flash('error', 'Please verify your email first.');
+            return res.redirect('/login');
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -76,8 +83,26 @@ const register = async (req, res, next) => {
             return res.redirect("/register");
         }
         const newUser = new User({ name, email, phone, password, role });
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+
+        newUser.emailVerificationToken = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+
+        newUser.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
         await newUser.save();
-        req.flash("success", "Registration Successful.");
+
+        const verificationUrl = `${process.env.APP_URL}/verify-email/${verificationToken}`;
+
+        await sendEmail({
+            to: newUser.email,
+            subject: 'Verify your email address',
+            html: verificationEmailTemplate(newUser.name, verificationUrl)
+        });
+
+        console.log(verificationToken);
+        req.flash("success", "Registration successful. Please check your email to verify your account.");
         res.redirect('/login');
     } catch (error) {
         next(errorMessage(error.message, 500));
@@ -93,6 +118,52 @@ const logout = async (req, res) => {
     res.redirect('/login');
 };
 
+const verifyEmail = async (req, res, next) => {
+
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({
+        emailVerificationToken: hashedToken,
+        emailVerificationExpires: { $gt: Date.now() },
+        isEmailVerified: false
+    });
+
+    if (!user) {
+        return next(errorMessage("Invalid or expired token", 400));
+    }
+
+    if (user.isEmailVerified) {
+        req.flash('success', 'Email already verified.');
+        return res.redirect('/login');
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+
+    await user.save();
+    req.flash("success", "Email verified successfully.");
+    res.redirect('/login');
+};
+
+const verificationEmailTemplate = (name, url) => `
+    <div style="font-family: Arial, sans-serif;">
+        <h2>Hello ${name},</h2>
+        <p>Thank you for registering with <b>${process.env.APP_NAME}</b>.</p>
+        <p>Please verify your email address by clicking the button below:</p>
+        <p>
+            <a href="${url}" 
+               style="background:#28a745;color:#fff;padding:10px 15px;
+               text-decoration:none;border-radius:5px;">
+               Verify Email
+            </a>
+        </p>
+        <p>This link will expire in 24 hours.</p>
+        <p>Regards,<br/>Support Team</p>
+    </div>
+`;
+
+
+
 export default {
     loginPage,
     login,
@@ -100,5 +171,6 @@ export default {
     register,
     forgotPasswordPage,
     forgotPassword,
-    logout
+    logout,
+    verifyEmail
 };
