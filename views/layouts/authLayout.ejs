@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Login</title>
+    <title><%= typeof title !== 'undefined' ? title : 'Ecommerce' %></title>
 
     <!-- Custom fonts for this template-->
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -35,6 +35,7 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
+                            <%- include('../partials/flash') %>
                             <%- body %>
                         </div>
                     </div>
@@ -56,6 +57,17 @@
     <!-- Custom scripts for all pages-->
     <script src="/js/sb-admin-2.min.js"></script>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            document.querySelectorAll(".flash-alert").forEach(alert => {
+                alert.classList.add("fade");
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 7000); // 7 seconds
+    });
+    </script>
 </body>
 
 </html>

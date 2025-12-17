@@ -43,11 +43,10 @@ const vendorUpdateValidation = [
 ];
 
 const loginValidation = [
-  body('username')
+    body('email')
     .trim()
-    .notEmpty().withMessage('Username is required.')
-    .matches(/^\S+$/).withMessage('Username must not contain spaces.')
-    .isLength({ min: 5, max: 20 }).withMessage('Username must be at least 5 and at most 20 characters long.'),
+    .notEmpty().withMessage('Email is required.')
+    .isEmail().withMessage('Invalid email format.'),
 
     body('password')
     .trim()
@@ -56,26 +55,40 @@ const loginValidation = [
 ];
 
 const userValidation = [
-     body('fullname')
+     body('name')
     .trim()
-    .notEmpty().withMessage('Username is required.')
-    .isLength({ min: 5, max: 50 }).withMessage('Fullname must be at least 5 and at most 50 characters long.'),
+    .notEmpty().withMessage('Name is required.')
+    .isLength({ min: 5, max: 50 }).withMessage('Name must be at least 5 and at most 50 characters long.'),
 
-    body('username')
+    body('email')
     .trim()
-    .notEmpty().withMessage('Username is required.')
-    .matches(/^\S+$/).withMessage('Username must not contain spaces.')
-    .isLength({ min: 5, max: 20 }).withMessage('Username must be at least 5 and at most 20 characters long.'),
+    .notEmpty().withMessage('Email is required.')
+    .isEmail().withMessage('Invalid email format.'),
+
+    body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required.'),
 
     body('password')
     .trim()
     .notEmpty().withMessage('Password is required.')
     .isLength({ min: 8, max: 20 }).withMessage('Password must be at least 8 and at most 20 characters long.'),
 
+    body('confirmPassword')
+    .trim()
+    .notEmpty().withMessage('Confirm password is required.')
+    .isLength({ min: 8, max: 20 }).withMessage('Confirm password must be at least 8 and at most 20 characters long.')
+    .custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords do not match.');
+        }
+        return true;
+    }),
+
     body('role')
     .trim()
     .notEmpty().withMessage('Role is required.')
-    .isIn(['admin', 'author']).withMessage('Role must be either admin or author.')
+    .isIn(['customer', 'vendor']).withMessage('Role must be either Customer or Vendor.')
 ];
 
 const userUpdateValidation = [

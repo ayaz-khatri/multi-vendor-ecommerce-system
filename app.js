@@ -9,6 +9,7 @@ import path from 'path';
 import __dirname from './utils/dirname.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
+import auth from "./middlewares/auth.js";
 // import vendorRoutes from './routes/vendor.js';
 // import customerRoutes from './routes/customer.js';
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.set('layout', 'layouts/authLayout');
 app.set('view engine', 'ejs');
+app.use(auth);
 
 /* --------------------------- Database Connection -------------------------- */
 mongoose.connect(process.env.MONGODB_URI)

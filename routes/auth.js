@@ -1,27 +1,25 @@
 import express from 'express';
 const router = express.Router();
+import authController from '../controllers/authController.js';
 // import userController from '../controllers/userController.js';
 // import isLoggedIn from '../middlewares/isLoggedIn.js';
 // import isAdmin from '../middlewares/isAdmin.js';
-// import isValid from '../middlewares/validation.js';
+import isValid from '../middlewares/validation.js';
+
 // import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
 
 // Login Routes
-router.get('/', (req, res)=> {
-    res.render('auth/login');
-});
+router.get('/login', authController.loginPage);
+router.post('/login', isValid.loginValidation, authController.login);
 
-router.get('/login', (req, res)=> {
-    res.render('auth/login');
-});
+router.get('/register', authController.registerPage);
+router.post('/register', isValid.userValidation, authController.register);
 
-router.get('/register', (req, res)=> {
-    res.render('auth/register');
-});
+router.get('/forgot-password', authController.forgotPasswordPage);
+router.post('/forgot-password', authController.forgotPassword);
 
-router.get('/forgot-password', (req, res)=> {
-    res.render('auth/forgot-password');
-});
+router.get('/logout', authController.logout);
+
 // router.get('/', redirectIfLoggedIn, userController.loginPage);
 // router.post('/index', isValid.loginValidation, userController.adminLogin);
 // router.get('/logout', userController.logout);
@@ -42,7 +40,7 @@ router.use('', (req, res, next) => {
 router.use('',(err, req, res, next) => {
     console.log(err.stack);
     const status = err.status || 500;
-    res.status(status).render('admin/error',{
+    res.status(status).render('common/error',{
         status: status,
         message: err.message || 'Something went wrong!',
         role: req.role
