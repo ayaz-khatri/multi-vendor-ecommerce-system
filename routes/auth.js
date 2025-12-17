@@ -2,21 +2,20 @@ import express from 'express';
 const router = express.Router();
 import authController from '../controllers/authController.js';
 // import userController from '../controllers/userController.js';
-// import isLoggedIn from '../middlewares/isLoggedIn.js';
-// import isAdmin from '../middlewares/isAdmin.js';
+import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
 import isValid from '../middlewares/validation.js';
 
-// import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
+// router.use(redirectIfLoggedIn);
 
 // Login Routes
-router.get('/login', authController.loginPage);
-router.post('/login', isValid.loginValidation, authController.login);
+router.get('/login', redirectIfLoggedIn, authController.loginPage);
+router.post('/login', redirectIfLoggedIn, isValid.loginValidation, authController.login);
 
-router.get('/register', authController.registerPage);
-router.post('/register', isValid.userValidation, authController.register);
+router.get('/register', redirectIfLoggedIn, authController.registerPage);
+router.post('/register', redirectIfLoggedIn, isValid.userValidation, authController.register);
 
-router.get('/forgot-password', authController.forgotPasswordPage);
-router.post('/forgot-password', authController.forgotPassword);
+router.get('/forgot-password', redirectIfLoggedIn, authController.forgotPasswordPage);
+router.post('/forgot-password', redirectIfLoggedIn, authController.forgotPassword);
 
 router.get('/logout', authController.logout);
 

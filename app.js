@@ -10,7 +10,7 @@ import __dirname from './utils/dirname.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import auth from "./middlewares/auth.js";
-// import vendorRoutes from './routes/vendor.js';
+import vendorRoutes from './routes/vendor.js';
 // import customerRoutes from './routes/customer.js';
 dotenv.config();
 
@@ -72,7 +72,7 @@ app.use('/frontend', (req, res, next)=>{
   next();
 });
 app.use('/admin', adminRoutes);
-// app.use('/vendor', vendorRoutes);
+app.use('/vendor', vendorRoutes);
 // app.use('/customer', customerRoutes);
 app.use(authRoutes);
 

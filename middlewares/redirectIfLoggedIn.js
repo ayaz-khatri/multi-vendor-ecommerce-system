@@ -1,17 +1,27 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const redirectIfLoggedIn = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
 
     if (!token) {
-        return next(); // user not logged in → continue to login page
+        return next(); // Not logged in → allow access (login/register pages)
     }
 
     try {
-        jwt.verify(token, process.env.JWT_SECRET);
-        return res.redirect('/admin/dashboard'); // already logged in
-    } catch (error) {
-        return next(); // invalid token → treat as not logged in
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const redirectMap = {
+            admin: "/admin",
+            vendor: "/vendor",
+            customer: "/"
+        };
+
+        return res.redirect(redirectMap[decoded.role] || "/");
+    } catch (err) {
+        return next(); // Invalid or expired token → treat as not logged in
     }
 };
 

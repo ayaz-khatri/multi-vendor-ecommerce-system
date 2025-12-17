@@ -1,11 +1,13 @@
 import express from 'express';
 const router = express.Router();
 import vendorController from '../controllers/vendorController.js';
-// import userController from '../controllers/userController.js';
-// import isLoggedIn from '../middlewares/isLoggedIn.js';
-// import isAdmin from '../middlewares/isAdmin.js';
+import isLoggedIn from '../middlewares/isLoggedIn.js';
+import isAdmin from '../middlewares/isAdmin.js';
 // import upload from '../middlewares/multer.js';
 import isValid from '../middlewares/validation.js';
+
+router.use(isLoggedIn);
+router.use(isAdmin);
 
 // User CRUD Routes
 router.get('/', (req, res)=> {

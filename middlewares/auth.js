@@ -8,6 +8,7 @@ const auth = async (req, res, next) => {
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = decoded;
             res.locals.isLoggedIn = true;
             res.locals.authUser = decoded;
         } catch (err) {

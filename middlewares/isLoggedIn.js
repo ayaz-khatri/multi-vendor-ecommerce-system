@@ -5,14 +5,18 @@ dotenv.config();
 const isLoggedIn = async (req, res, next) => {
     try {
         const token = req.cookies.token;
-        if (!token) return res.redirect('/admin/');
-        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        req.id = tokenData.id;
-        req.role = tokenData.role;
-        req.fullname = tokenData.fullname;
+        if (!token) {
+            req.flash("error", "Unauthorized access. Please log in.");
+            return res.redirect("/login");
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.locals.isLoggedIn = true;
+        res.locals.authUser = decoded;
         next();
     } catch (error) {
-        res.status(500).json({message: error.message});
+        req.flash("error", "Something went wrong. Please log in again.");
+        return res.redirect('/login');
     }
 };  
 
