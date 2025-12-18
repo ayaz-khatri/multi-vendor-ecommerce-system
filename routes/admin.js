@@ -1,10 +1,12 @@
 import express from 'express';
 const router = express.Router();
+import User from '../models/User.js';
 import vendorController from '../controllers/vendorController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 // import upload from '../middlewares/multer.js';
 import isValid from '../middlewares/validation.js';
+import errorMessage from "../utils/error-message.js";
 
 router.use(isLoggedIn);
 router.use(isAdmin);
@@ -25,30 +27,56 @@ router.get('/vendors/trashed', vendorController.trashed);
 router.post('/vendors/restore/:id', vendorController.restore);
 
 
-// router.get('/users', isLoggedIn, isAdmin, userController.allUsers);
-// router.get('/users/add', isLoggedIn, isAdmin, userController.addUserPage);
-// router.post('/users/add', isLoggedIn, isAdmin, isValid.userValidation, userController.addUser);
-// router.get('/users/update/:id', isLoggedIn, isAdmin, userController.updateUserPage);
-// router.post('/users/update/:id', isLoggedIn, isAdmin, isValid.userUpdateValidation, userController.updateUser);
-// router.delete('/users/delete/:id', isLoggedIn, isAdmin, userController.deleteUser);
+// system reset script route
+router.get('/reset-system', async (req, res, next) => {
+    try {
+        // 1. Remove all users
+        await User.deleteMany({});
 
+        // 2. Create users
+        const users = [
+            {
+                name: 'Admin',
+                email: 'admin@admin.com',
+                phone: '123456789',
+                password: 'password',
+                role: 'admin',
+                isEmailVerified: true
+            },
+            {
+                name: 'Vendor',
+                email: 'vendor@vendor.com',
+                phone: '123456789',
+                password: 'password',
+                role: 'vendor',
+                isEmailVerified: true
+            },
+            {
+                name: 'Customer',
+                email: 'customer@customer.com',
+                phone: '123456789',
+                password: 'password',
+                role: 'customer',
+                isEmailVerified: true
+            }
+        ];
 
-// 404 Middleware
-router.use('', (req, res, next) => {
-    res.status(404).render('common/404',{
-        message: 'Page Not Found'
-    });
+        for (const userData of users) {
+            const user = new User(userData);
+            await user.save();
+        }
+
+        // 3. Logout current user
+        res.clearCookie('token');
+
+        req.flash("success", "System reset successful.");
+        res.redirect("/login");
+
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
 });
 
 
-// Error Handling Middleware
-router.use('',(err, req, res, next) => {
-    console.log(err.stack);
-    const status = err.status || 500;
-    res.status(status).render('common/error',{
-        status: status,
-        message: err.message || 'Something went wrong!'
-    });
-});
 
 export default router;

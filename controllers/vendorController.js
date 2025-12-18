@@ -115,7 +115,7 @@ const destroy = async (req, res, next) => {
         req.flash("success", "Vendor deleted successfully.");
         res.json({ success: true });
     } catch (error) {
-        next(errorMessage(error.message, 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -141,7 +141,7 @@ const restore = async (req, res, next) => {
         req.flash("success", "Vendor restored successfully.");
         res.json({ success: true });
     } catch (error) {
-        next(errorMessage(error.message, 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 

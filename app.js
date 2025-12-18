@@ -80,6 +80,23 @@ app.use(authRoutes);
 //     res.send("Hello World! Welcome to Multi Vendor Ecommerce System.");
 // });
 
+app.use('', (req, res, next) => {
+    res.status(404).render('common/404',{
+        message: 'Page Not Found'
+    });
+});
+
+
+// Error Handling Middleware
+app.use('',(err, req, res, next) => {
+    console.log(err.stack);
+    const status = err.status || 500;
+    res.status(status).render('common/error',{
+        status: status,
+        message: err.message || 'Something went wrong!',
+        role: req.role
+    });
+});
 
 /* ---------------------------- Start the server ---------------------------- */
 const port = process.env.PORT || 3000;
