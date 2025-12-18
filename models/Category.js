@@ -43,11 +43,10 @@ const categorySchema = new mongoose.Schema(
     timestamps: true
 });
 
-categorySchema.pre('validate', function (next) {
+categorySchema.pre('validate', function () {
     if (!this.slug && this.name) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
-    next();
 });
 
 categorySchema.index({ parentCategory: 1 });

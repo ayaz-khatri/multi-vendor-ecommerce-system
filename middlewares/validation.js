@@ -105,11 +105,29 @@ const resetPasswordValidation = [
     .isLength({ min: 8, max: 20 }).withMessage('Password must be at least 8 and at most 20 characters long.')
 ];
 
+const categoryValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Category name is required.')
+    .isLength({ min: 3, max: 50 }).withMessage('Category name must be at least 3 and at most 50 characters long.'),
+
+    body('description')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isLength({ max: 200 }).withMessage('Description can be at most 200 characters long.'),
+
+    body('parentCategory')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isMongoId().withMessage('Invalid parent category ID.')
+];
+
 export default { 
     loginValidation,
     userValidation,
     vendorValidation,
     vendorUpdateValidation,
     forgotPasswordValidation,
-    resetPasswordValidation
+    resetPasswordValidation,
+    categoryValidation
 };

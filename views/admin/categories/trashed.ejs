@@ -1,0 +1,62 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/admin/categories/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+            <a href="/admin/categories" class="btn btn-outline-primary btn-sm mt-1">Categories</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+<%- include('../../partials/restoreModal.ejs') %>
+
+<script src="/js/tabulator.min.js"></script>
+<script type="module">
+    import { initTabulator } from "/js/tabulator-helper.js";
+
+    const tableData = <%- JSON.stringify(categories || []) %>;
+
+    const columns = [
+        { title: "S.No.", formatter: "rownum", width: 80, hozAlign: "center", headerSort: false },
+        { title: "Name", field: "name", headerFilter: "input" },
+        { title: "Slug", field: "slug", headerFilter: "input" },
+        { title: "Parent Category", field: "parentCategory.name", headerFilter: "input" },
+        { title: "Created", field: "createdAt" },
+        { title: "Updated", field: "updatedAt" }
+    ];
+
+    function actionsTemplate(rowData) {
+        return `
+            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-success" title="Restore"><i class="fas fa-undo"></i></button>
+        `;
+    }
+
+    // Initialize table with deleteUrl
+    initTabulator({
+        tableId: "#crudTable",
+        data: tableData,
+        columns,
+        actions: actionsTemplate,
+        url: "/admin/categories/restore",
+        method: "POST"
+    });
+
+</script>
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+

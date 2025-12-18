@@ -1,0 +1,29 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/admin/categories" class="btn btn-outline-primary btn-sm mt-1">Categories</a>
+            <a href="/admin/categories/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <p><strong>Slug:</strong> <%= category.slug %></p>
+            <p><strong>Description:</strong> <%= category.description %></p>
+            <p><strong>Created At:</strong> <%= category.createdAt.toDateString() %> (<%= timeAgo(category.createdAt) %>)</p>
+            <p><strong>Updated At:</strong> <%= category.updatedAt.toDateString() %> (<%= timeAgo(category.updatedAt) %>)</p>
+        </div>
+    </div>
+    <!--/Form -->
+
+</div>
+<!-- /.container-fluid -->
+

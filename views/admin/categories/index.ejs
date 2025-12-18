@@ -1,0 +1,63 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+          <a href="/admin/categories/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+          <a href="/admin/categories/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+<%- include('../../partials/deleteModal.ejs') %>
+
+<script src="/js/tabulator.min.js"></script>
+<script type="module">
+    import { initTabulator } from "/js/tabulator-helper.js";
+
+    const tableData = <%- JSON.stringify(categories || []) %>;
+
+    const columns = [
+        { title: "S.No.", formatter: "rownum", width: 80, hozAlign: "center", headerSort: false },
+        { title: "Name", field: "name", headerFilter: "input" },
+        { title: "Slug", field: "slug", headerFilter: "input" },
+        { title: "Parent Category", field: "parentCategory.name", headerFilter: "input" },
+        { title: "Created", field: "createdAt" },
+        { title: "Updated", field: "updatedAt" }
+    ];
+
+    function actionsTemplate(rowData) {
+        return `
+            <a href="/admin/categories/view/${rowData._id}" class="btn btn-sm btn-primary text-white" title="View"><i class="fas fa-eye"></i></a>
+            <a href="/admin/categories/edit/${rowData._id}" class="btn btn-sm btn-success text-white mx-1" title="Edit"><i class="fas fa-edit"></i></a>
+            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+        `;
+    }
+
+    // Initialize table with deleteUrl
+    initTabulator({
+        tableId: "#crudTable",
+        data: tableData,
+        columns,
+        actions: actionsTemplate,
+        url: "/admin/categories"
+    });
+
+</script>
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+

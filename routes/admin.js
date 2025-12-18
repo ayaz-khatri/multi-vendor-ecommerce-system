@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import User from '../models/User.js';
 import vendorController from '../controllers/vendorController.js';
+import categoryController from '../controllers/categoryController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 // import upload from '../middlewares/multer.js';
@@ -16,6 +17,7 @@ router.get('/', (req, res)=> {
     res.render('admin/dashboard', { title: 'Dashboard' });
 });
 
+// Vendor Routes
 router.get('/vendors', vendorController.index);
 router.get('/vendors/view/:id', vendorController.view);
 router.get('/vendors/create', vendorController.create);
@@ -25,6 +27,18 @@ router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.upd
 router.delete('/vendors/:id', vendorController.destroy);
 router.get('/vendors/trashed', vendorController.trashed);
 router.post('/vendors/restore/:id', vendorController.restore);
+
+
+// Category Routes
+router.get('/categories', categoryController.index);
+router.get('/categories/view/:id', categoryController.view);
+router.get('/categories/create', categoryController.create);
+router.post('/categories', isValid.categoryValidation, categoryController.store);
+router.get('/categories/edit/:id', categoryController.edit);
+router.post('/categories/:id', isValid.categoryValidation, categoryController.update);
+router.delete('/categories/:id', categoryController.destroy);
+router.get('/categories/trashed', categoryController.trashed);
+router.post('/categories/restore/:id', categoryController.restore);
 
 
 // system reset script route

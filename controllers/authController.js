@@ -54,7 +54,7 @@ const login = async (req, res, next) => {
     try {
         const user = await User.findOne({ email, isDeleted: false }).select('+password');
         if (!user) {
-            req.flash("error", "Email not found.");
+            req.flash("error", "Invalid Email or Password.");
             req.flash("old", req.body);
             return res.redirect("/login");
         }
