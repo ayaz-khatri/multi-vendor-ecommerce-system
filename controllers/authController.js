@@ -50,7 +50,7 @@ const login = async (req, res, next) => {
         req.flash("old", req.body);
         return res.redirect("/login");    
     }
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
     try {
         const user = await User.findOne({ email, isDeleted: false }).select('+password');
         if (!user) {
@@ -71,11 +71,14 @@ const login = async (req, res, next) => {
             return res.redirect("/login");
         }
 
+        const tokenExpiry = rememberMe ? '30d' : '1d';
         const jwtData = { id: user._id, role: user.role, name: user.name, email: user.email };
-        const token = jwt.sign(jwtData, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        const token = jwt.sign(jwtData, process.env.JWT_SECRET, { expiresIn: tokenExpiry });
+        const cookieOptions = { httpOnly: true, sameSite: 'strict' };
+        if (rememberMe) cookieOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+        res.cookie('token', token, cookieOptions);
+ 
         req.flash("success", "Login Successful.");
-
         user.lastLogin = new Date();
         await user.save({ validateBeforeSave: false });
 
