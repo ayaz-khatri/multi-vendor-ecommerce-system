@@ -2,11 +2,13 @@ import Category from "../models/Category.js";
 import errorMessage from "../utils/error-message.js";
 import { validationResult } from "express-validator";
 import { timeAgo } from '../utils/helper.js';
+import path from 'path';
+import fs from 'fs';
 
 const index = async (req, res, next) => {
     try {
         const categories = await Category.find({ isDeleted: false }).populate('parentCategory', 'name').sort({ createdAt: -1 });
-        res.render('admin/categories', { categories, title: 'categories' });
+        res.render('admin/categories', { categories, title: 'Categories' });
     } catch (err) {
         next(errorMessage("Something went wrong", 500));
     }
@@ -14,7 +16,7 @@ const index = async (req, res, next) => {
 
 const view = async (req, res, next) => {
     try {
-        const category = await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.id).populate('parentCategory', 'name');
         if (!category || category.isDeleted) return next(errorMessage('Category not found.', 404));
         res.render('admin/categories/view', { category, title: category.name, timeAgo });
     } catch (err) {
@@ -24,7 +26,7 @@ const view = async (req, res, next) => {
 
 const create = async (req, res, next) => {
     try {
-        const categories = await Category.find({ isDeleted: false }).sort({ name: 1 });
+        const categories = await Category.find({ isDeleted: false, parentCategory: null }).sort({ name: 1 }).lean();
         res.render('admin/categories/create', { categories, title: 'Create Category' });
     } catch (err) {
         return next(errorMessage("Something went wrong", 500));
@@ -40,23 +42,30 @@ const store = async (req, res, next) => {
     }
 
     try {
-        const category = new Category(req.body);
+        const category = new Category(req.body); 
+        category.parentCategory = req.body.parentCategory || null;
+        category.icon = req.file ? req.file.filename : null;
         const saved = await category.save();
-
         req.flash("success", "Category created successfully.");
-        res.redirect("/admin/categories");
+        return res.redirect("/admin/categories");
 
     } catch (error) {
-        console.log(error);
-        next(errorMessage("Something went wrong", 500));
-    } 
+        // Duplicate key (slug or name+parentCategory)
+        if (error.code === 11000) {
+            req.flash("error", "Category already exists in this level.");
+            req.flash("old", req.body);
+            return res.redirect("/admin/categories/create");
+        }
+        return next(errorMessage("Something went wrong", 500));
+    }
 };
+
 
 const edit = async (req, res, next) => {
     try {
         const category = await Category.findById(req.params.id);
         if (!category || category.isDeleted) return next(errorMessage('Category not found.', 404));
-        const categories = await Category.find({ isDeleted: false }).sort({ name: 1 });
+        const categories = await Category.find({ isDeleted: false, parentCategory: null }).sort({ name: 1 });
         res.render('admin/categories/edit', { category, categories, title: 'Edit Category' });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
@@ -78,13 +87,36 @@ const update = async (req, res, next) => {
         if (!category || category.isDeleted) return next(errorMessage('Category not found.', 404));
         
         category.name = name || category.name;
-        category.parentCategory = parentCategory || category.parentCategory;
         category.description = description || category.description;
+        if (parentCategory === '') {
+            category.parentCategory = null;
+        } else if (parentCategory) {
+            category.parentCategory = parentCategory;
+        }
+
+        if (req.file && category.icon) {
+            const imagePath = path.join('./public/uploads/', category.icon);
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    req.flash("error", "Failed to upload image.");
+                    req.flash("old", req.body);
+                    return res.redirect(`/admin/categories/edit/${req.params.id}`);
+                }
+            });
+        }
+        category.icon = req.file ? req.file.filename : category.icon;
+
         const saved = await category.save();
 
         req.flash("success", "Category updated successfully.");
         res.redirect("/admin/categories");
     } catch (error) {
+        console.log(error);
+        if (error.code === 11000) {
+            req.flash("error", "Category already exists in this level.");
+            req.flash("old", req.body);
+            return res.redirect("/admin/categories/create");
+        }
         next(errorMessage("Something went wrong", 500));
     }
 };

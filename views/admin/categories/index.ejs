@@ -27,7 +27,12 @@
     const tableData = <%- JSON.stringify(categories || []) %>;
 
     const columns = [
-        { title: "S.No.", formatter: "rownum", width: 80, hozAlign: "center", headerSort: false },
+        { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
+        { title: "Image", field: "icon", formatter: function(cell, formatterParams) {
+            const icon = cell.getValue();
+            const imgSrc = icon ? '/uploads/' + icon : '/img/placeholder.png';
+            return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
+        }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },
         { title: "Slug", field: "slug", headerFilter: "input" },
         { title: "Parent Category", field: "parentCategory.name", headerFilter: "input" },

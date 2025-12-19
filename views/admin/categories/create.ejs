@@ -11,7 +11,7 @@
     </div>
 
     <!-- Content Row -->
-    <form action="/admin/categories" method="POST" class="bg-white shadow p-4 rounded">
+    <form action="/admin/categories" method="POST" class="bg-white shadow p-4 rounded" enctype="multipart/form-data">
 
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -30,8 +30,11 @@
                     <% }) %>
                 </select>
             </div>
-
-            <div class="col mb-3">
+            <div class="col-12 mb-3">
+                <label class="form-label">Icon (optional)</label>
+                <input type="file" name="icon" class="form-control">
+            </div>
+            <div class="col-12 mb-3">
                 <label class="form-label">Description</label>
                 <textarea name="description" id="description" class="form-control"><%= old.description || '' %></textarea>
             </div>

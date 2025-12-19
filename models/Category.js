@@ -11,6 +11,7 @@ const categorySchema = new mongoose.Schema(
 
     slug: {
         type: String,
+        required: true,
         unique: true,
         lowercase: true,
         trim: true
@@ -43,14 +44,30 @@ const categorySchema = new mongoose.Schema(
     timestamps: true
 });
 
-categorySchema.pre('validate', function () {
-    if (!this.slug && this.name) {
-        this.slug = slugify(this.name, { lower: true, strict: true });
+categorySchema.pre('validate', async function () {
+    if (!this.name) return next();
+
+    const currentSlug = slugify(this.name, { lower: true, strict: true });
+
+    if (!this.parentCategory) {
+        // Top-level category
+        this.slug = currentSlug;
+        return;
     }
+
+    // Sub-category: prepend parent slug
+    const parent = await this.constructor.findById(this.parentCategory);
+
+    if (!parent) {
+        return next(new Error('Invalid parent category'));
+    }
+
+    this.slug = `${parent.slug}/${currentSlug}`;
 });
 
+
 categorySchema.index({ parentCategory: 1 });
-categorySchema.index({ name: 1, parentCategory: 1 }, { unique: true });
+categorySchema.index({ slug: 1 }, { unique: true });
 
 const Category = mongoose.model('Category', categorySchema);
 export default Category;
