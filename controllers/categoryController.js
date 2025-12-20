@@ -26,7 +26,7 @@ const view = async (req, res, next) => {
 
 const create = async (req, res, next) => {
     try {
-        const categories = await Category.find({ isDeleted: false, parentCategory: null }).sort({ name: 1 }).lean();
+        const categories = await Category.find({ isDeleted: false, parentCategory: null }).sort({ name: 1 });
         res.render('admin/categories/create', { categories, title: 'Create Category' });
     } catch (err) {
         return next(errorMessage("Something went wrong", 500));
@@ -65,7 +65,7 @@ const edit = async (req, res, next) => {
     try {
         const category = await Category.findById(req.params.id);
         if (!category || category.isDeleted) return next(errorMessage('Category not found.', 404));
-        const categories = await Category.find({ isDeleted: false, parentCategory: null }).sort({ name: 1 });
+        const categories = await Category.find({ isDeleted: false, parentCategory: null, _id: { $ne: category._id } }).sort({ name: 1 });
         res.render('admin/categories/edit', { category, categories, title: 'Edit Category' });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
@@ -95,14 +95,15 @@ const update = async (req, res, next) => {
         }
 
         if (req.file && category.icon) {
-            const imagePath = path.join('./public/uploads/', category.icon);
-            fs.unlink(imagePath, (err) => {
-                if (err) {
-                    req.flash("error", "Failed to upload image.");
-                    req.flash("old", req.body);
-                    return res.redirect(`/admin/categories/edit/${req.params.id}`);
-                }
-            });
+            const imagePath = path.join('./public/uploads/categories', category.icon);
+            try {
+                await fs.promises.unlink(imagePath);
+            } catch (err) {
+                console.error("Failed to delete old icon:", err);
+                req.flash("error", "Failed to delete previous icon.");
+                req.flash("old", req.body);
+                return res.redirect(`/admin/categories/edit/${req.params.id}`);
+            }
         }
         category.icon = req.file ? req.file.filename : category.icon;
 
@@ -111,7 +112,6 @@ const update = async (req, res, next) => {
         req.flash("success", "Category updated successfully.");
         res.redirect("/admin/categories");
     } catch (error) {
-        console.log(error);
         if (error.code === 11000) {
             req.flash("error", "Category already exists in this level.");
             req.flash("old", req.body);
@@ -142,7 +142,7 @@ const destroy = async (req, res, next) => {
 const trashed = async (req, res, next) => {
     try {
         const categories = await Category.find({ isDeleted: true }).populate('parentCategory', 'name').sort({ createdAt: -1 });
-        res.render('admin/categories/trashed', { categories, title: 'Trashed categories' });
+        res.render('admin/categories/trashed', { categories, title: 'Trashed Categories' });
     } catch (err) {
         next(errorMessage("Something went wrong", 500));
     }
