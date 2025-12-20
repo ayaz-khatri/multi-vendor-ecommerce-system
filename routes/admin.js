@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import User from '../models/User.js';
 import Category from '../models/Category.js';
+import Shop from '../models/Shop.js';
 import vendorController from '../controllers/vendorController.js';
 import categoryController from '../controllers/categoryController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
@@ -49,18 +50,17 @@ router.get('/reset-system', async (req, res, next) => {
         // Remove all
         await User.deleteMany({});
         await Category.deleteMany({});
+        await Shop.deleteMany({});
 
         // Default Users
-        const users = [
-            { name: 'Admin', email: 'admin@admin.com', phone: '123456789', password: 'password', role: 'admin', isEmailVerified: true },
-            { name: 'Vendor', email: 'vendor@vendor.com', phone: '123456789', password: 'password', role: 'vendor', isEmailVerified: true},
-            { name: 'Customer', email: 'customer@customer.com', phone: '123456789', password: 'password', role: 'customer', isEmailVerified: true }
-        ];
+        const admin = new User({ name: 'Admin', email: 'admin@admin.com', phone: '123456789', password: 'password', role: 'admin', isEmailVerified: true });
+        await admin.save();
 
-        for (const userData of users) {
-            const user = new User(userData);
-            await user.save();
-        }
+        const vendor = new User({ name: 'Vendor', email: 'vendor@vendor.com', phone: '123456789', password: 'password', role: 'vendor', isEmailVerified: true });
+        await vendor.save();
+
+        const customer = new User({ name: 'Customer', email: 'customer@customer.com', phone: '123456789', password: 'password', role: 'customer', isEmailVerified: true });
+        await customer.save();
 
         // Default Categories
         const electronics = new Category({ name: 'Electronics', parentCategory: null });
@@ -85,6 +85,40 @@ router.get('/reset-system', async (req, res, next) => {
             const category = new Category(data);
             await category.save();
         }
+
+        // Default Shops
+        const shop1 = new Shop({
+            vendorId: vendor._id,
+            name: 'Urban Style Store',
+            description: 'A modern fashion shop offering trendy urban clothing.',
+            email: 'urbanstyle@shop.com',
+            phone: '03001234567',
+            address: {city: 'Lahore',country: 'Pakistan'},
+            status: 'approved'
+        });
+        await shop1.save();
+
+        const shop2 = new Shop({
+            vendorId: vendor._id,
+            name: 'Tech World Hub',
+            description: 'Electronics and gadgets store with latest technology.',
+            email: 'techworld@shop.com',
+            phone: '03219876543',
+            address: {city: 'Karachi', country: 'Pakistan'},
+            status: 'pending'
+        });
+        await shop2.save();
+
+        const shop3 = new Shop({
+            vendorId: vendor._id,
+            name: 'Home Comforts',
+            description: 'Quality home and kitchen essentials.',
+            email: 'homecomforts@shop.com',
+            phone: '03335558899',
+            address: {city: 'Faisalabad',country: 'Pakistan'},
+            status: 'approved'
+        });
+        await shop3.save();
 
         // Logout current user
         res.clearCookie('token');

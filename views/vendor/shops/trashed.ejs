@@ -5,8 +5,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-            <a href="/admin/categories/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
-            <a href="/admin/categories" class="btn btn-outline-primary btn-sm mt-1">Categories</a>
+            <a href="/vendor/shops/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+            <a href="/vendor/shops" class="btn btn-outline-primary btn-sm mt-1">Shops</a>
         </div>
     </div>
 
@@ -24,18 +24,18 @@
 <script type="module">
     import { initTabulator } from "/js/tabulator-helper.js";
 
-    const tableData = <%- JSON.stringify(categories || []) %>;
+    const tableData = <%- JSON.stringify(shops || []) %>;
 
     const columns = [
         { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
-        { title: "Image", field: "icon", formatter: function(cell, formatterParams) {
+        { title: "Image", field: "logo", formatter: function(cell, formatterParams) {
             const icon = cell.getValue();
-            const imgSrc = icon ? '/uploads/categories/' + icon : '/img/placeholder.png';
+            const imgSrc = icon ? '/uploads/shops/' + icon : '/img/placeholder.png';
             return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
         }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },
+        { title: "Email", field: "email", headerFilter: "input" },
         { title: "Slug", field: "slug", headerFilter: "input" },
-        { title: "Parent Category", field: "parentCategory.name", headerFilter: "input" },
         { title: "Deleted", field: "deletedAt" }
     ];
 
@@ -51,7 +51,7 @@
         data: tableData,
         columns,
         actions: actionsTemplate,
-        url: "/admin/categories/restore",
+        url: "/vendor/shops/restore",
         method: "POST"
     });
 

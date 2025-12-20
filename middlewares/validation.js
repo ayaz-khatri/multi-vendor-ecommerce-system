@@ -122,6 +122,32 @@ const categoryValidation = [
     .isMongoId().withMessage('Invalid parent category ID.')
 ];
 
+const shopValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Shop name is required.')
+    .isLength({ min: 3, max: 50 }).withMessage('Shop name must be at least 3 and at most 50 characters long.'),
+
+    body('description')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isLength({ max: 200 }).withMessage('Description can be at most 200 characters long.'),
+
+    body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required.')
+    .isEmail().withMessage('Invalid email format.'),
+
+    body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required.'),
+
+    body('address')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isLength({ max: 200 }).withMessage('Address can be at most 200 characters long.')
+];
+
 export default { 
     loginValidation,
     userValidation,
@@ -129,5 +155,6 @@ export default {
     vendorUpdateValidation,
     forgotPasswordValidation,
     resetPasswordValidation,
-    categoryValidation
+    categoryValidation,
+    shopValidation
 };

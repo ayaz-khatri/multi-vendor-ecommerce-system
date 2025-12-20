@@ -1,0 +1,55 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/vendor/shops" class="btn btn-outline-primary btn-sm mt-1">Shops</a>
+            <a href="/vendor/shops/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Slug:</strong> <%= shop.slug %></p>
+                    <p><strong>Email:</strong> <%= shop.email %></p>
+                    <p><strong>Phone:</strong> <%= shop.phone %></p>
+                    <p>
+                        <strong>Address:</strong>
+                        <%= [
+                                shop.address?.line1,
+                                shop.address?.line2,
+                                shop.address?.city,
+                                shop.address?.state,
+                                shop.address?.country
+                            ].filter(Boolean).join(', ') || 'N/A' %>
+                        </p>
+                    <p><strong>Description:</strong> <%= shop.description %></p>
+                    <p><strong>Created At:</strong> <%= shop.createdAt.toDateString() %> (<%= timeAgo(shop.createdAt) %>)</p>
+                    <p><strong>Updated At:</strong> <%= shop.updatedAt.toDateString() %> (<%= timeAgo(shop.updatedAt) %>)</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" 
+                        alt="<%= shop.name %>" class="mb-3 w-50 border border-3 border-secondary rounded shadow">
+                </div>
+            </div>
+            <div class="row">
+                <p><strong>Banner:</strong></p>
+                <img src="<%= shop.banner ? '/uploads/shops/' + shop.banner : '/img/placeholder-banner.png' %>" 
+                        alt="<%= shop.name %>" class="mb-3 w-100 border border-3 border-secondary rounded shadow">
+            </div>
+            
+        </div>
+    </div>
+    <!--/Form -->
+
+</div>
+<!-- /.container-fluid -->
+

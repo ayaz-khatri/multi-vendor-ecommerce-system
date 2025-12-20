@@ -99,7 +99,6 @@ const update = async (req, res, next) => {
             try {
                 await fs.promises.unlink(imagePath);
             } catch (err) {
-                console.error("Failed to delete old icon:", err);
                 req.flash("error", "Failed to delete previous icon.");
                 req.flash("old", req.body);
                 return res.redirect(`/admin/categories/edit/${req.params.id}`);

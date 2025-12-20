@@ -54,7 +54,7 @@ const shopSchema = new mongoose.Schema(
 
     status: {
         type: String,
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'approved'],
         default: 'pending'
     },
 
@@ -72,11 +72,10 @@ const shopSchema = new mongoose.Schema(
     timestamps: true
 });
 
-shopSchema.pre('validate', function (next) {
+shopSchema.pre('validate', function () {
     if (!this.slug && this.name) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
-    next();
 });
 
 shopSchema.index({ vendorId: 1, name: 1 }, { unique: true });
