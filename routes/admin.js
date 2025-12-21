@@ -4,7 +4,7 @@ import User from '../models/User.js';
 import Category from '../models/Category.js';
 import Shop from '../models/Shop.js';
 import vendorController from '../controllers/vendorController.js';
-import categoryController from '../controllers/categoryController.js';
+import adminCategoryController from '../controllers/adminCategoryController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
@@ -33,15 +33,15 @@ router.post('/vendors/restore/:id', vendorController.restore);
 
 
 // Category Routes
-router.get('/categories', categoryController.index);
-router.get('/categories/view/:id', categoryController.view);
-router.get('/categories/create', categoryController.create);
-router.post('/categories', uploadCategoryIcon.single('icon'), isValid.categoryValidation, categoryController.store);
-router.get('/categories/edit/:id', categoryController.edit);
-router.post('/categories/:id', uploadCategoryIcon.single('icon'), isValid.categoryValidation, categoryController.update);
-router.delete('/categories/:id', categoryController.destroy);
-router.get('/categories/trashed', categoryController.trashed);
-router.post('/categories/restore/:id', categoryController.restore);
+router.get('/categories', adminCategoryController.index);
+router.get('/categories/view/:id', adminCategoryController.view);
+router.get('/categories/create', adminCategoryController.create);
+router.post('/categories', uploadCategoryIcon.single('icon'), isValid.categoryValidation, adminCategoryController.store);
+router.get('/categories/edit/:id', adminCategoryController.edit);
+router.post('/categories/:id', uploadCategoryIcon.single('icon'), isValid.categoryValidation, adminCategoryController.update);
+router.delete('/categories/:id', adminCategoryController.destroy);
+router.get('/categories/trashed', adminCategoryController.trashed);
+router.post('/categories/restore/:id', adminCategoryController.restore);
 
 
 // system reset script route

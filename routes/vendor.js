@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import shopController from '../controllers/shopController.js';
+import vendorShopController from '../controllers/vendorShopController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isVendor from '../middlewares/isVendor.js';
 import isValid from '../middlewares/validation.js';
@@ -14,15 +14,15 @@ router.get('/', (req, res)=> {
     res.render('vendor/dashboard', { title: 'Dashboard' });
 });
 
-router.get('/shops', shopController.index);
-router.get('/shops/view/:id', shopController.view);
-router.get('/shops/create', shopController.create);
-router.post('/shops', uploadShopImage.fields([{ name: 'logo', maxCount: 1 },{ name: 'banner', maxCount: 1 }]), isValid.shopValidation, shopController.store);
-router.get('/shops/edit/:id', shopController.edit);
-router.post('/shops/:id', uploadShopImage.fields([{ name: 'logo', maxCount: 1 },{ name: 'banner', maxCount: 1 }]), isValid.shopValidation, shopController.update);
-router.delete('/shops/:id', shopController.destroy);
-router.get('/shops/trashed', shopController.trashed);
-router.post('/shops/restore/:id', shopController.restore);
+router.get('/shops', vendorShopController.index);
+router.get('/shops/view/:id', vendorShopController.view);
+router.get('/shops/create', vendorShopController.create);
+router.post('/shops', uploadShopImage.fields([{ name: 'logo', maxCount: 1 },{ name: 'banner', maxCount: 1 }]), isValid.shopValidation, vendorShopController.store);
+router.get('/shops/edit/:id', vendorShopController.edit);
+router.post('/shops/:id', uploadShopImage.fields([{ name: 'logo', maxCount: 1 },{ name: 'banner', maxCount: 1 }]), isValid.shopValidation, vendorShopController.update);
+router.delete('/shops/:id', vendorShopController.destroy);
+router.get('/shops/trashed', vendorShopController.trashed);
+router.post('/shops/restore/:id', vendorShopController.restore);
 
 
 
