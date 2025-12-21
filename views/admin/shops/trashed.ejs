@@ -5,8 +5,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-          <a href="/vendor/shops/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
-          <a href="/vendor/shops/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+            <a href="/admin/shops" class="btn btn-outline-primary btn-sm mt-1">Shops</a>
         </div>
     </div>
 
@@ -18,7 +17,7 @@
 </div>
 <!-- /.container-fluid -->
 
-<%- include('../../partials/deleteModal.ejs') %>
+<%- include('../../partials/restoreModal.ejs') %>
 
 <script src="/js/tabulator.min.js"></script>
 <script type="module">
@@ -34,7 +33,7 @@
             return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
         }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },
-        { title: "Email", field: "email", headerFilter: "input" },
+        { title: "Vendor", field: "vendorId.name", headerFilter: "input" },
         { title: "Slug", field: "slug", headerFilter: "input" },
         { title: "Status", field: "status", headerFilter: "input", formatter: function(cell, formatterParams) {
             const status = cell.getValue();
@@ -44,15 +43,12 @@
                 return `<span class="badge badge-warning">Pending</span>`;
             }
         }},
-        { title: "Created", field: "createdAt" },
-        { title: "Updated", field: "updatedAt" }
+        { title: "Deleted", field: "deletedAt" }
     ];
 
     function actionsTemplate(rowData) {
         return `
-            <a href="/vendor/shops/view/${rowData._id}" class="btn btn-sm btn-primary text-white" title="View"><i class="fas fa-eye"></i></a>
-            <a href="/vendor/shops/edit/${rowData._id}" class="btn btn-sm btn-success text-white mx-1" title="Edit"><i class="fas fa-edit"></i></a>
-            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-success" title="Restore"><i class="fas fa-undo"></i></button>
         `;
     }
 
@@ -62,7 +58,8 @@
         data: tableData,
         columns,
         actions: actionsTemplate,
-        url: "/vendor/shops"
+        url: "/admin/shops/restore",
+        method: "POST"
     });
 
 </script>

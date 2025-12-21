@@ -5,8 +5,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-            <a href="/vendor/shops" class="btn btn-outline-primary btn-sm mt-1">Shops</a>
-            <a href="/vendor/shops/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+            <a href="/admin/shops" class="btn btn-outline-primary btn-sm mt-1">Shops</a>
+            <a href="/admin/shops/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
         </div>
     </div>
 
@@ -26,6 +26,7 @@
                             <span class="badge badge-danger">Pending</span>
                         <% } %>
                     </p>
+                    <p><strong>Vendor:</strong> <%= shop.vendorId.name %></p>
                     <p><strong>Slug:</strong> <%= shop.slug %></p>
                     <p><strong>Email:</strong> <%= shop.email %></p>
                     <p><strong>Phone:</strong> <%= shop.phone %></p>

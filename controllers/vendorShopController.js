@@ -7,7 +7,7 @@ import fs from 'fs';
 
 const index = async (req, res, next) => {
     try {
-        const shops = await Shop.find({ isDeleted: false }).sort({ createdAt: -1 });
+        const shops = await Shop.find({ isDeleted: false, vendorId: req.user.id }).sort({ createdAt: -1 });
         res.render('vendor/shops', { shops, title: 'Shops' });
     } catch (err) {
         next(errorMessage("Something went wrong", 500));
@@ -16,7 +16,7 @@ const index = async (req, res, next) => {
 
 const view = async (req, res, next) => {
     try {
-        const shop = await Shop.findById(req.params.id);
+        const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
         res.render('vendor/shops/view', { shop, title: shop.name, timeAgo });
     } catch (err) {
@@ -26,8 +26,7 @@ const view = async (req, res, next) => {
 
 const create = async (req, res, next) => {
     try {
-        const shops = await Shop.find({ isDeleted: false }).sort({ name: 1 });
-        res.render('vendor/shops/create', { shops, title: 'Create Shop' });
+        res.render('vendor/shops/create', { title: 'Create Shop' });
     } catch (err) {
         return next(errorMessage("Something went wrong", 500));
     }
@@ -69,7 +68,7 @@ const store = async (req, res, next) => {
 
 const edit = async (req, res, next) => {
     try {
-        const shop = await Shop.findById(req.params.id);
+        const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
         res.render('vendor/shops/edit', { shop, title: 'Edit Shop' });
     } catch (error) {
@@ -88,7 +87,7 @@ const update = async (req, res, next) => {
 
     const { name, description, email, phone, logo, banner, line1, line2, city, state, country } = req.body;
     try {
-        const shop = await Shop.findById(req.params.id);
+        const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
         
         shop.name = name || shop.name;
@@ -143,7 +142,7 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
     try {
-        const shop = await Shop.findById(req.params.id);
+        const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
 
         // Soft delete
@@ -160,7 +159,7 @@ const destroy = async (req, res, next) => {
 
 const trashed = async (req, res, next) => {
     try {
-        const shops = await Shop.find({ isDeleted: true }).sort({ createdAt: -1 });
+        const shops = await Shop.find({ isDeleted: true, vendorId: req.user.id }).sort({ createdAt: -1 });
         res.render('vendor/shops/trashed', { shops, title: 'Trashed Shops' });
     } catch (err) {
         next(errorMessage("Something went wrong", 500));
@@ -169,7 +168,7 @@ const trashed = async (req, res, next) => {
 
 const restore = async (req, res, next) => {
     try {
-        const shop = await Shop.findById(req.params.id);
+        const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || !shop.isDeleted) return next(errorMessage('Shop not found.', 404));
 
         // Restore

@@ -11,6 +11,8 @@ export function initTabulator({
     actions = null,
     url = null,
     method = "DELETE",
+    approveUrl = null,
+    approveModalId = null,
 }) {
 
     /* -----------------------------
@@ -143,6 +145,46 @@ export function initTabulator({
             };
         }
     }
+
+    if (approveUrl && approveModalId) {
+        let approveItemId = null;
+
+        window.openApproveModal = function (id) {
+            approveItemId = id;
+            new bootstrap.Modal(
+                document.getElementById(approveModalId)
+            ).show();
+        };
+
+        const confirmBtn = document.getElementById("confirmApproveBtn");
+        if (confirmBtn) {
+            confirmBtn.onclick = async () => {
+                if (!approveItemId) return;
+
+                try {
+                     const res = await fetch(`${approveUrl}/${approveItemId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    if (res.ok) {
+                        window.location.reload();
+                    } else {
+                        alert("Failed to approve shop.");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("An error occurred while approving.");
+                }
+
+                approveItemId = null;
+                bootstrap.Modal.getInstance(
+                    document.getElementById(approveModalId)
+                ).hide();
+            };
+        }
+    }
+
 
     return table;
 }

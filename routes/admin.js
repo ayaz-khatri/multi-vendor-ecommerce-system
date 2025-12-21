@@ -5,6 +5,7 @@ import Category from '../models/Category.js';
 import Shop from '../models/Shop.js';
 import vendorController from '../controllers/vendorController.js';
 import adminCategoryController from '../controllers/adminCategoryController.js';
+import adminShopController from '../controllers/adminShopController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
@@ -43,6 +44,13 @@ router.delete('/categories/:id', adminCategoryController.destroy);
 router.get('/categories/trashed', adminCategoryController.trashed);
 router.post('/categories/restore/:id', adminCategoryController.restore);
 
+// Shop Routes
+router.get('/shops', adminShopController.index);
+router.get('/shops/view/:id', adminShopController.view);
+router.delete('/shops/:id', adminShopController.destroy);
+router.get('/shops/trashed', adminShopController.trashed);
+router.post('/shops/restore/:id', adminShopController.restore);
+router.post('/shops/approve/:id', adminShopController.approve);
 
 // system reset script route
 router.get('/reset-system', async (req, res, next) => {
