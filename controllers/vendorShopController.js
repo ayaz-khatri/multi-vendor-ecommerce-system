@@ -9,7 +9,7 @@ const index = async (req, res, next) => {
     try {
         const shops = await Shop.find({ isDeleted: false, vendorId: req.user.id }).sort({ createdAt: -1 });
         res.render('vendor/shops', { shops, title: 'Shops' });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -19,7 +19,7 @@ const view = async (req, res, next) => {
         const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
         res.render('vendor/shops/view', { shop, title: shop.name, timeAgo });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -27,7 +27,7 @@ const view = async (req, res, next) => {
 const create = async (req, res, next) => {
     try {
         res.render('vendor/shops/create', { title: 'Create Shop' });
-    } catch (err) {
+    } catch (error) {
         return next(errorMessage("Something went wrong", 500));
     }
 };
@@ -61,7 +61,7 @@ const store = async (req, res, next) => {
             req.flash("old", req.body);
             return res.redirect("/vendor/shops/create");
         }
-        return next(errorMessage(error.message, 500));
+        return next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -85,7 +85,7 @@ const update = async (req, res, next) => {
         return res.redirect(`/vendor/shops/edit/${req.params.id}`);
     }
 
-    const { name, description, email, phone, logo, banner, line1, line2, city, state, country } = req.body;
+    const { name, description, email, phone, line1, line2, city, state, country } = req.body;
     try {
         const shop = await Shop.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!shop || shop.isDeleted) return next(errorMessage('Shop not found.', 404));
@@ -104,7 +104,7 @@ const update = async (req, res, next) => {
             const imagePath = path.join('./public/uploads/shops', shop.logo);
             try {
                 await fs.promises.unlink(imagePath);
-            } catch (err) {
+            } catch (error) {
                 req.flash("error", "Failed to delete previous logo.");
                 req.flash("old", req.body);
                 return res.redirect(`/vendor/shops/edit/${req.params.id}`);
@@ -115,7 +115,7 @@ const update = async (req, res, next) => {
             const imagePath = path.join('./public/uploads/shops', shop.banner);
             try {
                 await fs.promises.unlink(imagePath);
-            } catch (err) {
+            } catch (error) {
                 req.flash("error", "Failed to delete previous banner.");
                 req.flash("old", req.body);
                 return res.redirect(`/vendor/shops/edit/${req.params.id}`);
@@ -128,12 +128,12 @@ const update = async (req, res, next) => {
         const saved = await shop.save();
 
         req.flash("success", "Shop updated successfully.");
-        res.redirect("/vendor/shops");
+        return res.redirect("/vendor/shops");
     } catch (error) {
         if (error.code === 11000) {
             req.flash("error", "Shop already exists.");
             req.flash("old", req.body);
-            return res.redirect("/vendor/shops/create");
+            return res.redirect(`/vendor/shops/edit/${req.params.id}`);
         }
         next(errorMessage("Something went wrong", 500));
     }
@@ -161,7 +161,7 @@ const trashed = async (req, res, next) => {
     try {
         const shops = await Shop.find({ isDeleted: true, vendorId: req.user.id }).sort({ createdAt: -1 });
         res.render('vendor/shops/trashed', { shops, title: 'Trashed Shops' });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };

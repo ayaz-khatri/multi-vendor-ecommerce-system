@@ -1,0 +1,53 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/vendor/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
+            <a href="/vendor/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Status:</strong> 
+                        <% if(product.status == 'active') { %>
+                            <span class="badge badge-success">Active</span>
+                        <% } else { %>
+                            <span class="badge badge-danger">Inactive</span>
+                        <% } %>
+                    </p>
+                    <p><strong>Slug:</strong> <%= product.slug %></p>
+                    <p><strong>Shop:</strong> <%= product.shopId.name %></p>
+                    <p><strong>Category:</strong> <%= product.categoryId.name %></p>
+                    <p><strong>Price:</strong> <%= product.price %></p>
+                    <p><strong>Discount:</strong> <%= product.discountPrice %></p>
+                    <p><strong>SKU:</strong> <%= product.sku %></p>
+                    <p><strong>Stock:</strong> <%= product.stock %></p>
+                    <p><strong>Description:</strong> <%= product.description %></p>
+                    
+                    <p><strong>Created At:</strong> <%= product.createdAt.toDateString() %> (<%= timeAgo(product.createdAt) %>)</p>
+                    <p><strong>Updated At:</strong> <%= product.updatedAt.toDateString() %> (<%= timeAgo(product.updatedAt) %>)</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="<%= product.images[0] ? '/uploads/products/' + product.images[0] : '/img/placeholder.png' %>" 
+                        alt="<%= product.name %>" class="mb-3 w-50 border border-3 border-secondary rounded shadow">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!--/Form -->
+
+</div>
+<!-- /.container-fluid -->
+

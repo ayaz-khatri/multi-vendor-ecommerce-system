@@ -1,0 +1,76 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+            <a href="/vendor/products/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+            <a href="/vendor/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+<%- include('../../partials/restoreModal.ejs') %>
+
+<script src="/js/tabulator.min.js"></script>
+<script type="module">
+    import { initTabulator } from "/js/tabulator-helper.js";
+
+    const tableData = <%- JSON.stringify(products || []) %>;
+
+    const columns = [
+        { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
+        { title: "Image", field: "images[0]", formatter: function(cell, formatterParams) {
+            const image = cell.getValue();
+            const imgSrc = image ? '/uploads/products/' + images : '/img/placeholder.png';
+            return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
+        }, hozAlign: "center", headerSort: false, width: 100 },
+        { title: "Name", field: "name", headerFilter: "input" },
+        { title: "Shop", field: "shopId.name", headerFilter: "input" },
+        { title: "Slug", field: "slug", headerFilter: "input" },
+        { title: "Price", field: "price", headerFilter: "input" },
+        { title: "Stock", field: "stock", headerFilter: "input" },
+        { title: "Status", field: "status", headerFilter: "input", formatter: function(cell, formatterParams) {
+            const status = cell.getValue();
+            if (status == "active") {
+                return `<span class="badge badge-success">Active</span>`;
+            }  else {
+                return `<span class="badge badge-warning">Inactive</span>`;
+            }
+        }},
+        { title: "Deleted", field: "deletedAt" }
+    ];
+
+    function actionsTemplate(rowData) {
+        return `
+            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-success" title="Restore"><i class="fas fa-undo"></i></button>
+        `;
+    }
+
+    // Initialize table with deleteUrl
+    initTabulator({
+        tableId: "#crudTable",
+        data: tableData,
+        columns,
+        actions: actionsTemplate,
+        url: "/vendor/products/restore",
+        method: "POST"
+    });
+
+</script>
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+

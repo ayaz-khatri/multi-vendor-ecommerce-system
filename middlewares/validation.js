@@ -148,6 +148,54 @@ const shopValidation = [
     .isLength({ max: 200 }).withMessage('Address can be at most 200 characters long.')
 ];
 
+const productValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Product name is required.')
+    .isLength({ min: 3, max: 50 }).withMessage('Product name must be between 3 and 50 characters.'),
+
+    body('description')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isLength({ max: 200 }).withMessage('Description can be at most 200 characters long.'),
+
+    body('price')
+    .trim()
+    .notEmpty().withMessage('Price is required.')
+    .isFloat({ gt: 0 }).withMessage('Price must be a valid positive number.')
+    .toFloat(),
+
+    body('discountPrice')
+    .optional({ checkFalsy: true })
+    .isFloat({ min: 0 }).withMessage('Discount price must be a valid number.')
+    .toFloat()
+    .optional({ checkFalsy: true })
+    .custom((value, { req }) => { if (value >= req.body.price) { throw new Error('Discount price must be less than the original price.'); } return true; }),
+
+    body('stock')
+    .trim()
+    .notEmpty().withMessage('Stock is required.')
+    .isInt({ min: 0 }).withMessage('Stock must be a non-negative integer.')
+    .toInt(),
+
+    body('sku')
+    .trim()
+    .notEmpty().withMessage('SKU is required.')
+    .isLength({ min: 3, max: 30 }).withMessage('SKU must be between 3 and 30 characters.')
+    .toUpperCase(),
+
+    body('categoryId')
+    .trim()
+    .notEmpty().withMessage('Category is required.')
+    .isMongoId().withMessage('Invalid category ID.'),
+
+    body('shopId')
+    .trim()
+    .notEmpty().withMessage('Shop is required.')
+    .isMongoId().withMessage('Invalid shop ID.'),    
+
+];
+
 export default { 
     loginValidation,
     userValidation,
@@ -156,5 +204,6 @@ export default {
     forgotPasswordValidation,
     resetPasswordValidation,
     categoryValidation,
-    shopValidation
+    shopValidation,
+    productValidation
 };

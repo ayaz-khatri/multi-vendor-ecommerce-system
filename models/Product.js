@@ -98,11 +98,10 @@ const productSchema = new mongoose.Schema(
     timestamps: true
 });
 
-productSchema.pre('validate', function (next) {
+productSchema.pre('validate', function () {
     if (!this.slug && this.name) {
         this.slug = slugify(this.name, { lower: true, strict: true  });
     }
-    next();
 });
 
 productSchema.index({ shopId: 1 });

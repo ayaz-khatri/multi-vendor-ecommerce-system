@@ -3,6 +3,7 @@ const router = express.Router();
 import User from '../models/User.js';
 import Category from '../models/Category.js';
 import Shop from '../models/Shop.js';
+import Product from '../models/Product.js';
 import vendorController from '../controllers/vendorController.js';
 import adminCategoryController from '../controllers/adminCategoryController.js';
 import adminShopController from '../controllers/adminShopController.js';
@@ -59,6 +60,7 @@ router.get('/reset-system', async (req, res, next) => {
         await User.deleteMany({});
         await Category.deleteMany({});
         await Shop.deleteMany({});
+        await Product.deleteMany({});
 
         // Default Users
         const admin = new User({ name: 'Admin', email: 'admin@admin.com', phone: '123456789', password: 'password', role: 'admin', isEmailVerified: true });
@@ -128,12 +130,74 @@ router.get('/reset-system', async (req, res, next) => {
         });
         await shop3.save();
 
+        // Default Products
+        const product1 = new Product({
+            shopId: shop1._id,
+            vendorId: vendor._id,
+            categoryId: fashion._id,
+            name: 'Casual Shirt',
+            slug: 'casual-shirt',
+            sku: 'CS123',
+            slug: 'casual-shirt',
+            description: 'A casual shirt for men and women.',
+            price: 19.99,
+            discountPrice: null,
+            stock: 50,
+            status: 'active',
+            attributes: [
+                { key: 'Color', value: 'Red' },
+                { key: 'Size', value: 'M' }
+            ]
+        });
+        await product1.save();
+
+        const product2 = new Product({
+            shopId: shop1._id,
+            vendorId: vendor._id,
+            categoryId: fashion._id,
+            name: 'Formal Dress',
+            slug: 'formal-dress',
+            sku: 'FD123',
+            slug: 'formal-dress',
+            description: 'A formal dress for women.',
+            price: 49.99,
+            discountPrice: null,
+            stock: 30,
+            status: 'active',
+            attributes: [
+                { key: 'Color', value: 'Black' },
+                { key: 'Size', value: 'L' }
+            ]
+        });
+        await product2.save();
+
+        const product3 = new Product({
+            shopId: shop2._id,
+            vendorId: vendor._id,
+            categoryId: electronics._id,
+            name: 'Smartphone',
+            slug: 'smartphone',
+            sku: 'SP123',
+            slug: 'smartphone',
+            description: 'A high-end smartphone with advanced features.',
+            price: 999.99,
+            discountPrice: null,
+            stock: 20,
+            status: 'active',
+            attributes: [
+                { key: 'Color', value: 'Black' },
+                { key: 'Storage', value: '128GB' }
+            ]
+        });
+        await product3.save();
+
         // Logout current user
         res.clearCookie('token');
         req.flash("success", "System reset successful.");
         res.redirect("/login");
 
     } catch (error) {
+        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 });
