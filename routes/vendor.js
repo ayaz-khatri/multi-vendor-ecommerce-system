@@ -2,8 +2,11 @@ import express from 'express';
 const router = express.Router();
 import vendorShopController from '../controllers/vendorShopController.js';
 import vendorProductController from '../controllers/vendorProductController.js';
+import Shop from '../models/Shop.js';
+import Product from '../models/Product.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isVendor from '../middlewares/isVendor.js';
+import errorMessage from "../utils/error-message.js";
 import isValid from '../middlewares/validation.js';
 import createUploader from '../middlewares/multer.js';
 const uploadShopImage = createUploader('shops');
@@ -12,8 +15,15 @@ const uploadProductImages = createUploader('products');
 router.use(isLoggedIn);
 router.use(isVendor);
 
-router.get('/', (req, res)=> {
-    res.render('vendor/dashboard', { title: 'Dashboard' });
+router.get('/', async (req, res, next) => {
+    try {
+        const shops = await Shop.find({ isDeleted: false, vendorId: req.user.id });
+        const products = await Product.find({ isDeleted: false, vendorId: req.user.id });
+
+        res.render('vendor/dashboard', { shopCount: shops.length, productCount: products.length, title: 'Dashboard' });
+    } catch (error) {
+            next(errorMessage("Something went wrong", 500));
+        }
 });
 
 // Shop Routes

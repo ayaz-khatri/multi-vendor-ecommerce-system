@@ -7,6 +7,8 @@ import { timeAgo } from '../utils/helper.js';
 import path from 'path';
 import fs from 'fs';
 
+const MAX_IMAGES = 8;
+
 const index = async (req, res, next) => {
     try {
         const products = await Product.find({ isDeleted: false, vendorId: req.user.id })
@@ -34,7 +36,7 @@ const create = async (req, res, next) => {
         const categories = await Category.find({ isDeleted: false });
         res.render('vendor/products/create', { shops, categories, title: 'Create Product' });
     } catch (error) {
-        return next(errorMessage("Something went wrong", 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -64,12 +66,12 @@ const store = async (req, res, next) => {
 
         // Handle multiple images
         if (req.files && req.files.length > 0) {
-            if (req.files.length > 8) {
+            if (req.files.length > MAX_IMAGES) {
                 // Delete uploaded files to avoid orphan files
                 req.files.forEach(file => {
                     fs.unlinkSync(path.join('./public/uploads/products', file.filename));
                 });
-                req.flash("error", "You can upload a maximum of 8 images per product.");
+                req.flash("error", `You can upload a maximum of ${MAX_IMAGES} images per product.`);
                 req.flash("old", req.body);
                 return res.redirect("/vendor/products/create");
             }
@@ -103,7 +105,7 @@ const store = async (req, res, next) => {
             req.flash("old", req.body);
             return res.redirect("/vendor/products/create");
         }
-        return next(errorMessage("Something went wrong", 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -152,13 +154,13 @@ const update = async (req, res, next) => {
         if (req.files && req.files.length > 0) {
             const totalImages = product.images.length + req.files.length;
 
-            if (totalImages > 8) {
+            if (totalImages > MAX_IMAGES) {
                 // Delete uploaded files to avoid orphan files
                 req.files.forEach(file => {
                     fs.unlinkSync(path.join('./public/uploads/products', file.filename));
                 });
 
-                req.flash("error", "You can upload a maximum of 8 images per product.");
+                req.flash("error", `You can upload a maximum of ${MAX_IMAGES} images per product.`);
                 req.flash("old", req.body);
                 return res.redirect(`/vendor/products/edit/${req.params.id}`);
             }
@@ -202,7 +204,7 @@ const update = async (req, res, next) => {
             req.flash("old", req.body);
             return res.redirect(`/vendor/products/edit/${req.params.id}`);
         }
-        return next(errorMessage("Something went wrong", 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 

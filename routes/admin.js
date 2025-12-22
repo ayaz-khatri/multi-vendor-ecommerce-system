@@ -18,8 +18,21 @@ router.use(isLoggedIn);
 router.use(isAdmin);
 
 // User CRUD Routes
-router.get('/', (req, res)=> {
-    res.render('admin/dashboard', { title: 'Dashboard' });
+router.get('/', async (req, res, next) => {
+    try {
+        const vendors = await User.find({ role: 'vendor', isDeleted: false });
+        const customers = await User.find({ role: 'customer', isDeleted: false });
+        const shops = await Shop.find({ isDeleted: false });
+        const products = await Product.find({ isDeleted: false });
+        res.render('admin/dashboard', { 
+                        vendorCount: vendors.length, 
+                        customerCount: customers.length, 
+                        shopCount: shops.length, 
+                        productCount: products.length, 
+                        title: 'Dashboard' });
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
 });
 
 // Vendor Routes
