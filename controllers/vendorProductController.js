@@ -47,15 +47,57 @@ const store = async (req, res, next) => {
     }
 
     try {
-        const product = new Product(req.body); 
-        product.vendorId = req.user.id;
-        const saved = await product.save();
+        const { name, price, stock, shopId, categoryId, sku, discountPrice, status, description, attributes } = req.body;
+
+        const product = new Product({
+            name,
+            price: parseFloat(price),
+            stock: parseInt(stock, 10),
+            shopId,
+            categoryId,
+            sku,
+            discountPrice: discountPrice ? parseFloat(discountPrice) : undefined,
+            status,
+            description,
+            vendorId: req.user.id
+        });
+
+        // Handle multiple images
+        if (req.files && req.files.length > 0) {
+            if (req.files.length > 8) {
+                // Delete uploaded files to avoid orphan files
+                req.files.forEach(file => {
+                    fs.unlinkSync(path.join('./public/uploads/products', file.filename));
+                });
+                req.flash("error", "You can upload a maximum of 8 images per product.");
+                req.flash("old", req.body);
+                return res.redirect("/vendor/products/create");
+            }
+
+            product.images = req.files.map(file => file.filename);
+        }
+
+        // Handle attributes array
+        if (attributes) {
+            const attrsArray = Array.isArray(attributes) ? attributes : [attributes];
+            // Filter out empty attributes
+            const filteredAttrs = attrsArray.filter(attr => attr.key?.trim() || attr.value?.trim());
+            product.attributes = filteredAttrs.map(attr => ({
+                key: attr.key,
+                value: attr.value
+            }));
+        } else {
+            // If attributes not sent, remove all existing attributes
+            product.attributes = [];
+        }
+        
+        await product.save();
+
         req.flash("success", "Product created successfully.");
         return res.redirect("/vendor/products");
 
     } catch (error) {
-        console.log(error);
-        // Duplicate key (slug or name)
+        console.error(error);
         if (error.code === 11000) {
             req.flash("error", "Product already exists.");
             req.flash("old", req.body);
@@ -64,6 +106,8 @@ const store = async (req, res, next) => {
         return next(errorMessage("Something went wrong", 500));
     }
 };
+
+
 
 
 const edit = async (req, res, next) => {
@@ -79,7 +123,6 @@ const edit = async (req, res, next) => {
     }
 };
 
-
 const update = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -88,34 +131,81 @@ const update = async (req, res, next) => {
         return res.redirect(`/vendor/products/edit/${req.params.id}`);
     }
 
-    const { name, description, shopId, price, discountPrice, stock, categoryId, status, sku,  } = req.body;
     try {
-        const product = await Product.findOne({ _id: req.params.id, vendorId: req.user.id }).populate('shopId', 'name');
+        const product = await Product.findOne({ _id: req.params.id, vendorId: req.user.id });
         if (!product || product.isDeleted) return next(errorMessage('Product not found.', 404));
-        
-        product.name = name || shop.name;
-        product.description = description || shop.description;
+
+        const { name, description, shopId, price, discountPrice, status, stock, categoryId, sku, attributes } = req.body;
+
+        // Update basic fields
+        product.name = name || product.name;
+        product.description = description || product.description;
         product.shopId = shopId || product.shopId;
-        product.price = price || product.price;
-        product.discountPrice = discountPrice || product.discountPrice;
-        product.stock = stock || product.stock;
-        product.categoryId = categoryId || product.categoryId;
+        product.price = price !== undefined ? parseFloat(price) : product.price;
+        product.discountPrice = discountPrice ? parseFloat(discountPrice) : product.discountPrice;
         product.status = status || product.status;
+        product.stock = stock !== undefined ? parseInt(stock, 10) : product.stock;
+        product.categoryId = categoryId || product.categoryId;
         product.sku = sku || product.sku;
 
-        const saved = await product.save();
+        // Handle new uploaded images
+        if (req.files && req.files.length > 0) {
+            const totalImages = product.images.length + req.files.length;
 
+            if (totalImages > 8) {
+                // Delete uploaded files to avoid orphan files
+                req.files.forEach(file => {
+                    fs.unlinkSync(path.join('./public/uploads/products', file.filename));
+                });
+
+                req.flash("error", "You can upload a maximum of 8 images per product.");
+                req.flash("old", req.body);
+                return res.redirect(`/vendor/products/edit/${req.params.id}`);
+            }
+
+            const newImages = req.files.map(file => file.filename);
+            product.images = product.images.concat(newImages);
+        }
+
+        // Handle attributes array
+        if (attributes) {
+            const attrsArray = Array.isArray(attributes) ? attributes : [attributes];
+            // Filter out empty attributes
+            const filteredAttrs = attrsArray.filter(attr => attr.key?.trim() || attr.value?.trim());
+            product.attributes = filteredAttrs.map(attr => ({
+                key: attr.key,
+                value: attr.value
+            }));
+        } else {
+            // Remove all attributes if not sent
+            product.attributes = [];
+        }
+
+        if (req.body.removeImages) {
+            const removeImages = Array.isArray(req.body.removeImages) ? req.body.removeImages : [req.body.removeImages];
+            product.images = product.images.filter(img => !removeImages.includes(img));
+            removeImages.forEach(img => {
+                const imgPath = path.join('./public/uploads/products', img);
+                if (fs.existsSync(imgPath)) {
+                    fs.unlinkSync(imgPath);
+                }
+            });
+        }
+        await product.save();
         req.flash("success", "Product updated successfully.");
         return res.redirect("/vendor/products");
+
     } catch (error) {
+        console.error(error);
         if (error.code === 11000) {
             req.flash("error", "Product already exists.");
             req.flash("old", req.body);
             return res.redirect(`/vendor/products/edit/${req.params.id}`);
         }
-        next(errorMessage("Something went wrong", 500));
+        return next(errorMessage("Something went wrong", 500));
     }
 };
+
 
 
 const destroy = async (req, res, next) => {

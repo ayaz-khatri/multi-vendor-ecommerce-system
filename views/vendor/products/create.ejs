@@ -5,67 +5,132 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-            <a href="/vendor/products" class="btn btn-outline-primary btn-sm mt-1">products</a>
+            <a href="/vendor/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
             <a href="/vendor/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
         </div>
     </div>
 
     <!-- Content Row -->
-    <form action="/vendor/products" method="POST" class="bg-white shadow p-4 rounded">
+    <form action="/vendor/products" method="POST" class="bg-white shadow p-4 rounded" enctype="multipart/form-data">
 
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label class="form-label">Name</label>
                 <input type="text" name="name" id="name" class="form-control" value="<%= old.name || '' %>" required>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Price</label>
                 <input type="number" name="price" id="price" step="0.01" class="form-control" value="<%= old.price || '' %>" required>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Stock</label>
                 <input type="number" name="stock" id="stock" class="form-control" value="<%= old.stock || '' %>" required>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Shop</label>
-                <select name="shopId" id="shopId" class="form-control">
+                <select name="shopId" id="shopId" class="form-control" required>
                     <option value="">Select Shop</option>
                     <% shops.forEach(shop => { %>
-                        <option value="<%= shop._id %>" <%= old.shopId == shop._id ? 'selected' : '' %>>
-                            <%= shop.name %>
-                        </option>
+                        <option value="<%= shop._id %>" <%= old.shopId == shop._id ? 'selected' : '' %>><%= shop.name %></option>
                     <% }) %>
                 </select>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Category</label>
-                <select name="categoryId" id="categoryId" class="form-control">
+                <select name="categoryId" id="categoryId" class="form-control" required>
                     <option value="">Select Category</option>
                     <% categories.forEach(category => { %>
-                        <option value="<%= category._id %>" <%= old.categoryId == category._id ? 'selected' : '' %>>
-                            <%= category.name %>
-                        </option>
+                        <option value="<%= category._id %>" <%= old.categoryId == category._id ? 'selected' : '' %>><%= category.name %></option>
                     <% }) %>
                 </select>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">SKU</label>
                 <input type="text" name="sku" id="sku" class="form-control" value="<%= old.sku || '' %>" required>
             </div>
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Discount Price</label>
-                <input type="number" name="discountPrice" id="discountPrice" class="form-control" value="<%= old.discountPrice || '' %>">
+                <input type="number" name="discountPrice" id="discountPrice" step="0.01" class="form-control" value="<%= old.discountPrice || '' %>">
             </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="active" <%= old.status == 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="inactive" <%= old.status == 'inactive' ? 'selected' : '' %>>Inactive</option>
+                </select>
+            </div>
+
             <div class="col-12 mb-3">
                 <label class="form-label">Description</label>
                 <textarea name="description" id="description" class="form-control"><%= old.description || '' %></textarea>
             </div>
+
+            <div class="col-12 mb-3">
+                <label class="form-label">Images</label>
+                <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*">
+                <small class="text-muted">You can upload multiple images.</small>
+            </div>
+
+
+            <div class="col-12 mb-3">
+                <label class="form-label">Attributes</label>
+                <div id="attributes-wrapper">
+                    <% if (old.attributes && old.attributes.length > 0) { %>
+                        <% old.attributes.forEach((attr, index) => { %>
+                            <div class="d-flex mb-2">
+                                <input type="text" name="attributes[<%= index %>][key]" class="form-control mx-2" placeholder="Key" value="<%= attr.key %>">
+                                <input type="text" name="attributes[<%= index %>][value]" class="form-control mx-2" placeholder="Value" value="<%= attr.value %>">
+                                <button type="button" class="btn btn-danger btn-sm remove-attribute">X</button>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="d-flex mb-2">
+                            <input type="text" name="attributes[0][key]" class="form-control mx-2" placeholder="Key">
+                            <input type="text" name="attributes[0][value]" class="form-control mx-2" placeholder="Value">
+                            <button type="button" class="btn btn-danger btn-sm remove-attribute">X</button>
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" id="add-attribute">Add Attribute</button>
+            </div>
+
         </div>
 
-        <input type="submit" name="submit" class="btn btn-primary" value="Save" required />
+        <input type="submit" name="submit" class="btn btn-primary" value="Save" />
 
     </form>
     <!--/Form -->
- 
+
 </div>
 <!-- /.container-fluid -->
+
+<!-- Optional JS for adding/removing attributes dynamically -->
+<script>
+    const wrapper = document.getElementById('attributes-wrapper');
+    const addBtn = document.getElementById('add-attribute');
+
+    addBtn.addEventListener('click', () => {
+        const index = wrapper.children.length;
+        const div = document.createElement('div');
+        div.classList.add('d-flex', 'mb-2');
+        div.innerHTML = `
+            <input type="text" name="attributes[${index}][key]" class="form-control mx-2" placeholder="Key">
+            <input type="text" name="attributes[${index}][value]" class="form-control mx-2" placeholder="Value">
+            <button type="button" class="btn btn-danger btn-sm remove-attribute">X</button>
+        `;
+        wrapper.appendChild(div);
+    });
+
+    wrapper.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-attribute')) {
+            e.target.parentElement.remove();
+        }
+    });
+</script>
