@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import auth from "./middlewares/auth.js";
 import vendorRoutes from './routes/vendor.js';
+import profileRoutes from './routes/profile.js';
 // import customerRoutes from './routes/customer.js';
 dotenv.config();
 
@@ -73,6 +74,7 @@ app.use('/frontend', (req, res, next)=>{
 });
 app.use('/admin', adminRoutes);
 app.use('/vendor', vendorRoutes);
+app.use('/profile', profileRoutes);
 // app.use('/customer', customerRoutes);
 app.use(authRoutes);
 

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -8,9 +9,14 @@ const auth = async (req, res, next) => {
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = decoded;
+            const user = await User.findById(decoded.id);
+            if(!user || user.isDeleted){
+                res.clearCookie('token'); 
+                return next(); 
+            }
+            req.user = user;
             res.locals.isLoggedIn = true;
-            res.locals.authUser = decoded;
+            res.locals.authUser = user;
         } catch (err) {
             res.locals.isLoggedIn = false;
         }

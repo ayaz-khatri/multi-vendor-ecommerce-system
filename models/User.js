@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema(
         default: 'customer'
     },
 
+    profilePic: { 
+        type: String, 
+        default: null 
+    },
+
     isDeleted: {
         type: Boolean,
         default: false

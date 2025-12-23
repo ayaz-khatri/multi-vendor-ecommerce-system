@@ -196,6 +196,40 @@ const productValidation = [
 
 ];
 
+const profileValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Username is required.')
+    .isLength({ min: 3, max: 50 }).withMessage('Name must be at least 3 and at most 50 characters long.'),
+
+    body('phone')
+    .trim()
+    .notEmpty().withMessage('Phone number is required.'),
+];
+
+const passwordUpdateValidation = [
+    body('oldPassword')
+    .trim()
+    .notEmpty().withMessage('Old Password is required.')
+    .isLength({ min: 8, max: 20 }).withMessage('Password must be at least 8 and at most 20 characters long.'),
+
+    body('newPassword')
+    .trim()
+    .notEmpty().withMessage('New Password is required.')
+    .isLength({ min: 8, max: 20 }).withMessage('Password must be at least 8 and at most 20 characters long.'),
+
+    body('confirmPassword')
+    .trim()
+    .notEmpty().withMessage('Confirm password is required.')
+    .isLength({ min: 8, max: 20 }).withMessage('Confirm password must be at least 8 and at most 20 characters long.')
+    .custom((value, { req }) => {
+        if (value !== req.body.newPassword) {
+            throw new Error('Passwords do not match.');
+        }
+        return true;
+    }),
+];
+
 export default { 
     loginValidation,
     userValidation,
@@ -205,5 +239,7 @@ export default {
     resetPasswordValidation,
     categoryValidation,
     shopValidation,
-    productValidation
+    productValidation,
+    profileValidation,
+    passwordUpdateValidation
 };

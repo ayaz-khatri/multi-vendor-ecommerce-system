@@ -72,7 +72,7 @@ const login = async (req, res, next) => {
         }
 
         const tokenExpiry = rememberMe ? '30d' : '1d';
-        const jwtData = { id: user._id, role: user.role, name: user.name, email: user.email };
+        const jwtData = { id: user._id, role: user.role };
         const token = jwt.sign(jwtData, process.env.JWT_SECRET, { expiresIn: tokenExpiry });
         const cookieOptions = { httpOnly: true, sameSite: 'strict' };
         if (rememberMe) cookieOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days

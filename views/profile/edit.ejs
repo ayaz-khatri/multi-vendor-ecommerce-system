@@ -1,0 +1,37 @@
+<div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+<div class="col-lg-6">
+    <div class="p-5">
+        <div class="text-center">
+            <h1 class="h4 text-gray-900 mb-4"><%= title %></h1>
+        </div>
+        <form class="user" method="POST" action="/profile/edit/<%= user._id %>" enctype="multipart/form-data">
+            <div class="form-group text-center">
+                <img src="<%= user.profilePic ? '/uploads/users/' + user.profilePic : '/img/undraw_profile.svg' %>" class="img w-50 w-md-25" alt="Profile Image">
+
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-user"
+                    id="exampleInputName" aria-describedby="NameHelp"
+                    placeholder="Enter Name" name="name" value="<%= old.name || user.name %>">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-user"
+                    id="exampleInputPhone" aria-describedby="PhoneHelp"
+                    placeholder="Enter Phone" name="phone" value="<%= old.phone || user.phone %>">
+            </div>
+
+            <div class="form-group">
+                <input type="file" class="form-control form-control-user"
+                    id="exampleInputPhone" aria-describedby="profilePicHelp"
+                    name="profilePic">
+            </div>
+            
+            <input type="submit" class="btn btn-primary btn-user btn-block" value="Update">
+        </form>
+        <hr>
+        <div class="text-center">
+            <a class="small" href="/login">Dashboard</a>
+        </div>
+    </div>
+</div>
+                       
