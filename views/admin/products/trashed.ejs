@@ -5,8 +5,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-          <a href="/vendor/products/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
-          <a href="/vendor/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+            <a href="/admin/products/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+            <a href="/admin/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
 </div>
 <!-- /.container-fluid -->
 
-<%- include('../../partials/deleteModal.ejs') %>
+<%- include('../../partials/restoreModal.ejs') %>
 
 <script src="/js/tabulator.min.js"></script>
 <script type="module">
@@ -28,15 +28,15 @@
 
     const columns = [
         { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
-        { title: "Image", field: "images", formatter: function(cell, formatterParams) {
-            const images = cell.getValue();
-            const image = (Array.isArray(images) && images.length > 0) ? images[0] : null;
-            const imgSrc = image ? '/uploads/products/' + image : '/img/placeholder.png';
+        { title: "Image", field: "images[0]", formatter: function(cell, formatterParams) {
+            const image = cell.getValue();
+            const imgSrc = image ? '/uploads/products/' + images : '/img/placeholder.png';
             return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
         }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },
         { title: "Category", field: "categoryId.name", headerFilter: "input" },
         { title: "Shop", field: "shopId.name", headerFilter: "input" },
+        { title: "Vendor", field: "vendorId.name", headerFilter: "input" },
         { title: "Price", field: "price", headerFilter: "input" },
         { title: "Stock", field: "stock", headerFilter: "input" },
         { title: "Status", field: "status", headerFilter: "input", formatter: function(cell, formatterParams) {
@@ -47,15 +47,12 @@
                 return `<span class="badge badge-warning">Inactive</span>`;
             }
         }},
-        { title: "Created", field: "createdAt" },
-        { title: "Updated", field: "updatedAt" }
+        { title: "Deleted", field: "deletedAt" }
     ];
 
     function actionsTemplate(rowData) {
         return `
-            <a href="/vendor/products/view/${rowData._id}" class="btn btn-sm btn-primary text-white" title="View"><i class="fas fa-eye"></i></a>
-            <a href="/vendor/products/edit/${rowData._id}" class="btn btn-sm btn-success text-white mx-1" title="Edit"><i class="fas fa-edit"></i></a>
-            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+            <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-success" title="Restore"><i class="fas fa-undo"></i></button>
         `;
     }
 
@@ -65,7 +62,8 @@
         data: tableData,
         columns,
         actions: actionsTemplate,
-        url: "/vendor/products"
+        url: "/admin/products/restore",
+        method: "POST"
     });
 
 </script>

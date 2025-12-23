@@ -13,6 +13,7 @@ const index = async (req, res, next) => {
     try {
         const products = await Product.find({ isDeleted: false, vendorId: req.user.id })
                                         .populate('shopId', 'name')
+                                        .populate('categoryId', 'name')
                                         .sort({ createdAt: -1 });
         res.render('vendor/products', { products, title: 'Products' });
     } catch (error) {
@@ -229,7 +230,10 @@ const destroy = async (req, res, next) => {
 
 const trashed = async (req, res, next) => {
     try {
-        const products = await Product.find({ isDeleted: true, vendorId: req.user.id }).populate('shopId', 'name').sort({ createdAt: -1 });
+        const products = await Product.find({ isDeleted: true, vendorId: req.user.id })
+                                        .populate('shopId', 'name')
+                                        .populate('categoryId', 'name')
+                                        .sort({ createdAt: -1 });
         res.render('vendor/products/trashed', { products, title: 'Trashed Products' });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));

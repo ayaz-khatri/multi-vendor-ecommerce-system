@@ -4,9 +4,11 @@ import User from '../models/User.js';
 import Category from '../models/Category.js';
 import Shop from '../models/Shop.js';
 import Product from '../models/Product.js';
-import vendorController from '../controllers/vendorController.js';
+import adminVendorController from '../controllers/adminVendorController.js';
+import adminCustomerController from '../controllers/adminCustomerController.js';
 import adminCategoryController from '../controllers/adminCategoryController.js';
 import adminShopController from '../controllers/adminShopController.js';
+import adminProductController from '../controllers/adminProductController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
@@ -36,16 +38,26 @@ router.get('/', async (req, res, next) => {
 });
 
 // Vendor Routes
-router.get('/vendors', vendorController.index);
-router.get('/vendors/view/:id', vendorController.view);
-router.get('/vendors/create', vendorController.create);
-router.post('/vendors', isValid.vendorValidation, vendorController.store);
-router.get('/vendors/edit/:id', vendorController.edit);
-router.post('/vendors/:id', isValid.vendorUpdateValidation, vendorController.update);
-router.delete('/vendors/:id', vendorController.destroy);
-router.get('/vendors/trashed', vendorController.trashed);
-router.post('/vendors/restore/:id', vendorController.restore);
+router.get('/vendors', adminVendorController.index);
+router.get('/vendors/view/:id', adminVendorController.view);
+router.get('/vendors/create', adminVendorController.create);
+router.post('/vendors', isValid.vendorValidation, adminVendorController.store);
+router.get('/vendors/edit/:id', adminVendorController.edit);
+router.post('/vendors/:id', isValid.vendorUpdateValidation, adminVendorController.update);
+router.delete('/vendors/:id', adminVendorController.destroy);
+router.get('/vendors/trashed', adminVendorController.trashed);
+router.post('/vendors/restore/:id', adminVendorController.restore);
 
+// Customer Controller
+router.get('/customers', adminCustomerController.index);
+router.get('/customers/view/:id', adminCustomerController.view);
+router.get('/customers/create', adminCustomerController.create);
+router.post('/customers', isValid.vendorValidation, adminCustomerController.store);
+router.get('/customers/edit/:id', adminCustomerController.edit);
+router.post('/customers/:id', isValid.vendorUpdateValidation, adminCustomerController.update);
+router.delete('/customers/:id', adminCustomerController.destroy);
+router.get('/customers/trashed', adminCustomerController.trashed);
+router.post('/customers/restore/:id', adminCustomerController.restore);
 
 // Category Routes
 router.get('/categories', adminCategoryController.index);
@@ -65,6 +77,13 @@ router.delete('/shops/:id', adminShopController.destroy);
 router.get('/shops/trashed', adminShopController.trashed);
 router.post('/shops/restore/:id', adminShopController.restore);
 router.post('/shops/approve/:id', adminShopController.approve);
+
+router.get('/products', adminProductController.index);
+router.get('/products/view/:id', adminProductController.view);
+router.delete('/products/:id', adminProductController.destroy);
+router.get('/products/trashed', adminProductController.trashed);
+router.post('/products/restore/:id', adminProductController.restore);
+router.post('/products/approve/:id', adminProductController.approve);
 
 // system reset script route
 router.get('/reset-system', async (req, res, next) => {

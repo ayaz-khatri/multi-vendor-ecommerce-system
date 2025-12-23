@@ -5,8 +5,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-            <a href="/vendor/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
-            <a href="/vendor/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+            <a href="/admin/products" class="btn btn-outline-primary btn-sm mt-1">Products</a>
+            <a href="/admin/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
                     <p><strong>Slug:</strong> <%= product.slug %></p>
                     <p><strong>Category:</strong> <%= product.categoryId.name %></p>
                     <p><strong>Shop:</strong> <%= product.shopId.name %></p>
-                    <p><strong>Category:</strong> <%= product.categoryId.name %></p>
+                    <p><strong>Vendor:</strong> <%= product.vendorId.name %></p>
                     <p><strong>Price:</strong> <%= product.price %></p>
                     <p><strong>Discount:</strong> <%= product.discountPrice %></p>
                     <p><strong>SKU:</strong> <%= product.sku %></p>

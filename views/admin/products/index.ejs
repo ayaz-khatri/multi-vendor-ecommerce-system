@@ -5,8 +5,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-          <a href="/vendor/products/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
-          <a href="/vendor/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
+          <a href="/admin/products/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
+          <a href="/admin/products/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a>
         </div>
     </div>
 
@@ -37,6 +37,7 @@
         { title: "Name", field: "name", headerFilter: "input" },
         { title: "Category", field: "categoryId.name", headerFilter: "input" },
         { title: "Shop", field: "shopId.name", headerFilter: "input" },
+        { title: "Vendor", field: "vendorId.name", headerFilter: "input" },
         { title: "Price", field: "price", headerFilter: "input" },
         { title: "Stock", field: "stock", headerFilter: "input" },
         { title: "Status", field: "status", headerFilter: "input", formatter: function(cell, formatterParams) {
@@ -53,8 +54,7 @@
 
     function actionsTemplate(rowData) {
         return `
-            <a href="/vendor/products/view/${rowData._id}" class="btn btn-sm btn-primary text-white" title="View"><i class="fas fa-eye"></i></a>
-            <a href="/vendor/products/edit/${rowData._id}" class="btn btn-sm btn-success text-white mx-1" title="Edit"><i class="fas fa-edit"></i></a>
+            <a href="/admin/products/view/${rowData._id}" class="btn btn-sm btn-primary text-white mx-1" title="View"><i class="fas fa-eye"></i></a>
             <button onclick="openModal('${rowData._id}')" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
         `;
     }
@@ -65,7 +65,7 @@
         data: tableData,
         columns,
         actions: actionsTemplate,
-        url: "/vendor/products"
+        url: "/admin/products"
     });
 
 </script>
