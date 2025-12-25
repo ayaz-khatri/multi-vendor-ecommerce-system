@@ -1,9 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import profileController from '../controllers/profileController.js';
+import loadCategories from '../middlewares/loadCategories.js';
+import frontendController from '../controllers/frontendController.js';
 
-router.get("/", (req, res) => {
-    res.render("frontend/index", { title: "Home" });
-});
+router.use(loadCategories);
+
+router.get("/", frontendController.index);
 
 export default router;
