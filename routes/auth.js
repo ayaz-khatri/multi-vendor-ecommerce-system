@@ -4,6 +4,8 @@ import authController from '../controllers/authController.js';
 import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
 import isValid from '../middlewares/validation.js';
 
+// use 'layouts/authLayout.js'
+router.use(authController.authLayout);
 
 // Login Routes
 router.get('/login', redirectIfLoggedIn, authController.loginPage);

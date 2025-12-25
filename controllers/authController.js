@@ -8,6 +8,11 @@ import errorMessage from "../utils/error-message.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+const authLayout = (req, res, next) => {
+    res.locals.layout = 'layouts/authLayout';
+    next();
+};
+
 const loginPage = async (req, res) => {
     res.render('auth/login', { title: 'Login' });
 };
@@ -288,6 +293,7 @@ const resetPasswordTemplate = (name, url) => `
 `;
 
 export default {
+    authLayout,
     loginPage,
     login,
     registerPage,

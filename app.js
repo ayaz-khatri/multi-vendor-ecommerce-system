@@ -4,7 +4,6 @@ import expressLayouts from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
 import session from "express-session";
 import flash from "connect-flash";
-import dotenv from 'dotenv';
 import path from 'path';
 import __dirname from './utils/dirname.js';
 import authRoutes from './routes/auth.js';
@@ -12,7 +11,9 @@ import adminRoutes from './routes/admin.js';
 import auth from "./middlewares/auth.js";
 import vendorRoutes from './routes/vendor.js';
 import profileRoutes from './routes/profile.js';
+import frontendRoutes from './routes/frontend.js';
 // import customerRoutes from './routes/customer.js';
+import dotenv from 'dotenv';
 dotenv.config();
 
 /* ------------------------- Initialize Express App ------------------------- */
@@ -24,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(expressLayouts);
-app.set('layout', 'layouts/authLayout');
+app.set('layout', 'layouts/frontendLayout');
 app.set('view engine', 'ejs');
 app.use(auth);
 
@@ -51,10 +52,6 @@ app.use((req, res, next) => {
 });
 
 /* --------------------------------- Routes --------------------------------- */
-// app.use('/', (req, res, next)=>{
-//   res.send(path.join(__dirname, 'public'));
-//   next();
-// })
 
 app.use('/admin', (req, res, next)=>{
   res.locals.layout = 'layouts/adminLayout';
@@ -64,23 +61,21 @@ app.use('/vendor', (req, res, next)=>{
   res.locals.layout = 'layouts/vendorLayout';
   next();
 });
+app.use('/profile', (req, res, next)=>{
+  res.locals.layout = 'layouts/authLayout';
+  next();
+});
 app.use('/customer', (req, res, next)=>{
   res.locals.layout = 'layouts/customerLayout';
   next();
 });
-app.use('/frontend', (req, res, next)=>{
-  res.locals.layout = 'layouts/frontendLayout';
-  next();
-});
+
 app.use('/admin', adminRoutes);
 app.use('/vendor', vendorRoutes);
 app.use('/profile', profileRoutes);
-// app.use('/customer', customerRoutes);
+app.use('/', frontendRoutes);
 app.use(authRoutes);
 
-// app.get('/', (req, res) => {
-//     res.send("Hello World! Welcome to Multi Vendor Ecommerce System.");
-// });
 
 app.use('', (req, res, next) => {
     res.status(404).render('common/404',{
