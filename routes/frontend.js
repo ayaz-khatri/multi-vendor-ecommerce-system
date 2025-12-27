@@ -6,5 +6,6 @@ import frontendController from '../controllers/frontendController.js';
 router.use(loadCategories);
 
 router.get("/", frontendController.index);
+router.get("/product/:slug", frontendController.product);
 
 export default router;

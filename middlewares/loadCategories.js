@@ -12,7 +12,7 @@ const loadCategories = async (req, res, next) => {
 
         // Get product counts (direct products only)
         const productCounts = await Product.aggregate([
-            { $match: { isDeleted: false, categoryId: { $ne: null } } },
+            { $match: { isDeleted: false, status: "active", categoryId: { $ne: null } } },
             { $group: { _id: "$categoryId", count: { $sum: 1 } } }
         ]);
 
