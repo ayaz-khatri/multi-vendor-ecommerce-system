@@ -24,6 +24,8 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="/css/style.css" rel="stylesheet">
+    <script src="/js/image-fallback.js"></script>
+
 </head>
 
 <body>
@@ -43,8 +45,19 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="/login" type="button">Login</a>
-                            <a class="dropdown-item" href="/register" type="button">Register</a>
+                            <% if(!isLoggedIn) { %>
+                                <a class="dropdown-item" href="/login" type="button">Login</a>
+                                <a class="dropdown-item" href="/register" type="button">Register</a>
+                            <% } else { %>
+                                <% if(authUser.role == 'admin') { %>
+                                    <a class="dropdown-item" href="/admin" type="button">Dashboard</a>
+                                <% } else if(authUser.role == 'vendor') { %>
+                                    <a class="dropdown-item" href="/vendor" type="button">Dashboard</a>
+                                <% } %>
+                                <a class="dropdown-item" href="/profile/edit/<%= authUser.id %>" type="button">Profile</a>
+                                <a class="dropdown-item" href="/profile/password/<%= authUser.id %>" type="button">Update Password</a>
+                                <a class="dropdown-item" href="/logout" type="button">Logout</a>
+                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -62,7 +75,7 @@
         </div>
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
-                <a href="" class="text-decoration-none">
+                <a href="/" class="text-decoration-none">
                     <span class="h1 text-uppercase text-primary bg-dark px-2">E</span>
                     <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Commerce</span>
                 </a>
@@ -249,6 +262,7 @@
 
     <!-- Template Javascript -->
     <script src="/js/main.js"></script>
+
 </body>
 
 </html>
