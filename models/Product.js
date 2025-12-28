@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const productSchema = new mongoose.Schema(
 {
@@ -103,6 +104,8 @@ productSchema.pre('validate', function () {
         this.slug = slugify(this.name, { lower: true, strict: true  });
     }
 });
+
+productSchema.plugin(mongoosePaginate);
 
 productSchema.index({ shopId: 1 });
 productSchema.index({ categoryId: 1 });

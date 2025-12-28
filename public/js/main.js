@@ -59,6 +59,26 @@
         }
     });
 
+        // Shop carousel
+    $('.shop-carousel').owlCarousel({
+        loop: true,
+        margin: 29,
+        nav: false,
+        autoplay: true,
+        smartSpeed: 1000,
+        responsive: {
+            0:{
+                items:1
+            },
+            576:{
+                items:2
+            },
+            992:{
+                items:3
+            }
+        }
+    });
+
 
     // Related carousel
     $('.related-carousel').owlCarousel({
