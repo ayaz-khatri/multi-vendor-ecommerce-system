@@ -10,5 +10,8 @@ router.use(shareQueryParams);
 router.get("/", frontendController.index);
 router.get("/products", frontendController.products);
 router.get("/product/:slug", frontendController.product);
+router.get("/category/*slug", frontendController.categoryRedirect);
+router.get("/shop/:slug", frontendController.shopRedirect);
+router.get("/vendor/:slug", frontendController.vendorRedirect);
 
 export default router;

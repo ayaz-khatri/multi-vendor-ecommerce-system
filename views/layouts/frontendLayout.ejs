@@ -120,7 +120,7 @@
                             <% if (category.children && category.children.length > 0) { %>
                                 <!-- Parent category with submenu -->
                                 <div class="nav-item dropdown dropright">
-                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                                    <a href="/category/<%= category.slug %>" class="nav-link dropdown-toggle" data-toggle="dropdown">
                                         <%= category.name %>
                                         <i class="fa fa-angle-right float-right mt-1"></i>
                                     </a>
