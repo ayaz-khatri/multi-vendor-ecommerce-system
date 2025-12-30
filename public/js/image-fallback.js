@@ -5,11 +5,10 @@ window.addEventListener(
         const target = e.target;
 
         if (target && target.tagName === "IMG") {
-            console.log('image fallback loaded.')
             if (target.src.includes("/img/placeholder.png")) return;
 
             target.src = "/img/placeholder.png";
         }
     },
-    true // 🔴 CAPTURE MODE (this is the key)
+    true
 );

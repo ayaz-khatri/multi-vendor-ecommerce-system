@@ -4547,6 +4547,11 @@ input[type="button"].btn-block {
   display: flex;
 }
 
+.breadcrumb-item:hover {
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .breadcrumb-item + .breadcrumb-item {
   padding-left: 0.5rem;
 }
@@ -10027,4 +10032,9 @@ a.text-dark:hover, a.text-dark:focus {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Make dropright open on hover */
+.nav-item.dropright:hover > .dropdown-menu {
+    display: block;
 }

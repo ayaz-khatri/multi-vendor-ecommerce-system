@@ -25,6 +25,7 @@ const products = async (req, res, next) => {
     try {
 
         const { page = 1, limit = 2 } = req.query;
+
         const options = {
             page: parseInt(page),
             limit: parseInt(limit),
@@ -36,39 +37,80 @@ const products = async (req, res, next) => {
             ]
         };
 
-        const { search, category, shop, vendor } = req.query; // Get search and category from query parameters
+        const { search, category, shop, vendor } = req.query;
+
         let query = { status: "active", isDeleted: false };
 
-        // Search by product name (case-insensitive)
+        /* -------------------- BREADCRUMBS -------------------- */
+        let breadcrumbs = [
+            { label: 'Home', url: '/' },
+            { label: 'Products', url: '/products' }
+        ];
+
+        /* -------------------- SEARCH -------------------- */
         if (search) {
             query.name = { $regex: search, $options: "i" };
+            breadcrumbs.push({
+                label: `Search: "${search}"`,
+                url: null
+            });
         }
 
-        // Filter by category (optional)
+        /* -------------------- CATEGORY (NESTED SLUGS) -------------------- */
         if (category) {
-            const cat = await Category.findOne({ slug: category });
+            const cat = await Category.findOne({ slug: category, isDeleted: false });
             if (!cat) {
                 return next(errorMessage("Category not found", 404));
             }
+
             query.categoryId = cat._id;
+
+            // Build breadcrumb from nested slug (fashion/men/shoes)
+            const parts = category.split('/');
+            let path = '';
+            parts.forEach((part, index) => {
+                path += (index === 0 ? part : '/' + part);
+
+                breadcrumbs.push({
+                    label: part.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                    url: index === parts.length - 1
+                        ? null
+                        : `/products?category=${path}`
+                });
+            });
         }
 
+        /* -------------------- SHOP -------------------- */
         if (shop) {
-            const sh = await Shop.findOne({ slug: shop });
+            const sh = await Shop.findOne({ slug: shop, isDeleted: false, status: "approved" });
             if (!sh) {
                 return next(errorMessage("Shop not found", 404));
             }
+
             query.shopId = sh._id;
+
+            breadcrumbs.push({
+                label: sh.name,
+                url: null
+            });
         }
 
+        /* -------------------- VENDOR -------------------- */
         if (vendor) {
-            const ven = await User.findOne({ _id: vendor, role: "vendor" });
+            const ven = await User.findOne({ _id: vendor, role: "vendor", isDeleted: false });
             if (!ven) {
                 return next(errorMessage("Vendor not found", 404));
             }
+
             query.vendorId = ven._id;
+
+            breadcrumbs.push({
+                label: ven.name,
+                url: null
+            });
         }
 
+        /* -------------------- PRODUCTS -------------------- */
         const products = await Product.paginate(query, options);
 
         let message = "";
@@ -76,22 +118,30 @@ const products = async (req, res, next) => {
             message = "No record found.";
         }
 
-        res.render("frontend/products", { 
-            products:       products.docs, 
-            title:          'Products',
-            search:         search || '',  // Pass search back to template
-            category:       category || '',
-            totalDocs:      products.totalDocs,
-            limit:          products.limit,
-            totalPages:     products.totalPages,
-            page:           products.page,
-            pagingCounter:  products.pagingCounter,
-            hasPrevPage:    products.hasPrevPage,
-            hasNextPage:    products.hasNextPage,
-            nextPage:       products.nextPage,
-            prevPage:       products.prevPage,
-            message:        message
+        res.render("frontend/products", {
+            title: 'Products',
+            products: products.docs,
+
+            /* UI */
+            search: search || '',
+            category: category || '',
+            message,
+
+            /* Pagination */
+            totalDocs: products.totalDocs,
+            limit: products.limit,
+            totalPages: products.totalPages,
+            page: products.page,
+            pagingCounter: products.pagingCounter,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            nextPage: products.nextPage,
+            prevPage: products.prevPage,
+
+            /* Breadcrumbs */
+            breadcrumbs
         });
+
     } catch (error) {
         console.log(error);
         next(errorMessage("Something went wrong", 500));
@@ -101,16 +151,67 @@ const products = async (req, res, next) => {
 
 const product = async (req, res, next) => {
     try {
-        const product = await Product.findOne({ slug: req.params.slug, status: "active" })
-                                        .populate('categoryId', ['name', 'slug'])
-                                        .populate('shopId', ['name', 'slug'])
-                                        .populate('vendorId', 'name');
-        if (!product || product.isDeleted) return next(errorMessage('Product not found.', 404));
-        res.render("frontend/product", { product, title: product.name });
+        const product = await Product.findOne({
+            slug: req.params.slug,
+            status: "active",
+            isDeleted: false
+        })
+        .populate('categoryId', ['name', 'slug'])
+        .populate('shopId', ['name', 'slug'])
+        .populate('vendorId', ['name']);
+
+        if (!product) {
+            return next(errorMessage('Product not found.', 404));
+        }
+
+        /* -------------------- BREADCRUMBS -------------------- */
+        let breadcrumbs = [
+            { label: 'Home', url: '/' },
+            { label: 'Products', url: '/products' }
+        ];
+
+        /* -------- CATEGORY (supports nested slugs) -------- */
+        if (product.categoryId?.slug) {
+            const parts = product.categoryId.slug.split('/');
+            let path = '';
+
+            parts.forEach((part, index) => {
+                path += (index === 0 ? part : '/' + part);
+
+                breadcrumbs.push({
+                    label: part
+                        .replace(/-/g, ' ')
+                        .replace(/\b\w/g, c => c.toUpperCase()),
+                    url: `/products?category=${path}`
+                });
+            });
+        }
+
+        /* -------- OPTIONAL: SHOP -------- */
+        if (product.shopId?.slug) {
+            breadcrumbs.push({
+                label: product.shopId.name,
+                url: `/products?shop=${product.shopId.slug}`
+            });
+        }
+
+        /* -------- CURRENT PRODUCT -------- */
+        breadcrumbs.push({
+            label: product.name,
+            url: null
+        });
+
+        res.render("frontend/product", {
+            product,
+            title: product.name,
+            breadcrumbs
+        });
+
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };
+
 
 const categoryRedirect = async (req, res, next) => {
     try {
@@ -143,18 +244,104 @@ const vendorRedirect = async (req, res, next) => {
     }
 };
 
-// const productsFromCategory = async (req, res, next) => {
-//     let slug = req.params.slug;
-//     slug = slug.join("/")
-//     const category = await Category.findOne({ slug });
-//     if (!category) return next(errorMessage("Category not found", 404));
+const shops = async (req, res, next) => {
+    try {
+        const { page = 1, limit = 2 } = req.query;
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+            populate: [
+                { path: 'vendorId', select: 'name' }
+            ]
+        };
 
-//     req.query.category = category._id;
-//     return products(req, res, next); // REUSE
-// };
+        const { search } = req.query;
 
+        /* -------------------- SEARCH -------------------- */
+        let query = { status: "approved", isDeleted: false };
+        if (search) {
+            query.name = { $regex: search, $options: "i" };
+        }
+        const shops = await Shop.paginate(query, options);
+        let message = "";
+        if (shops.docs.length === 0) {
+            message = "No record found.";
+        }
 
+        res.render("frontend/shops", {
+            title: 'Shops',
+            shops: shops.docs,
 
+            /* UI */
+            search: search || '',
+            message,
+
+            /* Pagination */
+            totalDocs: shops.totalDocs,
+            limit: shops.limit,
+            totalPages: shops.totalPages,
+            page: shops.page,
+            pagingCounter: shops.pagingCounter,
+            hasPrevPage: shops.hasPrevPage,
+            hasNextPage: shops.hasNextPage,
+            nextPage: shops.nextPage,
+            prevPage: shops.prevPage,
+
+        });
+
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
+};
+
+const vendors = async (req, res, next) => {
+    try {
+        const { page = 1, limit = 2 } = req.query;
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 }
+        };
+
+        const { search } = req.query;
+
+        /* -------------------- SEARCH -------------------- */
+        let query = { role: "vendor", isDeleted: false };
+        if (search) {
+            query.name = { $regex: search, $options: "i" };
+        }
+        const vendors = await User.paginate(query, options);
+        let message = "";
+        if (vendors.docs.length === 0) {
+            message = "No record found.";
+        }
+
+        res.render("frontend/vendors", {
+            title: 'Vendors',
+            vendors: vendors.docs,
+
+            /* UI */
+            search: search || '',
+            message,
+
+            /* Pagination */
+            totalDocs: vendors.totalDocs,
+            limit: vendors.limit,
+            totalPages: vendors.totalPages,
+            page: vendors.page,
+            pagingCounter: vendors.pagingCounter,
+            hasPrevPage: vendors.hasPrevPage,
+            hasNextPage: vendors.hasNextPage,
+            nextPage: vendors.nextPage,
+            prevPage: vendors.prevPage,
+
+        });
+
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
+};
 
 export default {
     index,
@@ -162,5 +349,7 @@ export default {
     product,
     categoryRedirect,
     shopRedirect,
-    vendorRedirect
+    vendorRedirect,
+    shops,
+    vendors
 }

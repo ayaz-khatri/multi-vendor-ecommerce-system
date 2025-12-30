@@ -13,13 +13,23 @@
     <div class="row px-xl-5">
         <div class="col-12">
             <nav class="breadcrumb bg-light mb-30">
-                <a class="breadcrumb-item text-dark" href="/">Home</a>
-                <span class="breadcrumb-item active">Products</span>
+                <% breadcrumbs.forEach((item, index) => { %>
+                    <% if (item.url) { %>
+                        <a class="breadcrumb-item text-dark" href="<%= item.url %>">
+                            <%= item.label %>
+                        </a>
+                    <% } else { %>
+                        <span class="breadcrumb-item active">
+                            <%= item.label %>
+                        </span>
+                    <% } %>
+                <% }) %>
             </nav>
         </div>
     </div>
 </div>
 <!-- Breadcrumb End -->
+
 
 
 <!-- Products Start -->
@@ -112,13 +122,13 @@
                         <div class="product-img position-relative overflow-hidden">
                             <img class="img-fluid w-100" src="<%= (product.images[0]) ? '/uploads/products/' + product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>">
                             <div class="product-action">
-                                <a class="btn btn-outline-dark btn-square" href="/product/<%= product.slug %>"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-outline-dark btn-square" href="/products/<%= product.slug %>"><i class="fa fa-eye"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
                             </div>
                         </div>
                         <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="/product/<%= product.slug %>"><%= product.name %></a>
+                            <a class="h6 text-decoration-none text-truncate" href="/products/<%= product.slug %>"><%= product.name %></a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 <h5>$<%= product.price %></h5><h6 class="text-muted ml-2"><del>$<%= product.price * 2 %></del></h6>
                             </div>
@@ -133,10 +143,10 @@
                         </div>
                         <div class="row bg-dark m-0">
                             <div class="col text-left">
-                                <small><a class="text-decoration-none" href="/category/<%= product.categoryId.slug %>"><%= product.categoryId.name %></a></small>
+                                <small><a class="text-decoration-none" href="/categories/<%= product.categoryId.slug %>"><%= product.categoryId.name %></a></small>
                             </div>
                             <div class="col text-right text-secondary">
-                                <small><a class="text-decoration-none" href="/shop/<%= product.shopId.slug %>"><%= product.shopId.name %></a></small>
+                                <small><a class="text-decoration-none" href="/shops/<%= product.shopId.slug %>"><%= product.shopId.name %></a></small>
                             </div>
                         </div>
                     </div>

@@ -3,14 +3,23 @@
     <div class="row px-xl-5">
         <div class="col-12">
             <nav class="breadcrumb bg-light mb-30">
-                <a class="breadcrumb-item text-dark" href="/">Home</a>
-                <a class="breadcrumb-item text-dark" href="/category/<%= product.categoryId.slug %>"><%= product.categoryId.name %></a>
-                <span class="breadcrumb-item active"><%= product.name %></span>
+                <% breadcrumbs.forEach((item, index) => { %>
+                    <% if (item.url && index !== breadcrumbs.length - 1) { %>
+                        <a class="breadcrumb-item text-dark" href="<%= item.url %>">
+                            <%= item.label %>
+                        </a>
+                    <% } else { %>
+                        <span class="breadcrumb-item active">
+                            <%= item.label %>
+                        </span>
+                    <% } %>
+                <% }) %>
             </nav>
         </div>
     </div>
 </div>
 <!-- Breadcrumb End -->
+
 
 <!-- Shop Detail Start -->
 <div class="container-fluid pb-5">
@@ -65,7 +74,21 @@
                     <% }); %>
                     </table>
                 <% } %>
-            
+                <hr>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <span>Category</span><br>
+                        <a href="/category/<%= product.categoryId.slug %>"><%= product.categoryId.name %></a>
+                    </div>
+                    <div class="col-md-4 mb-3 text-md-center">
+                        <span>Vendor</span><br>
+                        <a href="/vendors/<%= product.vendorId.id %>"><%= product.vendorId.name %></a>
+                    </div>
+                    <div class="col-md-4 mb-3 text-md-right">
+                        <span>Shop</span><br>
+                        <a href="/shop/<%= product.shopId.slug %>"><%= product.shopId.name %></a>
+                    </div>
+                </div>
                 <div class="d-flex pt-2">
                     <strong class="text-dark mr-2">Share on:</strong>
                     <div class="d-inline-flex">

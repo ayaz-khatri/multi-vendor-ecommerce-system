@@ -1,0 +1,95 @@
+
+<!-- Products Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <!-- Shop Sidebar Start -->
+        <div class="col-lg-3 col-md-4">
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Search Shop</span></h5>
+            <form action="/shops">
+                <div class="input-group">
+                    <input type="text" class="form-control" value="<%= query.search || '' %>" name="search" placeholder="Search for shops">
+                    <div class="input-group-append">
+                        <button type="submit" class="input-group-text bg-transparent text-primary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <!-- Shop Sidebar End -->
+
+        <!-- Shop Product Start -->
+        <div class="col-lg-9 col-md-8">
+            <div class="row pb-3">
+
+                <% if (totalDocs === 0) { %>
+                    <div class="alert alert-warning my-4 w-100">
+                        <%= message %>
+                    </div>
+                <% } else { %>
+
+                <% shops.forEach(shop => { %>
+                <div class="col-lg-4 col-md-6 col-sm-6 pb-1 my-2">
+                    <a href="/shops/<%= shop.slug %>" class="text-decoration-none btn-link">
+                        <div class="bg-light p-4 shadow rounded text-center">
+                            <div class="shop-logo-wrapper mx-auto mb-3">
+                                <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" alt="<%= shop.name %>">
+                            </div>
+                            <span class="h5 text-dark"><%= shop.name %></span>
+                        </div>
+                    </a>
+                    <div class="row bg-dark m-0">
+                        <div class="col text-center">
+                            <small><a class="text-decoration-none" href="/vendors/<%= shop.vendorId._id %>"><%= shop.vendorId.name %></a></small>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+                <div class="col-12">
+
+                    <nav>
+                        <ul class="pagination justify-content-end">
+
+                            <!-- Previous -->
+                            <li class="page-item <%= !hasPrevPage ? 'disabled' : '' %>">
+                                <% if (hasPrevPage) { %>
+                                    <a class="page-link" href="?page=<%= prevPage %>">
+                                        Previous
+                                    </a>
+                                <% } else { %>
+                                    <span class="page-link">Previous</span>
+                                <% } %>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= page === i ? 'active' : '' %>">
+                                    <a class="page-link text-dark" href="?page=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
+
+                            <!-- Next -->
+                            <li class="page-item <%= !hasNextPage ? 'disabled' : '' %>">
+                                <% if (hasNextPage) { %>
+                                    <a class="page-link" href="?page=<%= nextPage %>">
+                                        Next
+                                    </a>
+                                <% } else { %>
+                                    <span class="page-link">Next</span>
+                                <% } %>
+                            </li>
+
+                        </ul>
+                    </nav>
+
+                </div>
+                <% } %>
+            </div>
+        </div>
+        <!-- Product End -->
+    </div>
+</div>
+<!-- Products End -->

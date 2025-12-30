@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const shopSchema = new mongoose.Schema(
 {
@@ -78,7 +79,11 @@ shopSchema.pre('validate', function () {
     }
 });
 
+shopSchema.plugin(mongoosePaginate);
+
 shopSchema.index({ vendorId: 1, name: 1 }, { unique: true });
+
+
 
 const Shop = mongoose.model('Shop', shopSchema);
 export default Shop;
