@@ -24,7 +24,7 @@ const index = async (req, res, next) => {
 const products = async (req, res, next) => {
     try {
 
-        const { page = 1, limit = 2 } = req.query;
+        const { page = 1, limit = 3 } = req.query;
 
         const options = {
             page: parseInt(page),
@@ -56,29 +56,45 @@ const products = async (req, res, next) => {
             });
         }
 
-        /* -------------------- CATEGORY (NESTED SLUGS) -------------------- */
+        /* -------------------- CATEGORY (PARENT + SUB CATEGORIES) -------------------- */
         if (category) {
             const cat = await Category.findOne({ slug: category, isDeleted: false });
             if (!cat) {
                 return next(errorMessage("Category not found", 404));
             }
 
-            query.categoryId = cat._id;
+            let categoryIds = [cat._id];
 
-            // Build breadcrumb from nested slug (fashion/men/shoes)
+            // If parent category → include its sub-categories
+            if (!cat.parentCategory) {
+                const children = await Category.find({
+                    parentCategory: cat._id,
+                    isDeleted: false
+                }).select('_id');
+
+                categoryIds = categoryIds.concat(children.map(c => c._id));
+            }
+
+            query.categoryId = { $in: categoryIds };
+
+            /* ---------- Breadcrumbs ---------- */
             const parts = category.split('/');
             let path = '';
+
             parts.forEach((part, index) => {
                 path += (index === 0 ? part : '/' + part);
 
                 breadcrumbs.push({
-                    label: part.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                    label: part
+                        .replace(/-/g, ' ')
+                        .replace(/\b\w/g, c => c.toUpperCase()),
                     url: index === parts.length - 1
                         ? null
-                        : `/products?category=${path}`
+                        : `/products?category=${encodeURIComponent(path)}`
                 });
             });
         }
+
 
         /* -------------------- SHOP -------------------- */
         if (shop) {
@@ -246,7 +262,7 @@ const vendorRedirect = async (req, res, next) => {
 
 const shops = async (req, res, next) => {
     try {
-        const { page = 1, limit = 2 } = req.query;
+        const { page = 1, limit = 9 } = req.query;
         const options = {
             page: parseInt(page),
             limit: parseInt(limit),
@@ -297,7 +313,7 @@ const shops = async (req, res, next) => {
 
 const vendors = async (req, res, next) => {
     try {
-        const { page = 1, limit = 2 } = req.query;
+        const { page = 1, limit = 9 } = req.query;
         const options = {
             page: parseInt(page),
             limit: parseInt(limit),

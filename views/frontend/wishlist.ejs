@@ -1,0 +1,49 @@
+ <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="/">Home</a>
+                    <a class="breadcrumb-item text-dark" href="/products">Products</a>
+                    <span class="breadcrumb-item active">Wishlist</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+<!-- Wishlist Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="table-responsive mb-5">
+            <table class="table table-light table-borderless table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Remove</th>
+                        <th>Image</th>
+                        <th>Products</th>
+                        <th>Price</th>
+                        <th>Shop</th>
+                        <th>Vendor</th>
+                        <th>Add to Cart</th>
+                    </tr>
+                </thead>
+                <tbody class="align-s">
+                    <% wishlist.forEach(item => { %>
+                    <tr>
+                        <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
+                        <td class="align-middle"><img src="<%= (item.productId.images[0]) ? '/uploads/products/' + item.productId.images[0] : '/img/placeholder.png' %>" style="width: 50px;"></td>
+                        <td class="align-middle"><a class="text-dark" href="/products/<%= item.productId.slug %>"><%= item.productId.name %></a></td>
+                        <td class="align-middle">$<%= item.productId.price %></td>
+                        <td class="align-middle"><a class="text-dark" href="/shops/<%= item.shopId.slug %>"><%= item.shopId.name %></a></td>
+                        <td class="align-middle"><a class="text-dark" href="/vendors/<%= item.vendorId.id %>"><%= item.vendorId.name %></a></td>
+                        <td class="align-middle"><button class="btn btn-primary">Add to Cart</button></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Wishlist End -->
