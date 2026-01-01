@@ -26,12 +26,26 @@ const index = async (req, res, next) => {
 const products = async (req, res, next) => {
     try {
 
-        const { page = 1, limit = 9 } = req.query;
+        const { page = 1, limit = 9, sort } = req.query;
+        let sortOption = { createdAt: -1 }; // default
+
+        if (sort === 'price_asc') {
+            sortOption = { price: 1 };
+        }
+
+        if (sort === 'price_desc') {
+            sortOption = { price: -1 };
+        }
+
+        if (sort === 'latest') {
+            sortOption = { createdAt: -1 };
+        }
 
         const options = {
             page: parseInt(page),
             limit: parseInt(limit),
             sort: { createdAt: -1 },
+            sort: sortOption,
             populate: [
                 { path: 'categoryId', select: 'name slug' },
                 { path: 'shopId', select: 'name slug' },

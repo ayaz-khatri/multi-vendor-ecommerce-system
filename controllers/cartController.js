@@ -10,7 +10,7 @@ const index = async (req, res, next) => {
         if(cart && cart.items && cart.items.length > 0){
             cart.shipping = 10;
         }
-        res.render("frontend/cart", { cart, title: "Cart"});
+        res.render("frontend/cart", { cart: cart || null, title: "Cart"});
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
@@ -38,6 +38,11 @@ const toggle = async (req, res, next) => {
         let message = "";
 
         if (action === "add") {
+
+            if (product.stock < 1) {
+                req.flash("error", "Item is out of stock.");
+                return res.redirect("/products");
+            }
 
             if (itemIndex > -1) {
                 // Increase quantity
@@ -105,9 +110,9 @@ const update = async (req, res, next) => {
             return res.redirect("/cart");
         }
 
-        const product = await Product.findOne({ _id: item.productId });
+        const product = await Product.findById(item.productId);
         if (!product || product.isDeleted || product.stock < quantity) {
-            req.flash("error", "Item is out of stock.");
+            req.flash("error", `Only ${product.stock} items available in stock.`);
             return res.redirect("/cart");
         }
 
