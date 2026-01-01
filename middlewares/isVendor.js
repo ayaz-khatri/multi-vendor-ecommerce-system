@@ -1,4 +1,4 @@
-const isAdmin = (req, res, next) => {
+const isVendor = (req, res, next) => {
     if (req.user && req.user.role === 'vendor') {
         return next();
     }
@@ -6,4 +6,4 @@ const isAdmin = (req, res, next) => {
     return res.redirect('/login');
 };
 
-export default isAdmin;
+export default isVendor;

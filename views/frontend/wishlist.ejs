@@ -30,9 +30,23 @@
                     </tr>
                 </thead>
                 <tbody class="align-s">
-                    <% wishlist.forEach(item => { %>
+                    <% if (wishlist && wishlist.items && wishlist.items.length > 0) { %>
+                    <% wishlist.items.forEach(item => { %>
                     <tr>
-                        <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
+                        <td class="align-middle">
+                            <a
+                                class="btn btn-sm btn-danger wishlist-btn"
+                                data-toggle="modal"
+                                data-target="#wishlistModal"
+                                data-product="<%= item.productId._id %>"
+                                data-shop="<%= item.shopId._id %>"
+                                data-vendor="<%= item.vendorId._id %>"
+                                data-added="1"
+                                type="button"
+                                >
+                                    <i class="fas fa-times"></i>
+                            </a>
+                        </td>
                         <td class="align-middle"><img src="<%= (item.productId.images[0]) ? '/uploads/products/' + item.productId.images[0] : '/img/placeholder.png' %>" style="width: 50px;"></td>
                         <td class="align-middle"><a class="text-dark" href="/products/<%= item.productId.slug %>"><%= item.productId.name %></a></td>
                         <td class="align-middle">$<%= item.productId.price %></td>
@@ -41,6 +55,7 @@
                         <td class="align-middle"><button class="btn btn-primary">Add to Cart</button></td>
                     </tr>
                     <% }) %>
+                    <% } else { %><tr><td colspan="7" class="text-center">No items in wishlist</td></tr><% } %>
                 </tbody>
             </table>
         </div>

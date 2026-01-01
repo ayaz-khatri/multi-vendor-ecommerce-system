@@ -17,6 +17,7 @@ const index = async (req, res, next) => {
         const shops = await Shop.find({ isDeleted: false, status: "approved" }).limit(10);
         res.render("frontend/index", { vendors, products, shops, title: "Ecommerce - Online Shopping Website" });
     } catch (error) {
+        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -24,7 +25,7 @@ const index = async (req, res, next) => {
 const products = async (req, res, next) => {
     try {
 
-        const { page = 1, limit = 3 } = req.query;
+        const { page = 1, limit = 9 } = req.query;
 
         const options = {
             page: parseInt(page),
