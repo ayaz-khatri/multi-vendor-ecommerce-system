@@ -124,7 +124,16 @@
                             <img class="img-fluid w-100" src="<%= (product.images[0]) ? '/uploads/products/' + product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href="/products/<%= product.slug %>"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                <a
+                                    class="btn btn-outline-dark btn-square cart-btn"
+                                    data-toggle="modal"
+                                    data-target="#cartModal"
+                                    data-product="<%= product._id %>"
+                                    data-added="<%= cartProductIds.includes(product._id.toString()) ? '1' : '0' %>"
+                                    type="button"
+                                    >
+                                    <i class="fa fa-shopping-cart <%= cartProductIds.includes(product._id.toString()) ? 'text-info' : '' %>"></i>
+                                </a>
                                 <a
                                     class="btn btn-outline-dark btn-square wishlist-btn"
                                     data-toggle="modal"
@@ -135,9 +144,8 @@
                                     data-added="<%= wishlistIds?.includes(product._id.toString()) ? '1' : '0' %>"
                                     type="button"
                                     >
-                                        <i class="<%= wishlistIds?.includes(product._id.toString()) ? 'fas fa-heart text-danger' : 'far fa-heart' %>"></i>
+                                        <i class="<%= wishlistIds?.includes(product._id.toString()) ? 'fas fa-heart text-info' : 'far fa-heart' %>"></i>
                                 </a>
-
                             </div>
                         </div>
                         <div class="text-center py-4">
@@ -145,6 +153,11 @@
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 <h5>$<%= product.price %></h5><h6 class="text-muted ml-2"><del>$<%= product.price * 2 %></del></h6>
                             </div>
+                            <% if(product.stock > 0) { %>
+                                <small class="text-success">In Stock</small>
+                            <% } else { %>
+                                <small class="text-danger">Out of Stock</small>
+                            <% } %>
                             <div class="d-flex align-items-center justify-content-center mb-1">
                                 <small class="fa fa-star text-primary mr-1"></small>
                                 <small class="fa fa-star text-primary mr-1"></small>

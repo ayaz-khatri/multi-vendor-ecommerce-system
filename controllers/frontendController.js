@@ -13,7 +13,8 @@ const index = async (req, res, next) => {
         const products = await Product.find({ isDeleted: false, status: "active" }).limit(8)
                                         .populate('shopId', ['name', 'slug'])
                                         .populate('categoryId', ['name', 'slug'])
-                                        .populate('vendorId', 'name');
+                                        .populate('vendorId', 'name')
+                                        .sort({ createdAt: -1 });
         const shops = await Shop.find({ isDeleted: false, status: "approved" }).limit(10);
         res.render("frontend/index", { vendors, products, shops, title: "Ecommerce - Online Shopping Website" });
     } catch (error) {

@@ -8,7 +8,6 @@ const index = async (req, res, next) => {
                                 .populate('items.productId')
                                 .populate('items.shopId', ['name', 'slug'])
                                 .populate('items.vendorId', 'name');
-                                // res.send(wishlist);
         res.render('frontend/wishlist', { wishlist, title: 'Wishlist' });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));

@@ -41,10 +41,9 @@ const cartSchema = new mongoose.Schema(
     timestamps: true
 });
 
-cartSchema.pre('save', function(next) {
+cartSchema.pre('save', function() {
   this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
   this.totalPrice = this.items.reduce((sum, item) => sum + item.subtotal, 0);
-  next();
 });
 
 cartSchema.index({ userId: 1 });
