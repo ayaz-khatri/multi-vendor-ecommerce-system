@@ -1,0 +1,155 @@
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="/">Home</a>
+                <a class="breadcrumb-item text-dark" href="/products">Products</a>
+                <span class="breadcrumb-item active">Checkout</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+
+<form action="/orders" method="POST">
+
+<!-- Checkout Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+
+        <!-- LEFT: SHIPPING ADDRESS -->
+        <div class="col-lg-8">
+            <h5 class="section-title position-relative text-uppercase mb-3">
+                <span class="bg-secondary pr-3">Shipping Address</span>
+            </h5>
+
+            <div class="bg-light p-30 mb-5">
+                <div class="row">
+
+                    <div class="col-md-6 form-group">
+                        <label>Full Name</label>
+                        <input class="form-control" type="text" value="<%= authUser.name %>" readonly>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>Email</label>
+                        <input class="form-control" type="email" value="<%= authUser.email %>" readonly>
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <label>Address Line 1</label>
+                        <input class="form-control" name="shippingAddress[line1]" required>
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <label>Address Line 2</label>
+                        <input class="form-control" name="shippingAddress[line2]">
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>City</label>
+                        <input class="form-control" name="shippingAddress[city]" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>State</label>
+                        <input class="form-control" name="shippingAddress[state]">
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>Country</label>
+                        <input class="form-control" name="shippingAddress[country]" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label>Postal Code</label>
+                        <input class="form-control" name="shippingAddress[postalCode]" required>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: ORDER SUMMARY -->
+        <div class="col-lg-4">
+
+            <h5 class="section-title position-relative text-uppercase mb-3">
+                <span class="bg-secondary pr-3">Order Summary</span>
+            </h5>
+
+            <div class="bg-light p-30 mb-5">
+
+                <% if (cartItems.length === 0) { %>
+                    <p>Your cart is empty.</p>
+                <% } else { %>
+
+                    <% cartItems.forEach(item => { %>
+                        <div class="d-flex justify-content-between">
+                            <p>
+                                <%= item.productId.name %> × <%= item.quantity %>
+                            </p>
+                            <p>
+                                $<%= (item.productId.price * item.quantity).toFixed(2) %>
+                            </p>
+                        </div>
+                    <% }) %>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <strong>Subtotal</strong>
+                        <strong>$<%= cartTotalPrice.toFixed(2) %></strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Shipping</span>
+                        <span>$<%= cartShipping.toFixed(2) %></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5>Total</h5>
+                        <h5>$<%= (cartTotalPrice + cartShipping).toFixed(2) %></h5>
+                    </div>
+
+                <% } %>
+            </div>
+
+            <!-- PAYMENT -->
+            <div class="mb-5">
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-secondary pr-3">Payment Method</span>
+                </h5>
+
+                <div class="bg-light p-30">
+
+                    <div class="custom-control custom-radio mb-2">
+                        <input type="radio" class="custom-control-input" name="paymentMethod" value="cod" id="cod" required>
+                        <label class="custom-control-label" for="cod">Cash on Delivery</label>
+                    </div>
+
+                    <div class="custom-control custom-radio mb-2">
+                        <input type="radio" class="custom-control-input" name="paymentMethod" value="paypal" id="paypal">
+                        <label class="custom-control-label" for="paypal">PayPal</label>
+                    </div>
+
+                    <div class="custom-control custom-radio mb-4">
+                        <input type="radio" class="custom-control-input" name="paymentMethod" value="stripe" id="stripe">
+                        <label class="custom-control-label" for="stripe">Credit / Debit Card</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">
+                        Place Order
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Checkout End -->
+
+</form>
+

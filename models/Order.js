@@ -9,6 +9,11 @@ const orderSchema = new mongoose.Schema(
         required: true
     },
 
+    orderNumber: {
+        type: String,
+        unique: true
+    },
+
     items: {
         type: [orderItemSchema],
         default: []
@@ -67,10 +72,9 @@ const orderSchema = new mongoose.Schema(
     timestamps: true
 });
 
-orderSchema.pre('save', function(next) {
+orderSchema.pre('save', function() {
   this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
   this.totalPrice = this.items.reduce((sum, item) => sum + item.subtotal, 0);
-  next();
 });
 
 orderSchema.index({ userId: 1 });

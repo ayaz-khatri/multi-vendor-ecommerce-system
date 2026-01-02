@@ -6,10 +6,6 @@ const index = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const cart = await Cart.findOne({ userId }).populate("items.productId");
-        cart.shipping = 0;
-        if(cart && cart.items && cart.items.length > 0){
-            cart.shipping = 10;
-        }
         res.render("frontend/cart", { cart: cart || null, title: "Cart"});
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
@@ -90,7 +86,7 @@ const update = async (req, res, next) => {
         const userId = req.user.id;
         const { productId, quantity } = req.body;
 
-        if (quantity < 1) {
+        if (isNaN(quantity) || quantity < 1) {
             req.flash("error", "Invalid Quantity.");
             return res.redirect("/cart");
         }
@@ -149,10 +145,19 @@ const clear = async (req, res, next) => {
     }
 };
 
+const checkout = async (req, res, next) => {
+    try {
+        return res.render("frontend/checkout", { title: "Checkout" });
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
+};
+
 
 export default {
     index,
     toggle,
     update,
-    clear
+    clear,
+    checkout
 };

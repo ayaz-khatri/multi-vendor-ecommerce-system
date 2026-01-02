@@ -1,0 +1,50 @@
+ <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="/">Home</a>
+                    <span class="breadcrumb-item active">Orders</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+<!-- Wishlist Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="table-responsive mb-5">
+            <table class="table table-light table-borderless table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    <% if (orders) { %>
+                    <% orders.forEach(order => { %>
+                    <tr>
+                        <td><a href="/order/<%= order._id %>"><%= order.orderNumber %></a></td>
+                        <td><%= order.createdAt.toDateString() %></td>
+                        <td><%= order.totalQuantity %></td>
+                        <td>$<%= order.totalPrice %></td>
+                        <td><%= (order.paymentMethod == "cod") ? "Cash on Delivery" : "Online Payment" %></td>
+                        <td><%= order.orderStatus %></td>
+                        <td><a href="/order/<%= order._id %>" class="btn btn-sm btn-primary" title="View"><i class="fa fa-eye"></i></a></td>
+                    </tr>
+                    <% }) %>
+                    <% } else { %><tr><td colspan="6" class="text-center">No orders yet.</td></tr><% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Wishlist End -->

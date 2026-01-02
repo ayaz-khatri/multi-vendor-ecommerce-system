@@ -4,6 +4,7 @@ import loadCategories from '../middlewares/loadCategories.js';
 import shareQueryParams from '../middlewares/shareQueryParams.js';
 import wishlistController from '../controllers/wishlistController.js';
 import cartController from '../controllers/cartController.js';
+import customerOrderController from '../controllers/customerOrderController.js';
 import frontendController from '../controllers/frontendController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import wishlist from '../middlewares/wishlist.js';
@@ -35,5 +36,15 @@ router.post('/cart/toggle', isLoggedIn, isCustomer, wishlist, cartController.tog
 router.get('/cart/', isLoggedIn, isCustomer, wishlist, cart, cartController.index);
 router.post("/cart/update", isLoggedIn, isCustomer, wishlist, cartController.update);
 router.get("/cart/clear", isLoggedIn, isCustomer, cartController.clear);
+router.get("/cart/checkout", isLoggedIn, isCustomer, wishlist, cart, cartController.checkout);
+
+/* ---------------------------------- Order ---------------------------------- */
+router.post('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.placeOrder);
+router.get('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.orders);
+router.get('/orders/view/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.order);
+router.post('/orders/cancel/:id', customerOrderController.cancel);
+router.post('/orders/confirm-delivery/:id', customerOrderController.confirm);
+
+
 
 export default router;

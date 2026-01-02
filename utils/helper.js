@@ -21,3 +21,9 @@ export const timeAgo = (value) => {
 
     return "just now";
 }
+
+export const generateOrderNumber = () => {
+    const random = Math.floor(1000 + Math.random() * 9000); // 4 digit random number
+    const timestamp = Date.now().toString().slice(-6); // last 6 digits of timestamp
+    return `ORD-${timestamp}${random}`;
+};
