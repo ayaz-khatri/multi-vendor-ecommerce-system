@@ -11,16 +11,14 @@ const placeOrder = async (req, res, next) => {
         const { shippingAddress, paymentMethod } = req.body;
 
         if (!shippingAddress || !paymentMethod) {
-            throw errorMessage("Invalid checkout data", 400);
+            req.flash("error", "Invalid checkout details.");
+            return res.redirect("/cart/checkout");
         }
 
-        const cart = await Cart.findOne({
-            userId,
-            isDeleted: false
-        }).populate("items.productId");
-
+        const cart = await Cart.findOne({ userId, isDeleted: false }).populate("items.productId");
         if (!cart || cart.items.length === 0) {
-            throw errorMessage("Your cart is empty", 400);
+            req.flash("error", "Your cart is empty.");
+            return res.redirect("/cart/checkout");
         }
 
         const orderItems = [];
@@ -29,11 +27,13 @@ const placeOrder = async (req, res, next) => {
             const product = item.productId;
 
             if (!product || product.isDeleted) {
-                throw errorMessage("One or more products are unavailable", 400);
+                req.flash("error", "One or more products are unavailable");
+                return res.redirect("/cart/checkout");
             }
 
             if (product.stock < item.quantity) {
-                throw errorMessage(`Insufficient stock for ${product.name}`, 400);
+                req.flash("error", `Insufficient stock for ${product.name}`);
+                return res.redirect("/cart/checkout");
             }
 
             // Deduct stock
@@ -75,10 +75,9 @@ const placeOrder = async (req, res, next) => {
         await cart.save();
 
         req.flash("success", "Order placed successfully.");
-        res.redirect(`/orders/view/${order._id}`);
+        res.redirect(`/orders/${order._id}`);
 
     } catch (error) {
-        console.error(error);
         next(error);
     }
 };
@@ -95,31 +94,37 @@ const orders = async (req, res, next) => {
 
 const order = async (req, res, next) => {
     try {
-
-        req.flash("success", "Order placed successfully.");
-        res.redirect("/");
+        const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
+        if (!order) return next(errorMessage('Order not found.', 404));
+        res.render('frontend/order', { order, title: "Order Details" });
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };
 
 const cancel = async (req, res, next) => {
     try {
-        req.flash("success", "Order placed successfully.");
-        res.redirect("/");
+        const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
+        if (!order || order.orderStatus !== "pending") return next(errorMessage('Order not found.', 404));
+        order.orderStatus = "cancelled";
+        await order.save();
+        req.flash("success", "Order cancelled successfully.");
+        res.redirect(`/orders/${order._id}`);
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };
 
-const confirm = async (req, res, next) => {
+const confirmDelivery = async (req, res, next) => {
     try {
-        req.flash("success", "Order placed successfully.");
-        res.redirect("/");
+        const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
+        if (!order || order.orderStatus !== "shipped") return next(errorMessage('Order not found.', 404));
+        if(order.orderStatus === "delivered") return next(errorMessage('Order already delivered.', 404));
+        order.orderStatus = "delivered";
+        await order.save();
+        req.flash("success", "Order delivered successfully.");
+        res.redirect(`/orders/${order._id}`);
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -129,5 +134,5 @@ export default {
     orders,
     order,
     cancel,
-    confirm
+    confirmDelivery
 }

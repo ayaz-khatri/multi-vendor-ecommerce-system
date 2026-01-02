@@ -41,9 +41,9 @@ router.get("/cart/checkout", isLoggedIn, isCustomer, wishlist, cart, cartControl
 /* ---------------------------------- Order ---------------------------------- */
 router.post('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.placeOrder);
 router.get('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.orders);
-router.get('/orders/view/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.order);
-router.post('/orders/cancel/:id', customerOrderController.cancel);
-router.post('/orders/confirm-delivery/:id', customerOrderController.confirm);
+router.get('/orders/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.order);
+router.post('/orders/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.cancel);
+router.post('/orders/confirm-delivery/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.confirmDelivery);
 
 
 

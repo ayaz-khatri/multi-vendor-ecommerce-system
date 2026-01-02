@@ -19,12 +19,12 @@
             <table class="table table-light table-borderless table-hover mb-0">
                 <thead class="thead-dark">
                     <tr>
+                        <th>Status</th>
                         <th>Order No.</th>
                         <th>Date</th>
                         <th>Items</th>
                         <th>Total</th>
                         <th>Payment Method</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -32,16 +32,29 @@
                     <% if (orders) { %>
                     <% orders.forEach(order => { %>
                     <tr>
-                        <td><a href="/order/<%= order._id %>"><%= order.orderNumber %></a></td>
+                        <td>
+                            <% let badgeClass = 'secondary'; %>
+
+                            <% if (order.orderStatus === 'pending') badgeClass = 'warning'; %>
+                            <% if (order.orderStatus === 'confirmed') badgeClass = 'info'; %>
+                            <% if (order.orderStatus === 'shipped') badgeClass = 'dark'; %>
+                            <% if (order.orderStatus === 'delivered') badgeClass = 'success'; %>
+                            <% if (order.orderStatus === 'cancelled') badgeClass = 'danger'; %>
+
+                            <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
+                                <%= order.orderStatus %>
+                            </span>
+                        </td>
+                        <td><%= order.orderNumber %></td>
                         <td><%= order.createdAt.toDateString() %></td>
                         <td><%= order.totalQuantity %></td>
                         <td>$<%= order.totalPrice %></td>
                         <td><%= (order.paymentMethod == "cod") ? "Cash on Delivery" : "Online Payment" %></td>
-                        <td><%= order.orderStatus %></td>
-                        <td><a href="/order/<%= order._id %>" class="btn btn-sm btn-primary" title="View"><i class="fa fa-eye"></i></a></td>
+                        
+                        <td><a href="/orders/<%= order._id %>" class="btn btn-sm btn-primary" title="View"><i class="fa fa-eye"></i></a></td>
                     </tr>
                     <% }) %>
-                    <% } else { %><tr><td colspan="6" class="text-center">No orders yet.</td></tr><% } %>
+                    <% } else { %><tr><td colspan="7" class="text-center">No orders yet.</td></tr><% } %>
                 </tbody>
             </table>
         </div>
