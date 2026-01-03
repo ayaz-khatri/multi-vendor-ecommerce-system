@@ -1,22 +1,17 @@
 import mongoose from 'mongoose';
-import orderItemSchema from './OrderItem.js';
 
-const orderSchema = new mongoose.Schema(
-{
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+const orderSchema = new mongoose.Schema({
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+
+    orderNumber: 
+    { 
+        type: String, 
+        unique: true,
         required: true
-    },
-
-    orderNumber: {
-        type: String,
-        unique: true
-    },
-
-    items: {
-        type: [orderItemSchema],
-        default: []
     },
 
     totalQuantity: {
@@ -29,15 +24,6 @@ const orderSchema = new mongoose.Schema(
         type: Number,
         required: true,
         min: 0
-    },
-    
-    shippingAddress: {
-        line1: String,
-        line2: String,
-        city: String,
-        state: String,
-        country: String,
-        postalCode: String
     },
 
     paymentMethod: {
@@ -52,12 +38,21 @@ const orderSchema = new mongoose.Schema(
         default: 'pending'
     },
 
-    orderStatus: {
+    overallStatus: {
         type: String,
-        enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+        enum: ['pending', 'partially_completed', 'completed', 'cancelled'],
         default: 'pending'
     },
-    
+
+    shippingAddress: {
+        line1: String,
+        line2: String,
+        city: String,
+        state: String,
+        country: String,
+        postalCode: String
+    },
+
     isDeleted: {
         type: Boolean,
         default: false
@@ -67,19 +62,11 @@ const orderSchema = new mongoose.Schema(
         type: Date,
         default: null
     },
-}, 
-{
-    timestamps: true
-});
 
-orderSchema.pre('save', function() {
-  this.totalQuantity = this.items.reduce((sum, item) => sum + item.quantity, 0);
-  this.totalPrice = this.items.reduce((sum, item) => sum + item.subtotal, 0);
-});
+
+}, { timestamps: true });
 
 orderSchema.index({ userId: 1 });
-orderSchema.index({ 'items.vendorId': 1 });
-orderSchema.index({ orderStatus: 1 });
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

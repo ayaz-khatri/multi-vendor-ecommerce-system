@@ -28,7 +28,6 @@ const cart = async (req, res, next) => {
         );
         res.locals.cartTotalQuantity = cart.totalQuantity;
         res.locals.cartTotalPrice = cart.totalPrice;
-        res.locals.cartShipping = 10;
 
         next();
 

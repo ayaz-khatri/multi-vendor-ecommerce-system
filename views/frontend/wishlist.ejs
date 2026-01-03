@@ -24,6 +24,7 @@
                         <th>Image</th>
                         <th>Products</th>
                         <th>Price</th>
+                        <th>Stock</th>
                         <th>Shop</th>
                         <th>Vendor</th>
                         <th>Add to Cart</th>
@@ -50,9 +51,27 @@
                         <td class="align-middle"><img src="<%= (item.productId.images[0]) ? '/uploads/products/' + item.productId.images[0] : '/img/placeholder.png' %>" style="width: 50px;"></td>
                         <td class="align-middle"><a class="text-dark" href="/products/<%= item.productId.slug %>"><%= item.productId.name %></a></td>
                         <td class="align-middle">$<%= item.productId.price %></td>
+                        <td class="align-middle">
+                            <% if(item.productId.stock > 0) { %>
+                                <span class="text-success">In Stock</span>
+                            <% } else { %>
+                                <span class="text-danger">Out of Stock</span>
+                            <% } %>
+                        </td>
                         <td class="align-middle"><a class="text-dark" href="/shops/<%= item.shopId.slug %>"><%= item.shopId.name %></a></td>
                         <td class="align-middle"><a class="text-dark" href="/vendors/<%= item.vendorId.id %>"><%= item.vendorId.name %></a></td>
-                        <td class="align-middle"><button class="btn btn-primary">Add to Cart</button></td>
+                        <td class="align-middle">
+                            <a
+                                class="btn btn-outline-dark btn-square cart-btn"
+                                data-toggle="modal"
+                                data-target="#cartModal"
+                                data-product="<%= item.productId._id %>"
+                                data-added="<%= cartProductIds.includes(item.productId._id.toString()) ? '1' : '0' %>"
+                                type="button"
+                                >
+                                <i class="fa fa-shopping-cart <%= cartProductIds.includes(item.productId._id.toString()) ? 'text-info' : '' %>"></i>
+                            </a>
+                        </td>
                     </tr>
                     <% }) %>
                     <% } else { %><tr><td colspan="7" class="text-center">No items in wishlist</td></tr><% } %>

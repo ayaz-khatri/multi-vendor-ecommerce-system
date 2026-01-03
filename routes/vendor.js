@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import vendorShopController from '../controllers/vendorShopController.js';
 import vendorProductController from '../controllers/vendorProductController.js';
+// import vendorOrderController from '../controllers/vendorOrderController.js';
 import Shop from '../models/Shop.js';
 import Product from '../models/Product.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
@@ -47,6 +48,14 @@ router.post('/products/:id', uploadProductImages.array('images[]', 10), isValid.
 router.delete('/products/:id', vendorProductController.destroy);
 router.get('/products/trashed', vendorProductController.trashed);
 router.post('/products/restore/:id', vendorProductController.restore);
+
+// Order Routes
+// router.get('/orders', vendorOrderController.index);
+// router.get('/orders/view/:id', vendorOrderController.view);
+// router.post('/orders/item/confirm/:id', vendorOrderController.confirmItem);
+// router.post('/orders/item/ship/:id', vendorOrderController.shipItem);
+// router.post('/orders/item/cancel/:id', vendorOrderController.cancelItem);
+
 
 
 export default router;
