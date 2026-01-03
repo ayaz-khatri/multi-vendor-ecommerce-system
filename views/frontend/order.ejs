@@ -27,14 +27,13 @@
                 <p>
                     <strong>Status:</strong>
                     <% let badgeClass = 'secondary'; %>
-                    <% if (order.orderStatus === 'pending') badgeClass = 'warning'; %>
-                    <% if (order.orderStatus === 'confirmed') badgeClass = 'info'; %>
-                    <% if (order.orderStatus === 'shipped') badgeClass = 'dark'; %>
-                    <% if (order.orderStatus === 'delivered') badgeClass = 'success'; %>
-                    <% if (order.orderStatus === 'cancelled') badgeClass = 'danger'; %>
+                    <% if (order.overallStatus === 'pending') badgeClass = 'warning'; %>
+                    <% if (order.overallStatus === 'partially_completed') badgeClass = 'info'; %>
+                    <% if (order.overallStatus === 'completed') badgeClass = 'success'; %>
+                    <% if (order.overallStatus === 'cancelled') badgeClass = 'danger'; %>
 
-                    <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2  text-uppercase">
-                        <%= order.orderStatus %>
+                    <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
+                        <%= order.overallStatus.replace('_', ' ') %>
                     </span>
                 </p>
 
@@ -67,16 +66,72 @@
 
             </div>
         </div>
-        <!-- RIGHT: ITEMS -->
+
+        <!-- RIGHT: VENDOR ORDERS -->
         <div class="col-lg-4">
             <div class="bg-light p-30">
+                <% vendorOrders.forEach(vendorOrder => { %>
+                    <div class="border rounded p-3 mb-4 shadow">
 
-                <h4 class="mb-4">Order Items</h4>
+                        <h6 class="mb-3">
+                            <div class="d-flex justify-content-between">
+                            <span>Vendor: <a href="<%= '/products?vendor=' + vendorOrder.vendorId.id  %>"><%= vendorOrder.vendorId.name %></a></span>
+                            <span class="badge badge-info text-uppercase ml-2">
+                                <%= vendorOrder.vendorStatus %>
+                            </span>
+                            </div>
+                        </h6>
 
-                <% order.items.forEach(item => { %>
-                    <div class="d-flex justify-content-between">
-                        <p><%= item.name %> × <%= item.quantity %></p>
-                        <p>$<%= item.subtotal.toFixed(2) %></p>
+                        <% vendorOrder.items.forEach(item => { %>
+                            <div class="d-flex justify-content-between">
+                                <p><%= item.name %> × <%= item.quantity %></p>
+                                <p>$<%= item.subtotal.toFixed(2) %></p>
+                            </div>
+                        <% }) %>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <strong>Vendor Subtotal</strong>
+                            <strong>$<%= vendorOrder.subtotal.toFixed(2) %></strong>
+                        </div>
+
+                        <% if (['pending', 'accepted'].includes(vendorOrder.vendorStatus)) { %>
+                            <button
+                                class="btn btn-danger btn-sm btn-block mt-2"
+                                data-toggle="modal"
+                                data-target="#cancelVendorOrder<%= vendorOrder._id %>">
+                                Cancel Vendor Order
+                            </button>
+
+                            <!-- Cancel Vendor Order Modal -->
+                            <div class="modal fade" id="cancelVendorOrder<%= vendorOrder._id %>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Cancel Vendor Order?</h5>
+                                            <button class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            Are you sure you want to cancel this vendor’s items?
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <form action="/orders/vendor/<%= vendorOrder._id %>/cancel" method="POST">
+                                                <button class="btn btn-danger" type="submit">
+                                                    Yes, Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+
                     </div>
                 <% }) %>
 
@@ -93,51 +148,12 @@
                 </div>
 
                 <hr>
-                <% if (order.orderStatus === 'pending') { %>
-                    <button class="btn btn-danger btn-block" data-toggle="modal" data-target="#cancelOrderModal" type="button">Cancel Order</button>
-                    <div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Confirm order cancellation?</h5>
-                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">Do you want to cancel this order?</div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                                    <form action="/orders/cancel/<%= order._id %>" method="POST">
-                                        <input class="btn btn-primary" type="submit" value="Yes, Cancel">
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+                <% if(order.overallStatus === 'pending') { %>
+                <a class="btn btn-danger btn-block" data-toggle="modal" data-target="#cancelOrderModal">Cancel Order</a>
                 <% } %>
 
-                <% if (order.orderStatus === 'shipped') { %>
-                    <button class="btn btn-success btn-block" data-toggle="modal" data-target="#deliveryOrderModal" type="button">Confirm Delivery</button>
-                    <div class="modal fade" id="deliveryOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Confirm Delivery?</h5>
-                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">Do you want to confirm the delivery of this order?</div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                                    <form action="/orders/confirm-delivery/<%= order._id %>" method="POST">
-                                        <input class="btn btn-success" type="submit" value="Yes, Confirm Delivery">
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
+                <%- include('../partials/cancelOrderModal.ejs') %>
 
                 <a href="/orders" class="btn btn-outline-dark btn-block mt-2">
                     Back to Orders
@@ -148,3 +164,4 @@
 
     </div>
 </div>
+<!-- /.container-fluid -->

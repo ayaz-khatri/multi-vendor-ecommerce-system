@@ -1,0 +1,25 @@
+<div class="modal fade" id="cancelOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm order cancellation?</h5>
+                <button class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to cancel this order?
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="/orders/cancel/<%= order._id %>" method="POST">
+                    <button class="btn btn-danger" type="submit">
+                        Yes, Cancel
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

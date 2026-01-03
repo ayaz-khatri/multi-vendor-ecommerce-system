@@ -129,9 +129,19 @@ const orders = async (req, res, next) => {
 
 const order = async (req, res, next) => {
     try {
-        const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!order) return next(errorMessage('Order not found.', 404));
-        res.render('frontend/order', { order, title: "Order Details" });
+        const orderId = req.params.id;
+        const userId = req.user.id;
+
+        // 1. Fetch main order (ownership check)
+        const order = await Order.findOne({ _id: orderId, userId, isDeleted: false });
+        if (!order) { return next(errorMessage("Order not found.", 404)); }
+
+        // 2. Fetch vendor orders related to this order
+        const vendorOrders = await VendorOrder.find({ orderId: order._id })
+                                                .populate("items.productId")
+                                                .populate("items.shopId")
+                                                .populate("vendorId");
+        res.render("frontend/order", { title: "Order Details", order, vendorOrders });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
@@ -140,27 +150,33 @@ const order = async (req, res, next) => {
 const cancel = async (req, res, next) => {
     try {
         const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!order || order.orderStatus !== "pending") return next(errorMessage('Order not found.', 404));
-        order.orderStatus = "cancelled";
-        await order.save();
-        req.flash("success", "Order cancelled successfully.");
-        res.redirect(`/orders/${order._id}`);
-    } catch (error) {
-        next(errorMessage("Something went wrong", 500));
-    }
-};
+        if (!order) return next(errorMessage('Order not found.', 404));
 
-const confirmDelivery = async (req, res, next) => {
-    try {
-        const order = await Order.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!order || order.orderStatus !== "shipped") return next(errorMessage('Order not found.', 404));
-        if(order.orderStatus === "delivered") return next(errorMessage('Order already delivered.', 404));
-        order.orderStatus = "delivered";
+        // Fetch related vendorOrders
+        const vendorOrders = await VendorOrder.find({ orderId: order._id });
+
+        // Check if any vendor has shipped or delivered
+        const blocked = vendorOrders.some(vo => ['shipped', 'delivered'].includes(vo.vendorStatus));
+
+        if (blocked) {
+            return next(errorMessage( 'Order cannot be cancelled because one or more vendors have already shipped.', 400 ));
+        }
+
+        // Cancel all vendor orders
+        for (let vo of vendorOrders) {
+            vo.vendorStatus = 'cancelled';
+            await vo.save();
+        }
+
+        // ✅ Cancel main order
+        order.overallStatus = 'cancelled';
         await order.save();
-        req.flash("success", "Order delivered successfully.");
-        res.redirect(`/orders/${order._id}`);
+
+        req.flash('success', 'Order cancelled successfully.');
+        res.redirect('/orders');
+
     } catch (error) {
-        next(errorMessage("Something went wrong", 500));
+        next(errorMessage('Something went wrong', 500));
     }
 };
 
@@ -168,6 +184,5 @@ export default {
     placeOrder,
     orders,
     order,
-    cancel,
-    confirmDelivery
+    cancel
 }

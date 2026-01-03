@@ -43,7 +43,6 @@ router.post('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderCont
 router.get('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.orders);
 router.get('/orders/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.order);
 router.post('/orders/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.cancel);
-router.post('/orders/confirm-delivery/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.confirmDelivery);
 
 
 

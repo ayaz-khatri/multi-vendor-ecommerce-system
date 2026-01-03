@@ -35,14 +35,14 @@
                         <td>
                             <% let badgeClass = 'secondary'; %>
 
-                            <% if (order.orderStatus === 'pending') badgeClass = 'warning'; %>
-                            <% if (order.orderStatus === 'confirmed') badgeClass = 'info'; %>
-                            <% if (order.orderStatus === 'shipped') badgeClass = 'dark'; %>
-                            <% if (order.orderStatus === 'delivered') badgeClass = 'success'; %>
-                            <% if (order.orderStatus === 'cancelled') badgeClass = 'danger'; %>
+                            <% if (order.overallStatus === 'pending') badgeClass = 'warning'; %>
+                            <% if (order.overallStatus === 'confirmed') badgeClass = 'info'; %>
+                            <% if (order.overallStatus === 'shipped') badgeClass = 'dark'; %>
+                            <% if (order.overallStatus === 'delivered') badgeClass = 'success'; %>
+                            <% if (order.overallStatus === 'cancelled') badgeClass = 'danger'; %>
 
                             <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
-                                <%= order.orderStatus %>
+                                <%= order.overallStatus %>
                             </span>
                         </td>
                         <td><%= order.orderNumber %></td>

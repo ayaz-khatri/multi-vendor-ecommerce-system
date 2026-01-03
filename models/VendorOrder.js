@@ -23,7 +23,7 @@
         status: {
             type: String,
             enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned'],
-            default: null
+            default: 'pending'
         }
     }],
 
