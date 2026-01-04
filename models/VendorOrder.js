@@ -18,7 +18,7 @@
         shopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop', required: true },
         name: { type: String, required: true },
         price: { type: Number, required: true, min: 0 },
-        quantity: { type: Number, required: true, min: 1 },
+        quantity: { type: Number, required: true, min: 0 },
         subtotal: { type: Number, required: true, min: 0 },
         status: {
             type: String,

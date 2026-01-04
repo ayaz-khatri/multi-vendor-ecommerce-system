@@ -71,7 +71,9 @@
         <div class="col-lg-4">
             <div class="bg-light p-30">
                 <% vendorOrders.forEach(vendorOrder => { %>
-                    <div class="border rounded p-3 mb-4 shadow">
+                    <% let cancelledClass = ''; 
+                    cancelledClass = (vendorOrder.vendorStatus == 'cancelled') ? 'alert alert-danger' : '';  %>
+                    <div class="border rounded p-3 mb-4 shadow <%= cancelledClass %>">
 
                         <h6 class="mb-3">
                             <div class="d-flex justify-content-between">
@@ -120,7 +122,7 @@
 
                                         <div class="modal-footer">
                                             <button class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <form action="/orders/vendor/<%= vendorOrder._id %>/cancel" method="POST">
+                                            <form action="/orders/vendor/cancel/<%= vendorOrder._id %>" method="POST">
                                                 <button class="btn btn-danger" type="submit">
                                                     Yes, Cancel
                                                 </button>

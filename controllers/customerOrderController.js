@@ -180,9 +180,79 @@ const cancel = async (req, res, next) => {
     }
 };
 
+const vendorOrderCancel = async (req, res, next) => {
+    try {
+        const vendorOrderId = req.params.id;
+
+        // 1️⃣ Find vendor order
+        const vendorOrder = await VendorOrder.findById(vendorOrderId);
+        if (!vendorOrder) {
+            return next(errorMessage("Vendor order not found.", 404));
+        }
+
+        // 2️⃣ Find parent order (ownership check)
+        const order = await Order.findOne({
+            _id: vendorOrder.orderId,
+            userId: req.user.id
+        });
+
+        if (!order) {
+            return next(errorMessage("Unauthorized action.", 403));
+        }
+
+        // 3️⃣ Status validation
+        if (['shipped', 'delivered'].includes(vendorOrder.vendorStatus)) {
+            return next(errorMessage(
+                "This item cannot be cancelled because it has already been shipped.",
+                400
+            ));
+        }
+
+        // 4️⃣ Cancel vendor order
+        vendorOrder.vendorStatus = 'cancelled';
+        await vendorOrder.save();
+
+        // 5️⃣ Recalculate order totals correctly
+        const activeVendorOrders = await VendorOrder.find({
+            orderId: order._id,
+            vendorStatus: { $ne: 'cancelled' }
+        });
+
+        order.totalQuantity = activeVendorOrders.reduce((orderSum, vo) => {
+            const vendorQty = vo.items.reduce(
+                (itemSum, item) => itemSum + item.quantity,
+                0
+            );
+            return orderSum + vendorQty;
+        }, 0);
+
+        order.totalPrice = activeVendorOrders.reduce(
+            (sum, vo) => sum + vo.subtotal,
+            0
+        );
+
+
+        // 6️⃣ Update overall order status
+        if (activeVendorOrders.length === 0) {
+            order.overallStatus = 'cancelled';
+        }
+
+        await order.save();
+
+        req.flash("success", "Item cancelled successfully.");
+        res.redirect(`/orders/${order._id}`);
+
+    } catch (error) {
+        console.error(error);
+        next(errorMessage("Something went wrong", 500));
+    }
+};
+
+
 export default {
     placeOrder,
     orders,
     order,
-    cancel
+    cancel,
+    vendorOrderCancel
 }
