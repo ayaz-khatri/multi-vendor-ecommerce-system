@@ -54,6 +54,13 @@
         required: true,
         min: 0,
         default: 0
+    },
+
+
+    vendorEarningStatus: {
+        type: String,
+        enum: ['pending', 'paid'],
+        default: 'pending'
     }
 
 }, { timestamps: true });

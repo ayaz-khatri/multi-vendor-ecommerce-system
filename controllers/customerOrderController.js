@@ -4,6 +4,7 @@ import VendorOrder from "../models/VendorOrder.js";
 import Product from "../models/Product.js";
 import errorMessage from "../utils/error-message.js";
 import { generateOrderNumber } from "../utils/helper.js";
+import { syncOverallOrderStatus } from '../services/orderSyncService.js';
 
 const placeOrder = async (req, res, next) => {
     try {
@@ -112,8 +113,7 @@ const placeOrder = async (req, res, next) => {
         return res.redirect(`/orders/${order._id}`);
 
     } catch (error) {
-        console.error("Place order error:", error);
-        next(error);
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -159,7 +159,8 @@ const cancel = async (req, res, next) => {
         const blocked = vendorOrders.some(vo => ['shipped', 'delivered'].includes(vo.vendorStatus));
 
         if (blocked) {
-            return next(errorMessage( 'Order cannot be cancelled because one or more vendors have already shipped.', 400 ));
+            req.flash("error", 'Order cannot be cancelled because one or more vendors have already shipped.');
+            return res.redirect("/orders/" + req.params.id);
         }
 
         // Cancel all vendor orders
@@ -168,7 +169,7 @@ const cancel = async (req, res, next) => {
             await vo.save();
         }
 
-        // ✅ Cancel main order
+        // Cancel main order
         order.overallStatus = 'cancelled';
         await order.save();
 
@@ -184,39 +185,27 @@ const vendorOrderCancel = async (req, res, next) => {
     try {
         const vendorOrderId = req.params.id;
 
-        // 1️⃣ Find vendor order
+        // Find vendor order
         const vendorOrder = await VendorOrder.findById(vendorOrderId);
-        if (!vendorOrder) {
-            return next(errorMessage("Vendor order not found.", 404));
-        }
+        if (!vendorOrder) { return next(errorMessage("Vendor order not found.", 404)); }
 
-        // 2️⃣ Find parent order (ownership check)
-        const order = await Order.findOne({
-            _id: vendorOrder.orderId,
-            userId: req.user.id
-        });
+        // Find parent order (ownership check)
+        const order = await Order.findOne({ _id: vendorOrder.orderId, userId: req.user.id });
 
-        if (!order) {
-            return next(errorMessage("Unauthorized action.", 403));
-        }
+        if (!order) { return next(errorMessage("Unauthorized action.", 403)); }
 
-        // 3️⃣ Status validation
+        // Status validation
         if (['shipped', 'delivered'].includes(vendorOrder.vendorStatus)) {
-            return next(errorMessage(
-                "This item cannot be cancelled because it has already been shipped.",
-                400
-            ));
+            req.flash("error", 'Order cannot be cancelled because this order is already shipped.');
+            return res.redirect("/orders/" + req.params.id);
         }
 
-        // 4️⃣ Cancel vendor order
+        // Cancel vendor order
         vendorOrder.vendorStatus = 'cancelled';
         await vendorOrder.save();
 
-        // 5️⃣ Recalculate order totals correctly
-        const activeVendorOrders = await VendorOrder.find({
-            orderId: order._id,
-            vendorStatus: { $ne: 'cancelled' }
-        });
+        // Recalculate order totals correctly
+        const activeVendorOrders = await VendorOrder.find({ orderId: order._id, vendorStatus: { $ne: 'cancelled' } });
 
         order.totalQuantity = activeVendorOrders.reduce((orderSum, vo) => {
             const vendorQty = vo.items.reduce(
@@ -231,19 +220,18 @@ const vendorOrderCancel = async (req, res, next) => {
             0
         );
 
-
-        // 6️⃣ Update overall order status
+        // Update overall order status
         if (activeVendorOrders.length === 0) {
             order.overallStatus = 'cancelled';
         }
 
         await order.save();
+        await syncOverallOrderStatus(order._id);
 
         req.flash("success", "Item cancelled successfully.");
         res.redirect(`/orders/${order._id}`);
 
     } catch (error) {
-        console.error(error);
         next(errorMessage("Something went wrong", 500));
     }
 };

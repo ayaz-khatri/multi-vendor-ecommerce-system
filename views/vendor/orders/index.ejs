@@ -5,8 +5,6 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
         <div class="ml-auto">
-          <!-- <a href="/vendor/shops/create" class="btn btn-outline-primary btn-sm mt-1">Add New</a>
-          <a href="/vendor/shops/trashed" class="btn btn-outline-primary btn-sm mt-1">Trashed</a> -->
         </div>
     </div>
 
@@ -26,44 +24,48 @@
 
     const columns = [
         { title: "S.No.", formatter: "rownum", width: 60, hozAlign: "center", headerSort: false },
-        { title: "Order No", field: "orderNumber", headerFilter: "input" },
-        { title: "Items", field: "items", formatter: function (cell) {
-                const items = cell.getValue();
+        { title: "Order No", field: "orderId.orderNumber", headerFilter: "input" },
+        { title: "Items", field: "items", formatter: (cell) => {
+                const items = cell.getValue() || [];
                 return items.map(item =>
                     `${item.name} × ${item.quantity}`
                 ).join("<br>");
             }
         },
-        {
-            title: "Item Status", field: "items", headerFilter: "input", hozAlign: "center", formatter: function (cell) {
-                const statuses = cell.getValue().map(i => i.status);
-                const unique = [...new Set(statuses)];
-
+        { title: "Vendor Status", field: "vendorStatus", hozAlign: "center", headerFilter: "select", headerFilterParams: {
+                values: {
+                    "": "All",
+                    pending: "Pending",
+                    accepted: "Accepted",
+                    shipped: "Shipped",
+                    delivered: "Delivered",
+                    cancelled: "Cancelled"
+                }
+            },
+            formatter: (cell) => {
+                const status = cell.getValue();
                 let badge = "secondary";
-                if (unique.includes("pending")) badge = "warning";
-                if (unique.includes("confirmed")) badge = "info";
-                if (unique.includes("shipped")) badge = "primary";
-                if (unique.includes("delivered")) badge = "success";
-                if (unique.includes("cancelled")) badge = "danger";
 
-                return `<span class="badge badge-${badge} text-uppercase">${unique.join(", ")}</span>`;
+                if (status === "pending") badge = "warning";
+                if (status === "accepted") badge = "info";
+                if (status === "shipped") badge = "primary";
+                if (status === "delivered") badge = "success";
+                if (status === "cancelled") badge = "danger";
+
+                return `<span class="badge badge-${badge} text-uppercase px-3 py-2">${status}</span>`;
             }
         },
-        { title: "Total", field: "items", hozAlign: "center", formatter: function (cell) {
-                const total = cell.getValue().reduce(
-                    (sum, item) => sum + item.subtotal,
-                    0
-                );
-                return `$${total.toFixed(2)}`;
+        { title: "Subtotal", field: "subtotal", hozAlign: "center", formatter: (cell) => {
+                return `$${cell.getValue().toFixed(2)}`;
             }
         },
-        { title: "Payment", field: "paymentMethod", hozAlign: "center", formatter: function (cell) {
+        { title: "Payment", field: "orderId.paymentMethod", hozAlign: "center", formatter: (cell) => {
                 return cell.getValue() === "cod"
                     ? "Cash on Delivery"
                     : "Online";
             }
         },
-        { title: "Date", field: "createdAt", formatter: function (cell) {
+        { title: "Date", field: "createdAt", formatter: (cell) => {
                 return new Date(cell.getValue()).toLocaleDateString();
             }
         }
@@ -72,7 +74,8 @@
     function actionsTemplate(rowData) {
         return `
             <a href="/vendor/orders/view/${rowData._id}" 
-               class="btn btn-sm btn-primary text-white" title="View Order">
+               class="btn btn-sm btn-primary text-white" 
+               title="View Order">
                 <i class="fas fa-eye"></i>
             </a>
         `;
@@ -85,7 +88,6 @@
         actions: actionsTemplate
     });
 </script>
-
 
 <%- contentFor('tabulatorCSS') %>
 <link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />

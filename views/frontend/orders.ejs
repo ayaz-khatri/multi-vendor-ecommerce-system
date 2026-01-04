@@ -37,13 +37,12 @@
                             <% let badgeClass = 'secondary'; %>
 
                             <% if (order.overallStatus === 'pending') badgeClass = 'warning'; %>
-                            <% if (order.overallStatus === 'confirmed') badgeClass = 'info'; %>
-                            <% if (order.overallStatus === 'shipped') badgeClass = 'dark'; %>
-                            <% if (order.overallStatus === 'delivered') badgeClass = 'success'; %>
+                            <% if (order.overallStatus === 'partially_completed') badgeClass = 'info'; %>
+                            <% if (order.overallStatus === 'completed') badgeClass = 'success'; %>
                             <% if (order.overallStatus === 'cancelled') badgeClass = 'danger'; %>
 
                             <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
-                                <%= order.overallStatus %>
+                                <%= order.overallStatus.replace('_', ' ') %>
                             </span>
                         </td>
                         <td><%= order.orderNumber %></td>
