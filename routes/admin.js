@@ -223,26 +223,26 @@ router.get('/reset-system', async (req, res, next) => {
 
     // TechNova
     products.push(
-    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Smartphones'), name: 'Samsung Galaxy A54', slug: 'samsung-galaxy-a54', sku: `SKU-${sku++}`, description: '6.4" AMOLED, 50MP camera.', price: 89999, stock: 40, status: 'active' },
-    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Smartphones'), name: 'Xiaomi Redmi Note 13', slug: 'xiaomi-redmi-note-13', sku: `SKU-${sku++}`, description: 'High value mid-range smartphone.', price: 64999, stock: 60, status: 'active' },
-    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Accessories'), name: 'Anker 20000mAh Power Bank', slug: 'anker-20000mah-power-bank', sku: `SKU-${sku++}`, description: 'Fast charging power bank.', price: 12999, stock: 50, status: 'active' },
-    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Accessories'), name: 'Baseus USB-C Fast Cable', slug: 'baseus-usb-c-cable', sku: `SKU-${sku++}`, description: 'Durable fast charging cable.', price: 1999, stock: 100, status: 'active' }
+    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Smartphones'), name: 'Samsung Galaxy A54', slug: 'samsung-galaxy-a54', sku: `SKU-${sku++}`, description: '6.4" AMOLED, 50MP camera.', price: 120, stock: 40, status: 'active' },
+    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Smartphones'), name: 'Xiaomi Redmi Note 13', slug: 'xiaomi-redmi-note-13', sku: `SKU-${sku++}`, description: 'High value mid-range smartphone.', price: 220, stock: 60, status: 'active' },
+    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Accessories'), name: 'Anker 20000mAh Power Bank', slug: 'anker-20000mah-power-bank', sku: `SKU-${sku++}`, description: 'Fast charging power bank.', price: 200, stock: 50, status: 'active' },
+    { shopId: shops[0]._id, vendorId: shops[0].vendorId, categoryId: cat('Accessories'), name: 'Baseus USB-C Fast Cable', slug: 'baseus-usb-c-cable', sku: `SKU-${sku++}`, description: 'Durable fast charging cable.', price: 150, stock: 100, status: 'active' }
     );
 
     // GadgetHub
     products.push(
-    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Laptops'), name: 'Dell Inspiron 15', slug: 'dell-inspiron-15', sku: `SKU-${sku++}`, description: 'Intel Core i5 laptop.', price: 185000, stock: 20, status: 'active' },
-    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Laptops'), name: 'HP Pavilion 14', slug: 'hp-pavilion-14', sku: `SKU-${sku++}`, description: 'Slim & lightweight laptop.', price: 175000, stock: 15, status: 'active' },
-    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Accessories'), name: 'Logitech Wireless Mouse', slug: 'logitech-wireless-mouse', sku: `SKU-${sku++}`, description: 'Ergonomic wireless mouse.', price: 3499, stock: 80, status: 'active' },
-    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Accessories'), name: 'Laptop Cooling Pad', slug: 'laptop-cooling-pad', sku: `SKU-${sku++}`, description: 'USB powered cooling pad.', price: 4999, stock: 40, status: 'active' }
+    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Laptops'), name: 'Dell Inspiron 15', slug: 'dell-inspiron-15', sku: `SKU-${sku++}`, description: 'Intel Core i5 laptop.', price: 180, stock: 0, status: 'active' },
+    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Laptops'), name: 'HP Pavilion 14', slug: 'hp-pavilion-14', sku: `SKU-${sku++}`, description: 'Slim & lightweight laptop.', price: 150, stock: 15, status: 'active' },
+    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Accessories'), name: 'Logitech Wireless Mouse', slug: 'logitech-wireless-mouse', sku: `SKU-${sku++}`, description: 'Ergonomic wireless mouse.', price: 30, stock: 80, status: 'active' },
+    { shopId: shops[1]._id, vendorId: shops[1].vendorId, categoryId: cat('Accessories'), name: 'Laptop Cooling Pad', slug: 'laptop-cooling-pad', sku: `SKU-${sku++}`, description: 'USB powered cooling pad.', price: 50, stock: 40, status: 'active' }
     );
 
     // Digital World
     products.push(
-    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Smartphones'), name: 'Apple iPhone 13', slug: 'iphone-13', sku: `SKU-${sku++}`, description: 'A15 Bionic chip.', price: 214999, stock: 18, status: 'active' },
-    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'Apple MagSafe Charger', slug: 'apple-magsafe-charger', sku: `SKU-${sku++}`, description: 'Fast wireless charging.', price: 14999, stock: 30, status: 'active' },
-    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'Sony WH-1000XM4 Headphones', slug: 'sony-wh-1000xm4', sku: `SKU-${sku++}`, description: 'Noise cancelling headphones.', price: 59999, stock: 12, status: 'active' },
-    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'SanDisk 128GB USB Drive', slug: 'sandisk-128gb-usb', sku: `SKU-${sku++}`, description: 'USB 3.0 flash drive.', price: 3499, stock: 90, status: 'active' }
+    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Smartphones'), name: 'Apple iPhone 13', slug: 'iphone-13', sku: `SKU-${sku++}`, description: 'A15 Bionic chip.', price: 280, stock: 18, status: 'active' },
+    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'Apple MagSafe Charger', slug: 'apple-magsafe-charger', sku: `SKU-${sku++}`, description: 'Fast wireless charging.', price: 180, stock: 30, status: 'active' },
+    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'Sony WH-1000XM4 Headphones', slug: 'sony-wh-1000xm4', sku: `SKU-${sku++}`, description: 'Noise cancelling headphones.', price: 200, stock: 12, status: 'active' },
+    { shopId: shops[2]._id, vendorId: shops[2].vendorId, categoryId: cat('Accessories'), name: 'SanDisk 128GB USB Drive', slug: 'sandisk-128gb-usb', sku: `SKU-${sku++}`, description: 'USB 3.0 flash drive.', price: 40, stock: 90, status: 'active' }
     );
 
     /* =======================
@@ -251,26 +251,23 @@ router.get('/reset-system', async (req, res, next) => {
 
     // Urban Wear
     products.push(
-    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Men Clothing'), name: 'Men Cotton Casual Shirt', slug: 'men-cotton-casual-shirt', sku: `SKU-${sku++}`, description: 'Breathable cotton shirt.', price: 3499, stock: 70, status: 'active' },
-    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Men Clothing'), name: 'Slim Fit Denim Jeans', slug: 'slim-fit-denim-jeans', sku: `SKU-${sku++}`, description: 'Classic blue jeans.', price: 4999, stock: 50, status: 'active' },
-    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Footwear'), name: 'Men Running Sneakers', slug: 'men-running-sneakers', sku: `SKU-${sku++}`, description: 'Comfortable sports shoes.', price: 6999, stock: 40, status: 'active' },
-    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Footwear'), name: 'Leather Casual Loafers', slug: 'leather-casual-loafers', sku: `SKU-${sku++}`, description: 'Premium leather loafers.', price: 8999, stock: 35, status: 'active' }
+    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Men Clothing'), name: 'Men Cotton Casual Shirt', slug: 'men-cotton-casual-shirt', sku: `SKU-${sku++}`, description: 'Breathable cotton shirt.', price: 40, stock: 0, status: 'active' },
+    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Men Clothing'), name: 'Slim Fit Denim Jeans', slug: 'slim-fit-denim-jeans', sku: `SKU-${sku++}`, description: 'Classic blue jeans.', price: 30, stock: 50, status: 'active' },
+    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Footwear'), name: 'Men Running Sneakers', slug: 'men-running-sneakers', sku: `SKU-${sku++}`, description: 'Comfortable sports shoes.', price: 60, stock: 40, status: 'active' },
+    { shopId: shops[3]._id, vendorId: shops[3].vendorId, categoryId: cat('Footwear'), name: 'Leather Casual Loafers', slug: 'leather-casual-loafers', sku: `SKU-${sku++}`, description: 'Premium leather loafers.', price: 70, stock: 35, status: 'active' }
     );
 
     // Style Avenue
     products.push(
-    { shopId: shops[4]._id, vendorId: shops[4].vendorId, categoryId: cat('Women Clothing'), name: 'Women Lawn Printed Suit', slug: 'women-lawn-printed-suit', sku: `SKU-${sku++}`, description: 'Summer lawn collection.', price: 5499, stock: 60, status: 'active' },
-    { shopId: shops[4]._id, vendorId: shops[4].vendorId, categoryId: cat('Women Clothing'), name: 'Chiffon Embroidered Dress', slug: 'chiffon-embroidered-dress', sku: `SKU-${sku++}`, description: 'Elegant evening wear.', price: 8999, stock: 30, status: 'active' },
-    { shopId: shops[4]._id, vendorId: shops[4].vendorId, categoryId: cat('Footwear'), name: 'Women Block Heel Sandals', slug: 'women-block-heel-sandals', sku: `SKU-${sku++}`, description: 'Stylish formal sandals.', price: 4999, stock: 40, status: 'active' },
-    { shopId: shops[4]._id, vendorId: shops[4].vendorId, categoryId: cat('Footwear'), name: 'Casual Flat Slippers', slug: 'casual-flat-slippers', sku: `SKU-${sku++}`, description: 'Daily wear slippers.', price: 2499, stock: 80, status: 'active' }
+    { shopId: shops[4]._id, vendorId: shops[4].vendorId, categoryId: cat('Women Clothing'), name: 'Women Lawn Printed Suit', slug: 'women-lawn-printed-suit', sku: `SKU-${sku++}`, description: 'Summer lawn collection.', price: 20, stock: 80, status: 'active' }
     );
 
     // Fashion Point
     products.push(
-    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Men Clothing'), name: 'Men Formal Dress Shirt', slug: 'men-formal-dress-shirt', sku: `SKU-${sku++}`, description: 'Office wear cotton shirt.', price: 3999, stock: 45, status: 'active' },
-    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Women Clothing'), name: 'Women Kurti Tunic', slug: 'women-kurti-tunic', sku: `SKU-${sku++}`, description: 'Comfortable casual kurti.', price: 2999, stock: 55, status: 'active' },
-    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Footwear'), name: 'Men Leather Formal Shoes', slug: 'men-leather-formal-shoes', sku: `SKU-${sku++}`, description: 'Classic office shoes.', price: 9999, stock: 25, status: 'active' },
-    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Footwear'), name: 'Women Khussa Shoes', slug: 'women-khussa-shoes', sku: `SKU-${sku++}`, description: 'Traditional handmade khussa.', price: 4599, stock: 30, status: 'active' }
+    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Men Clothing'), name: 'Men Formal Dress Shirt', slug: 'men-formal-dress-shirt', sku: `SKU-${sku++}`, description: 'Office wear cotton shirt.', price: 50, stock: 45, status: 'active' },
+    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Women Clothing'), name: 'Women Kurti Tunic', slug: 'women-kurti-tunic', sku: `SKU-${sku++}`, description: 'Comfortable casual kurti.', price: 25, stock: 55, status: 'active' },
+    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Footwear'), name: 'Men Leather Formal Shoes', slug: 'men-leather-formal-shoes', sku: `SKU-${sku++}`, description: 'Classic office shoes.', price: 100, stock: 25, status: 'active' },
+    { shopId: shops[5]._id, vendorId: shops[5].vendorId, categoryId: cat('Footwear'), name: 'Women Khussa Shoes', slug: 'women-khussa-shoes', sku: `SKU-${sku++}`, description: 'Traditional handmade khussa.', price: 80, stock: 30, status: 'active' }
     );
 
     /* =======================
@@ -279,26 +276,26 @@ router.get('/reset-system', async (req, res, next) => {
 
     // Home Essentials
     products.push(
-    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Kitchen'), name: 'Non-Stick Cookware Set', slug: 'non-stick-cookware-set', sku: `SKU-${sku++}`, description: '5-piece cookware set.', price: 14999, stock: 35, status: 'active' },
-    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Kitchen'), name: 'Electric Kettle 1.7L', slug: 'electric-kettle-17l', sku: `SKU-${sku++}`, description: 'Fast boiling kettle.', price: 5999, stock: 50, status: 'active' },
-    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Furniture'), name: 'Wooden Coffee Table', slug: 'wooden-coffee-table', sku: `SKU-${sku++}`, description: 'Solid wood coffee table.', price: 24999, stock: 15, status: 'active' },
-    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Decor'), name: 'Decorative Wall Clock', slug: 'decorative-wall-clock', sku: `SKU-${sku++}`, description: 'Modern design wall clock.', price: 3499, stock: 60, status: 'active' }
+    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Kitchen'), name: 'Non-Stick Cookware Set', slug: 'non-stick-cookware-set', sku: `SKU-${sku++}`, description: '5-piece cookware set.', price: 150, stock: 35, status: 'active' },
+    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Kitchen'), name: 'Electric Kettle 1.7L', slug: 'electric-kettle-17l', sku: `SKU-${sku++}`, description: 'Fast boiling kettle.', price: 75, stock: 50, status: 'active' },
+    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Furniture'), name: 'Wooden Coffee Table', slug: 'wooden-coffee-table', sku: `SKU-${sku++}`, description: 'Solid wood coffee table.', price: 175, stock: 15, status: 'active' },
+    { shopId: shops[6]._id, vendorId: shops[6].vendorId, categoryId: cat('Decor'), name: 'Decorative Wall Clock', slug: 'decorative-wall-clock', sku: `SKU-${sku++}`, description: 'Modern design wall clock.', price: 35, stock: 60, status: 'active' }
     );
 
     // Comfort Living
     products.push(
-    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Furniture'), name: '3-Seater Fabric Sofa', slug: '3-seater-fabric-sofa', sku: `SKU-${sku++}`, description: 'Comfortable living room sofa.', price: 89999, stock: 8, status: 'active' },
-    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Furniture'), name: 'Queen Size Bed Frame', slug: 'queen-size-bed-frame', sku: `SKU-${sku++}`, description: 'Solid wood bed frame.', price: 129999, stock: 6, status: 'active' },
-    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Decor'), name: 'Luxury Area Rug', slug: 'luxury-area-rug', sku: `SKU-${sku++}`, description: 'Soft premium rug.', price: 19999, stock: 20, status: 'active' },
-    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Decor'), name: 'Table Lamp with Shade', slug: 'table-lamp-with-shade', sku: `SKU-${sku++}`, description: 'Modern bedside lamp.', price: 4999, stock: 45, status: 'active' }
+    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Furniture'), name: '3-Seater Fabric Sofa', slug: '3-seater-fabric-sofa', sku: `SKU-${sku++}`, description: 'Comfortable living room sofa.', price: 450, stock: 8, status: 'active' },
+    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Furniture'), name: 'Queen Size Bed Frame', slug: 'queen-size-bed-frame', sku: `SKU-${sku++}`, description: 'Solid wood bed frame.', price: 320, stock: 0, status: 'active' },
+    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Decor'), name: 'Luxury Area Rug', slug: 'luxury-area-rug', sku: `SKU-${sku++}`, description: 'Soft premium rug.', price: 10, stock: 5, status: 'active' },
+    { shopId: shops[7]._id, vendorId: shops[7].vendorId, categoryId: cat('Decor'), name: 'Table Lamp with Shade', slug: 'table-lamp-with-shade', sku: `SKU-${sku++}`, description: 'Modern bedside lamp.', price: 40, stock: 45, status: 'active' }
     );
 
     // Decor House
     products.push(
-    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Decor'), name: 'Wall Art Canvas Set', slug: 'wall-art-canvas-set', sku: `SKU-${sku++}`, description: '3-piece wall art.', price: 7999, stock: 25, status: 'active' },
-    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Decor'), name: 'Artificial Indoor Plant', slug: 'artificial-indoor-plant', sku: `SKU-${sku++}`, description: 'Low maintenance decor plant.', price: 2999, stock: 70, status: 'active' },
-    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Furniture'), name: 'Bookshelf Storage Unit', slug: 'bookshelf-storage-unit', sku: `SKU-${sku++}`, description: '5-tier wooden bookshelf.', price: 19999, stock: 18, status: 'active' },
-    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Kitchen'), name: 'Dinnerware Set 24 Pieces', slug: 'dinnerware-set-24', sku: `SKU-${sku++}`, description: 'Complete dinner set.', price: 11999, stock: 30, status: 'active' }
+    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Decor'), name: 'Wall Art Canvas Set', slug: 'wall-art-canvas-set', sku: `SKU-${sku++}`, description: '3-piece wall art.', price: 35, stock: 25, status: 'active' },
+    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Decor'), name: 'Artificial Indoor Plant', slug: 'artificial-indoor-plant', sku: `SKU-${sku++}`, description: 'Low maintenance decor plant.', price: 20, stock: 70, status: 'active' },
+    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Furniture'), name: 'Bookshelf Storage Unit', slug: 'bookshelf-storage-unit', sku: `SKU-${sku++}`, description: '5-tier wooden bookshelf.', price: 175, stock: 0, status: 'active' },
+    { shopId: shops[8]._id, vendorId: shops[8].vendorId, categoryId: cat('Kitchen'), name: 'Dinnerware Set 24 Pieces', slug: 'dinnerware-set-24', sku: `SKU-${sku++}`, description: 'Complete dinner set.', price: 110, stock: 30, status: 'active' }
     );
 
     await Product.insertMany(products);

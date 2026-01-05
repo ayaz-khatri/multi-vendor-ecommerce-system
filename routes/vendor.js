@@ -1,10 +1,12 @@
 import express from 'express';
+import mongoose from 'mongoose';
 const router = express.Router();
 import vendorShopController from '../controllers/vendorShopController.js';
 import vendorProductController from '../controllers/vendorProductController.js';
 import vendorOrderController from '../controllers/vendorOrderController.js';
 import Shop from '../models/Shop.js';
 import Product from '../models/Product.js';
+import VendorOrder from '../models/VendorOrder.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isVendor from '../middlewares/isVendor.js';
 import errorMessage from "../utils/error-message.js";
@@ -18,14 +20,109 @@ router.use(isVendor);
 
 router.get('/', async (req, res, next) => {
     try {
-        const shops = await Shop.find({ isDeleted: false, vendorId: req.user.id });
-        const products = await Product.find({ isDeleted: false, vendorId: req.user.id });
+        const vendorId = new mongoose.Types.ObjectId(req.user.id);
 
-        res.render('vendor/dashboard', { shopCount: shops.length, productCount: products.length, title: 'Dashboard' });
+        const [shopCount, productCount, stats] = await Promise.all([
+            Shop.countDocuments({ isDeleted: false, vendorId }),
+            Product.countDocuments({ isDeleted: false, vendorId }),
+
+            VendorOrder.aggregate([
+                {
+                    $match: { vendorId }
+                },
+                {
+                    $lookup: {
+                        from: 'orders',
+                        localField: 'orderId',
+                        foreignField: '_id',
+                        as: 'order'
+                    }
+                },
+                { $unwind: '$order' },
+
+                {
+                    $group: {
+                        _id: null,
+
+                        totalOrders: {
+                            $sum: {
+                                $cond: [{ $ne: ['$vendorStatus', 'cancelled'] }, 1, 0]
+                            }
+                        },
+
+                        cancelledOrders: {
+                            $sum: {
+                                $cond: [{ $eq: ['$vendorStatus', 'cancelled'] }, 1, 0]
+                            }
+                        },
+
+                        totalRevenue: {
+                            $sum: {
+                                $cond: [
+                                    { $eq: ['$vendorStatus', 'delivered'] },
+                                    '$vendorEarning',
+                                    0
+                                ]
+                            }
+                        },
+
+                        pendingEarning: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $and: [
+                                            { $eq: ['$vendorStatus', 'delivered'] },
+                                            { $eq: ['$vendorEarningStatus', 'pending'] }
+                                        ]
+                                    },
+                                    '$vendorEarning',
+                                    0
+                                ]
+                            }
+                        },
+
+                        customers: { $addToSet: '$order.userId' }
+                    }
+                },
+                {
+                    $project: {
+                        totalOrders: 1,
+                        cancelledOrders: 1,
+                        totalRevenue: 1,
+                        pendingEarning: 1,
+                        totalCustomers: { $size: '$customers' }
+                    }
+                }
+            ])
+        ]);
+
+        const dashboardStats = stats[0] || {
+            totalOrders: 0,
+            cancelledOrders: 0,
+            totalRevenue: 0,
+            pendingEarning: 0,
+            totalCustomers: 0
+        };
+
+        res.render('vendor/dashboard', {
+            title: 'Dashboard',
+            shopCount,
+            productCount,
+            totalOrders: dashboardStats.totalOrders,
+            cancelledOrders: dashboardStats.cancelledOrders,
+            totalRevenue: dashboardStats.totalRevenue,
+            pendingEarning: dashboardStats.pendingEarning,
+            totalCustomers: dashboardStats.totalCustomers
+        });
+
     } catch (error) {
-            next(errorMessage("Something went wrong", 500));
-        }
+        console.error(error);
+        next(errorMessage('Something went wrong', 500));
+    }
 });
+
+
+
 
 // Shop Routes
 router.get('/shops', vendorShopController.index);
