@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Product from "../models/Product.js";
 import Shop from "../models/Shop.js";
 import Category from "../models/Category.js";
+import Review from "../models/Review.js";
 import errorMessage from "../utils/error-message.js";
 // import { validationResult } from "express-validator";
 // import path from 'path';
@@ -145,6 +146,40 @@ const products = async (req, res, next) => {
         /* -------------------- PRODUCTS -------------------- */
         const products = await Product.paginate(query, options);
 
+        const docs = products.docs || [];
+
+        const productIds = docs.map(p => p._id);
+
+        const reviewStats = await Review.aggregate([
+            { $match: { productId: { $in: productIds }, isDeleted: false, isApproved: true } },
+            { 
+                $group: { 
+                    _id: "$productId", 
+                    count: { $sum: 1 },       // review count
+                    avgRating: { $avg: "$rating" } // average rating
+                } 
+            }
+        ]);
+
+        const reviewMap = {};
+        reviewStats.forEach(stat => {
+            reviewMap[stat._id.toString()] = {
+                count: stat.count,
+                avgRating: stat.avgRating
+            };
+        });
+
+        // Attach count + avgRating to each product
+        products.docs = products.docs.map(p => {
+            const obj = p.toObject();  // ensure plain JS object
+            const stat = reviewMap[p._id.toString()] || { count: 0, avgRating: 0 };
+            obj.reviewCount = stat.count;
+            obj.avgRating = stat.avgRating;
+            return obj;
+        });
+
+
+
         let message = "";
         if (products.docs.length === 0) {
             message = "No record found.";
@@ -196,6 +231,11 @@ const product = async (req, res, next) => {
             return next(errorMessage('Product not found.', 404));
         }
 
+        const reviews = await Review.find({ productId: product._id, isApproved: true, isDeleted: false })
+                                    .populate('userId', ['name', 'profilePic'])
+                                    .sort({ createdAt: -1 });
+        const reviewCount = reviews.length;
+
         /* -------------------- BREADCRUMBS -------------------- */
         let breadcrumbs = [
             { label: 'Home', url: '/' },
@@ -236,7 +276,9 @@ const product = async (req, res, next) => {
         res.render("frontend/product", {
             product,
             title: product.name,
-            breadcrumbs
+            breadcrumbs,
+            reviews,
+            reviewCount
         });
 
     } catch (error) {

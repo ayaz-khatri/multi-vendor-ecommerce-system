@@ -167,13 +167,27 @@
                                 <small class="text-danger">Out of Stock</small>
                             <% } %>
                             <div class="d-flex align-items-center justify-content-center mb-1">
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small>(99)</small>
+                                <% 
+                                    const fullStars = Math.floor(product.avgRating); // Number of full stars
+                                    const halfStar = product.avgRating - fullStars >= 0.5; // Half star if needed
+                                    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0); // Remaining empty stars
+                                %>
+
+                                <% for(let i = 0; i < fullStars; i++) { %>
+                                    <small class="fas fa-star text-primary mr-1"></small>
+                                <% } %>
+
+                                <% if (halfStar) { %>
+                                    <small class="fas fa-star-half-alt text-primary mr-1"></small>
+                                <% } %>
+
+                                <% for(let i = 0; i < emptyStars; i++) { %>
+                                    <small class="far fa-star text-primary mr-1"></small>
+                                <% } %>
+
+                                <small>(<%= product.reviewCount %>)</small>
                             </div>
+
                         </div>
                         <div class="row bg-dark m-0">
                             <div class="col text-left">

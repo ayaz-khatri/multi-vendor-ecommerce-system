@@ -5,6 +5,7 @@ import shareQueryParams from '../middlewares/shareQueryParams.js';
 import wishlistController from '../controllers/wishlistController.js';
 import cartController from '../controllers/cartController.js';
 import customerOrderController from '../controllers/customerOrderController.js';
+import customerReviewController from '../controllers/customerReviewController.js';
 import frontendController from '../controllers/frontendController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import wishlist from '../middlewares/wishlist.js';
@@ -44,6 +45,10 @@ router.get('/orders', isLoggedIn, isCustomer, wishlist, cart, customerOrderContr
 router.get('/orders/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.order);
 router.post('/orders/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.cancel);
 router.post('/orders/vendor/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.vendorOrderCancel);
+
+/* --------------------------------- Reviews -------------------------------- */
+router.post('/reviews', isLoggedIn, isCustomer, wishlist, cart, customerReviewController.submit);
+
 
 
 

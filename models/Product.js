@@ -85,6 +85,19 @@ const productSchema = new mongoose.Schema(
         default: 'active'
     },
 
+    avgRating: {
+        type: mongoose.Decimal128,
+        default: 0.0,
+        min: 0,
+        max: 5
+    },
+
+    reviewCount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+
     isDeleted: {
         type: Boolean,
         default: false

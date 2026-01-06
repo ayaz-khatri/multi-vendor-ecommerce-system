@@ -65,6 +65,133 @@
                 </p>
 
             </div>
+
+    <% if ( (order.overallStatus === 'completed' || order.overallStatus === 'partially_completed') && reviewableItems.length ) { %>
+
+    <div class="row my-4">
+        <div class="col">
+            <div class="bg-light p-3 rounded">
+                <h4 class="mb-3">Leave a review</h4>
+
+                <small class="text-muted d-block mb-3">
+                    Reviews cannot be edited once submitted.
+                </small>
+
+                <form action="/reviews" method="POST">
+
+                    <!-- Product dropdown -->
+                    <div class="form-group mb-3">
+                        <label for="product">
+                            Select Product
+                        </label>
+                        <select
+                            name="productId"
+                            id="product"
+                            class="form-control"
+                            required
+                        >
+                            <option value="">-- Select a product --</option>
+                            <% reviewableItems.forEach(item => { %>
+                                <option
+                                    value="<%= item.productId %>"
+                                    data-shop="<%= item.shopId %>"
+                                    data-vendor="<%= item.vendorId %>"
+                                >
+                                    <%= item.productName %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="form-group mb-3">
+                        <label>Your Rating</label>
+                        <div class="rating-stars text-primary" id="ratingStars">
+                            <% for (let i = 5; i >= 1; i--) { %>
+                                <i class="far fa-star" data-value="<%= i %>"></i>
+                            <% } %>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" required>
+                    </div>
+
+                    <script>
+                        const stars = document.querySelectorAll('#ratingStars i');
+                        const ratingInput = document.getElementById('ratingInput');
+                        let currentRating = 0;
+
+                        stars.forEach(star => {
+                            star.addEventListener('mouseover', () => {
+                                const value = parseInt(star.dataset.value);
+                                highlightStars(value);
+                            });
+
+                            star.addEventListener('mouseout', () => {
+                                highlightStars(currentRating);
+                            });
+
+                            star.addEventListener('click', () => {
+                                currentRating = parseInt(star.dataset.value);
+                                ratingInput.value = currentRating;
+                                highlightStars(currentRating);
+                            });
+                        });
+
+                        function highlightStars(rating) {
+                            stars.forEach(star => {
+                                const value = parseInt(star.dataset.value);
+                                if (value <= rating) {
+                                    star.classList.remove('far'); // empty
+                                    star.classList.add('fas');    // solid
+                                } else {
+                                    star.classList.remove('fas');
+                                    star.classList.add('far');
+                                }
+                            });
+                        }
+                    </script>
+
+
+                    <!-- Review -->
+                    <div class="form-group mb-3">
+                        <label>
+                            Your Review
+                        </label>
+                        <textarea
+                            name="comment"
+                            rows="4"
+                            class="form-control"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <!-- Hidden fields filled by JS -->
+                    <input type="hidden" name="shopId" id="shopId">
+                    <input type="hidden" name="vendorId" id="vendorId">
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const productSelect = document.getElementById('product');
+        const shopInput = document.getElementById('shopId');
+        const vendorInput = document.getElementById('vendorId');
+
+        productSelect.addEventListener('change', function () {
+            const option = this.options[this.selectedIndex];
+            shopInput.value = option.dataset.shop || '';
+            vendorInput.value = option.dataset.vendor || '';
+        });
+    </script>
+
+    <% } %>
+
+
+
         </div>
 
         <!-- RIGHT: VENDOR ORDERS -->

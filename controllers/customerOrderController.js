@@ -1,6 +1,7 @@
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import VendorOrder from "../models/VendorOrder.js";
+import Review from "../models/Review.js";
 import Product from "../models/Product.js";
 import errorMessage from "../utils/error-message.js";
 import { generateOrderNumber } from "../utils/helper.js";
@@ -132,18 +133,54 @@ const order = async (req, res, next) => {
         const orderId = req.params.id;
         const userId = req.user.id;
 
-        // 1. Fetch main order (ownership check)
+        // 1️⃣ Fetch main order (ownership check)
         const order = await Order.findOne({ _id: orderId, userId, isDeleted: false });
-        if (!order) { return next(errorMessage("Order not found.", 404)); }
+        if (!order) return next(errorMessage("Order not found.", 404));
 
-        // 2. Fetch vendor orders related to this order
+        // 2️⃣ Fetch vendor orders related to this order
         const vendorOrders = await VendorOrder.find({ orderId: order._id })
-                                                .populate("items.productId")
-                                                .populate("items.shopId")
-                                                .populate("vendorId");
-        res.render("frontend/order", { title: "Order Details", order, vendorOrders });
+                                                .populate('items.productId')
+                                                .populate('items.shopId')
+                                                .populate('vendorId');
+
+        // 3️⃣ Generate reviewableItems
+        let reviewableItems = [];
+
+        for (const vOrder of vendorOrders) {
+            // Only process if the vendor order is delivered
+            if (vOrder.vendorStatus !== 'delivered') continue;
+
+            for (const item of vOrder.items) {
+
+                // Check if review already exists
+                const reviewExists = await Review.exists({
+                    userId,
+                    productId: item.productId._id,
+                    isDeleted: false
+                });
+
+                if (!reviewExists) {
+                    reviewableItems.push({
+                        productId: item.productId._id,
+                        productName: item.productId.name || item.name,
+                        shopId: item.shopId._id,
+                        vendorId: vOrder.vendorId._id
+                    });
+                }
+            }
+        }
+
+        // 4️⃣ Render frontend page
+        res.render('frontend/order', {
+            title: 'Order Details',
+            order,
+            vendorOrders,
+            reviewableItems
+        });
+
     } catch (error) {
-        next(errorMessage("Something went wrong", 500));
+        console.error(error);
+        next(errorMessage('Something went wrong', 500));
     }
 };
 
