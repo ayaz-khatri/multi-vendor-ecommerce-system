@@ -27,7 +27,8 @@ const index = async (req, res, next) => {
 const products = async (req, res, next) => {
     try {
 
-        const { page = 1, limit = 9, sort } = req.query;
+        const { page = 1, limit = 9, sort, min, max } = req.query;
+        let query = { status: "active", isDeleted: false };
         let sortOption = { createdAt: -1 }; // default
 
         if (sort === 'price_asc') {
@@ -40,6 +41,18 @@ const products = async (req, res, next) => {
 
         if (sort === 'latest') {
             sortOption = { createdAt: -1 };
+        }
+
+        if (sort === 'rating') {
+            sortOption = { avgRating: -1 };
+        }
+
+        if (sort === 'name') {
+            sortOption = { name: 1 };
+        }
+
+        if(min && max) {
+            query.price = { $gte: parseFloat(min), $lte: parseFloat(max) };
         }
 
         const options = {
@@ -55,8 +68,6 @@ const products = async (req, res, next) => {
         };
 
         const { search, category, shop, vendor } = req.query;
-
-        let query = { status: "active", isDeleted: false };
 
         /* -------------------- BREADCRUMBS -------------------- */
         let breadcrumbs = [

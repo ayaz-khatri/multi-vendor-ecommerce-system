@@ -10039,6 +10039,18 @@ a.text-dark:hover, a.text-dark:focus {
     display: block;
 }
 
+/* Small screens: center the dropdown */
+@media (max-width: 768px) {
+    .nav-item.dropright > .dropdown-menu {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 100%; /* dropdown appears below navbar */
+        right: auto !important;
+        margin-left: 0 !important;
+    }
+}
+
 #flash-container {
     position: fixed;
     top: 20px;
