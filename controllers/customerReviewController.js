@@ -5,7 +5,7 @@ import errorMessage from '../utils/error-message.js';
 const submit = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const { productId, shopId, vendorId, rating, comment } = req.body;
+        const { productId, shopId, vendorId, rating, comment, orderId } = req.body;
 
         if (!productId || !rating) {
             req.flash("error", "Rating is required.");
@@ -19,7 +19,7 @@ const submit = async (req, res, next) => {
             return res.redirect("orders");
         }
 
-        await Review.create({ userId, productId, shopId, vendorId, rating, comment });
+        await Review.create({ userId, productId, shopId, vendorId, orderId, rating, comment });
 
         const product = await Product.findById(productId);
         const reviews = await Review.find({ productId, isApproved: true });

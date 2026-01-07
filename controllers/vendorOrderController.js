@@ -1,4 +1,5 @@
 import VendorOrder from "../models/VendorOrder.js";
+import Review from "../models/Review.js";
 import Order from "../models/Order.js";
 import errorMessage from "../utils/error-message.js";
 import { timeAgo } from "../utils/helper.js";
@@ -25,6 +26,12 @@ const view = async (req, res, next) => {
                                                 .populate("items.shopId");
         if (!vendorOrder) { return next(errorMessage("Order not found", 404)); }
 
+        const reviews = await Review.find({
+            orderId: vendorOrder.orderId._id,
+            vendorId: req.user.id,
+            isDeleted: false
+        }).populate("userId", ["name", "profilePic"]).populate("productId", "name").populate("shopId", "name").sort({ createdAt: -1 });
+
         // Group items by shop
         const itemsByShop = {};
         vendorOrder.items.forEach(item => {
@@ -39,7 +46,7 @@ const view = async (req, res, next) => {
             itemsByShop[shopId].items.push(item);
             itemsByShop[shopId].subtotal += item.subtotal;
         });
-        res.render("vendor/orders/view", { order: vendorOrder, itemsByShop: Object.values(itemsByShop), title: "Order Details" });
+        res.render("vendor/orders/view", { order: vendorOrder, itemsByShop: Object.values(itemsByShop), reviews, title: "Order Details" });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }

@@ -4,6 +4,11 @@ import User from '../models/User.js';
 import Category from '../models/Category.js';
 import Shop from '../models/Shop.js';
 import Product from '../models/Product.js';
+import Order from '../models/Order.js';
+import VendorOrder from '../models/VendorOrder.js';
+import Review from '../models/Review.js';
+import Cart from '../models/Cart.js';
+import Wishlist from '../models/Wishlist.js';
 import adminVendorController from '../controllers/adminVendorController.js';
 import adminCustomerController from '../controllers/adminCustomerController.js';
 import adminCategoryController from '../controllers/adminCategoryController.js';
@@ -14,10 +19,11 @@ import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
 import errorMessage from "../utils/error-message.js";
 import createUploader from '../middlewares/multer.js';
+import { generateOrderNumber } from '../utils/helper.js';
 const uploadCategoryIcon = createUploader('categories');
 
-// router.use(isLoggedIn);
-// router.use(isAdmin);
+router.use(isLoggedIn);
+router.use(isAdmin);
 
 // User CRUD Routes
 router.get('/', async (req, res, next) => {
@@ -95,7 +101,12 @@ router.get('/reset-system', async (req, res, next) => {
       User.deleteMany({}),
       Category.deleteMany({}),
       Shop.deleteMany({}),
-      Product.deleteMany({})
+      Product.deleteMany({}),
+      Order.deleteMany({}),
+      VendorOrder.deleteMany({}),
+      Review.deleteMany({}),
+      Cart.deleteMany({}),
+      Wishlist.deleteMany({})
     ]);
 
     /* =======================
