@@ -17,32 +17,99 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
-                    <p>
-                        <strong>Status:</strong> 
-                        <% if(product.status == 'active') { %>
-                            <span class="badge badge-success">Active</span>
-                        <% } else { %>
-                            <span class="badge badge-warning">Inactive</span>
-                        <% } %>
-                    </p>
-                    <p><strong>Slug:</strong> <%= product.slug %></p>
-                    <p><strong>Category:</strong> <%= product.categoryId.name %></p>
-                    <p><strong>Shop:</strong> <%= product.shopId.name %></p>
-                    <p><strong>Vendor:</strong> <%= product.vendorId.name %></p>
-                    <p><strong>Price:</strong> <%= product.price %></p>
-                    <p><strong>Discount:</strong> <%= product.discountPrice %></p>
-                    <p><strong>SKU:</strong> <%= product.sku %></p>
-                    <p><strong>Stock:</strong> <%= product.stock %></p>
-                    <% if (product.attributes.length > 0) { %>
-                        <p><strong>Attributes:</strong></p>
-                        <% product.attributes.forEach(attr => { %>
-                            <span class="ml-5"><b><%= attr.key %></b>: <%= attr.value %></span><br>
-                        <% }) %>
-                    <% } %>
-                    <p class="mt-3"><strong>Description:</strong> <%= product.description %></p>
-                    <p><strong>Created At:</strong> <%= product.createdAt.toDateString() %> (<%= timeAgo(product.createdAt) %>)</p>
-                    <p><strong>Updated At:</strong> <%= product.updatedAt.toDateString() %> (<%= timeAgo(product.updatedAt) %>)</p>
+                <div class="col">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <% if (product.status === 'active') { %>
+                                        <span class="badge badge-success">Active</span>
+                                    <% } else { %>
+                                        <span class="badge badge-warning">Inactive</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Slug</th>
+                                <td><%= product.slug %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Category</th>
+                                <td><%= product.categoryId.name %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Shop</th>
+                                <td><%= product.shopId.name %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Vendor</th>
+                                <td><%= product.vendorId.name %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Price</th>
+                                <td><%= product.price %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Discount</th>
+                                <td><%= product.discountPrice || '—' %></td>
+                            </tr>
+
+                            <tr>
+                                <th>SKU</th>
+                                <td><%= product.sku %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Stock</th>
+                                <td><%= product.stock %></td>
+                            </tr>
+
+                            <% if (product.attributes && product.attributes.length > 0) { %>
+                                <tr>
+                                    <th>Attributes</th>
+                                    <td>
+                                        <% product.attributes.forEach(attr => { %>
+                                            <div>
+                                                <strong><%= attr.key %>:</strong> <%= attr.value %>
+                                            </div>
+                                        <% }) %>
+                                    </td>
+                                </tr>
+                            <% } %>
+
+                            <tr>
+                                <th>Description</th>
+                                <td><%= product.description || '—' %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Created At</th>
+                                <td>
+                                    <%= product.createdAt.toDateString() %>
+                                    <small class="text-muted">
+                                        (<%= timeAgo(product.createdAt) %>)
+                                    </small>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Updated At</th>
+                                <td>
+                                    <%= product.updatedAt.toDateString() %>
+                                    <small class="text-muted">
+                                        (<%= timeAgo(product.updatedAt) %>)
+                                    </small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="row">

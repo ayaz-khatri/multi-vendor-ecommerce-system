@@ -18,11 +18,49 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Slug:</strong> <%= category.slug %></p>
-                    <p><strong>Parent Category:</strong> <%= category.parentCategory.name %></p>
-                    <p><strong>Description:</strong> <%= category.description %></p>
-                    <p><strong>Created At:</strong> <%= category.createdAt.toDateString() %> (<%= timeAgo(category.createdAt) %>)</p>
-                    <p><strong>Updated At:</strong> <%= category.updatedAt.toDateString() %> (<%= timeAgo(category.updatedAt) %>)</p>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Slug</th>
+                                <td><%= category.slug %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Parent Category</th>
+                                <td>
+                                    <%= category.parentCategory
+                                        ? category.parentCategory.name
+                                        : '—' %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Description</th>
+                                <td><%= category.description || '—' %></td>
+                            </tr>
+
+                            <tr>
+                                <th>Created At</th>
+                                <td>
+                                    <%= category.createdAt.toDateString() %>
+                                    <small class="text-muted">
+                                        (<%= timeAgo(category.createdAt) %>)
+                                    </small>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Updated At</th>
+                                <td>
+                                    <%= category.updatedAt.toDateString() %>
+                                    <small class="text-muted">
+                                        (<%= timeAgo(category.updatedAt) %>)
+                                    </small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="col-md-6">
                     <img src="<%= category.icon ? '/uploads/categories/' + category.icon : '/img/placeholder.png' %>" 

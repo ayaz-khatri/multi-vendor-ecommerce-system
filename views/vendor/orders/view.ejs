@@ -18,34 +18,46 @@
             <div class="bg-light p-3 shadow">
 
 
-                <p><strong>Order Number:</strong> <%= order.orderId.orderNumber %></p>
-                <p><strong>Order Date:</strong> <%= order.createdAt.toDateString() %></p>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Order Number</th>
+                            <td><%= order.orderId.orderNumber %></td>
+                        </tr>
 
-                <!-- Vendor Status -->
-                <p>
-                    <strong>Vendor Status:</strong>
-                    <% let badge = 'secondary'; %>
-                    <% if (order.vendorStatus === 'pending') badge = 'warning'; %>
-                    <% if (order.vendorStatus === 'accepted') badge = 'info'; %>
-                    <% if (order.vendorStatus === 'shipped') badge = 'primary'; %>
-                    <% if (order.vendorStatus === 'delivered') badge = 'success'; %>
-                    <% if (order.vendorStatus === 'cancelled') badge = 'danger'; %>
+                        <tr>
+                            <th>Order Date</th>
+                            <td><%= order.createdAt.toDateString() %></td>
+                        </tr>
 
-                    <span class="badge badge-<%= badge %> text-uppercase px-3 py-2">
-                        <%= order.vendorStatus %>
-                    </span>
-                </p>
+                        <!-- Vendor Status -->
+                        <tr>
+                            <th>Vendor Status</th>
+                            <td>
+                                <% let badge = 'secondary'; %>
+                                <% if (order.vendorStatus === 'pending') badge = 'warning'; %>
+                                <% if (order.vendorStatus === 'accepted') badge = 'info'; %>
+                                <% if (order.vendorStatus === 'shipped') badge = 'primary'; %>
+                                <% if (order.vendorStatus === 'delivered') badge = 'success'; %>
+                                <% if (order.vendorStatus === 'cancelled') badge = 'danger'; %>
 
-                <p>
-                    <strong>Payment Method:</strong>
-                    <%= order.orderId.paymentMethod === 'cod'
-                        ? 'Cash on Delivery'
-                        : 'Online Payment'
-                    %>
-                </p>
+                                <span class="badge badge-<%= badge %> text-uppercase px-3 py-2">
+                                    <%= order.vendorStatus %>
+                                </span>
+                            </td>
+                        </tr>
 
-                <hr>
-
+                        <tr>
+                            <th>Payment Method</th>
+                            <td>
+                                <%= order.orderId.paymentMethod === 'cod'
+                                    ? 'Cash on Delivery'
+                                    : 'Online Payment'
+                                %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <!-- Update Vendor Status -->
                 <% if (!['cancelled', 'delivered'].includes(order.vendorStatus)) { %>
                     <form action="/vendor/orders/status/<%= order._id %>" method="POST" class="mt-3">
@@ -117,7 +129,7 @@
 
                 <div class="d-flex justify-content-between mt-2 h5">
                     <strong>Your Earning</strong>
-                    <small class="badge badge-<%= (order.vendorEarningStatus === 'paid' ? 'success' : 'danger') %>"><%= order.vendorEarningStatus %></small>
+                    <small class="badge badge-<%= (order.vendorEarningStatus === 'paid' ? 'success' : 'danger') %> text-uppercase"><%= order.vendorEarningStatus %></small>
                     <strong class="text-success">
                         $<%= order.vendorEarning.toFixed(2) %>
                     </strong>

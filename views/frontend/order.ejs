@@ -21,33 +21,54 @@
 
                 <h4 class="mb-4">Order Summary</h4>
 
-                <p><strong>Order Number:</strong> <%= order.orderNumber %></p>
-                <p><strong>Order Date:</strong> <%= order.createdAt.toDateString() %></p>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Order Number</th>
+                            <td><%= order.orderNumber %></td>
+                        </tr>
 
-                <p>
-                    <strong>Status:</strong>
-                    <% let badgeClass = 'secondary'; %>
-                    <% if (order.overallStatus === 'pending') badgeClass = 'warning'; %>
-                    <% if (order.overallStatus === 'partially_completed') badgeClass = 'info'; %>
-                    <% if (order.overallStatus === 'completed') badgeClass = 'success'; %>
-                    <% if (order.overallStatus === 'cancelled') badgeClass = 'danger'; %>
+                        <tr>
+                            <th>Order Date</th>
+                            <td><%= order.createdAt.toDateString() %></td>
+                        </tr>
 
-                    <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
-                        <%= order.overallStatus.replace('_', ' ') %>
-                    </span>
-                </p>
+                        <!-- Overall Status -->
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                <% let badgeClass = 'secondary'; %>
+                                <% if (order.overallStatus === 'pending') badgeClass = 'warning'; %>
+                                <% if (order.overallStatus === 'partially_completed') badgeClass = 'info'; %>
+                                <% if (order.overallStatus === 'completed') badgeClass = 'success'; %>
+                                <% if (order.overallStatus === 'cancelled') badgeClass = 'danger'; %>
 
-                <p>
-                    <strong>Payment Method:</strong>
-                    <%= order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment' %>
-                </p>
+                                <span class="badge badge-<%= badgeClass %> rounded-pill px-3 py-2 text-uppercase">
+                                    <%= order.overallStatus.replace('_', ' ') %>
+                                </span>
+                            </td>
+                        </tr>
 
-                <p>
-                    <strong>Payment Status:</strong>
-                    <span class="badge rounded-pill px-3 py-2 text-uppercase badge-<%= order.paymentStatus === 'paid' ? 'success' : 'warning' %>">
-                        <%= order.paymentStatus %>
-                    </span>
-                </p>
+                        <tr>
+                            <th>Payment Method</th>
+                            <td>
+                                <%= order.paymentMethod === 'cod'
+                                    ? 'Cash on Delivery'
+                                    : 'Online Payment'
+                                %>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Payment Status</th>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2 text-uppercase badge-<%= order.paymentStatus === 'paid' ? 'success' : 'warning' %>">
+                                    <%= order.paymentStatus %>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <hr>
 

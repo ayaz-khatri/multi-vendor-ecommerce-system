@@ -16,10 +16,39 @@
             <h6 class="m-0 font-weight-bold text-primary">Details</h6>
         </div>
         <div class="card-body">
-            <p><strong>Email:</strong> <%= customer.email %></p>
-            <p><strong>Phone:</strong> <%= customer.phone %></p>
-            <p><strong>Created At:</strong> <%= customer.createdAt.toDateString() %> (<%= timeAgo(customer.createdAt) %>)</p>
-            <p><strong>Updated At:</strong> <%= customer.updatedAt.toDateString() %> (<%= timeAgo(customer.updatedAt) %>)</p>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Email</th>
+                        <td><%= customer.email %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Phone</th>
+                        <td><%= customer.phone || '—' %></td>
+                    </tr>
+
+                    <tr>
+                        <th>Created At</th>
+                        <td>
+                            <%= customer.createdAt.toDateString() %>
+                            <small class="text-muted">
+                                (<%= timeAgo(customer.createdAt) %>)
+                            </small>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Updated At</th>
+                        <td>
+                            <%= customer.updatedAt.toDateString() %>
+                            <small class="text-muted">
+                                (<%= timeAgo(customer.updatedAt) %>)
+                            </small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <!--/Form -->
