@@ -14,6 +14,7 @@ import adminCustomerController from '../controllers/adminCustomerController.js';
 import adminCategoryController from '../controllers/adminCategoryController.js';
 import adminShopController from '../controllers/adminShopController.js';
 import adminProductController from '../controllers/adminProductController.js';
+import adminOrderController from '../controllers/adminOrderController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
@@ -90,6 +91,10 @@ router.delete('/products/:id', adminProductController.destroy);
 router.get('/products/trashed', adminProductController.trashed);
 router.post('/products/restore/:id', adminProductController.restore);
 router.post('/products/approve/:id', adminProductController.approve);
+
+router.get('/orders', adminOrderController.index);
+router.get('/orders/view/:id', adminOrderController.view);
+router.post('/orders/status/:id', adminOrderController.updateStatus);
 
 // system reset script route
 router.get('/reset-system', async (req, res, next) => {

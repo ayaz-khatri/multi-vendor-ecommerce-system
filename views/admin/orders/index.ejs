@@ -1,0 +1,90 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+<script src="/js/tabulator.min.js"></script>
+<script type="module">
+    import { initTabulator } from "/js/tabulator-helper.js";
+
+    const tableData = <%- JSON.stringify(orders || []) %>;
+
+    const columns = [
+        { title: "S.No.", formatter: "rownum", width: 60, hozAlign: "center", headerSort: false },
+        { title: "Order No", field: "orderNumber", headerFilter: "input" },
+        { title: "Total Quanity", field: "totalQuantity", hozAlign: "center" },
+        { title: "Total Price", field: "totalPrice", hozAlign: "center", formatter: (cell) => {
+                return `$${cell.getValue().toFixed(2)}`;
+            }
+        },
+        { title: "Payment", field: "paymentMethod", hozAlign: "center", formatter: (cell) => {
+                return cell.getValue() === "cod"
+                    ? "Cash on Delivery"
+                    : "Online";
+            }
+        },
+        { title: "Status", field: "overallStatus", hozAlign: "center", headerFilter: "select", headerFilterParams: {
+                values: {
+                    "": "All",
+                    pending: "Pending",
+                    partially_completed: "Partially Completed",
+                    completed: "Completed",
+                    cancelled: "Cancelled"
+                }
+            },
+            formatter: (cell) => {
+                const status = cell.getValue();
+                let badge = "secondary";
+
+                if (status === "pending") badge = "warning";
+                if (status === "partially_completed") badge = "info";
+                if (status === "completed") badge = "success";
+                if (status === "cancelled") badge = "danger";
+
+                return `<span class="badge badge-${badge} text-uppercase px-3 py-2">${status}</span>`;
+            }
+        },
+        { title: "Created", field: "createdAt", formatter: (cell) => {
+                return new Date(cell.getValue()).toLocaleDateString();
+            }
+        }
+    ];
+
+    function actionsTemplate(rowData) {
+        return `
+            <a href="/admin/orders/view/${rowData._id}" 
+               class="btn btn-sm btn-primary text-white" 
+               title="View Order">
+                <i class="fas fa-eye"></i>
+            </a>
+        `;
+    }
+
+    initTabulator({
+        tableId: "#crudTable",
+        data: tableData,
+        columns,
+        actions: actionsTemplate
+    });
+</script>
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+
