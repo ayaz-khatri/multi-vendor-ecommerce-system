@@ -1,184 +1,180 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
+    <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
-        <div class="ml-auto">
-          <a href="/vendor/orders" class="btn btn-outline-primary btn-sm mt-1">Orders</a>
-        </div>
+        <a href="/admin/orders" class="btn btn-outline-primary btn-sm">Orders</a>
     </div>
 
-</div>
-<div class="container-fluid">
     <div class="row">
 
-        <!-- LEFT: ORDER INFO -->
-        <div class="col-lg-8 mb-4">
-            <div class="bg-light p-3 shadow">
+        <!-- LEFT: ORDER & CUSTOMER INFO -->
+        <div class="col-lg-7 mb-4">
+            <div class="bg-light p-3 shadow-sm">
 
-                <table class="table table-striped">
+                <h6 class="text-primary mb-3">Order Information</h6>
+
+                <table class="table table-sm">
                     <tbody>
                         <tr>
                             <th>Order Number</th>
-                            <td><%= order.orderId.orderNumber %></td>
+                            <td><%= order.orderNumber %></td>
                         </tr>
                         <tr>
                             <th>Order Date</th>
-                            <td><%= order.createdAt.toDateString() %></td>
+                            <td><%= new Date(order.createdAt).toDateString() %></td>
                         </tr>
                         <tr>
-                            <th>Vendor Status</th>
+                            <th>Customer</th>
+                            <td><%= order.userId.name %> (<%= order.userId.email %>)</td>
+                        </tr>
+                        <tr>
+                            <th>Payment</th>
                             <td>
-                                <% let badge = 'secondary'; %>
-                                <% if (order.vendorStatus === 'pending') badge = 'warning'; %>
-                                <% if (order.vendorStatus === 'accepted') badge = 'info'; %>
-                                <% if (order.vendorStatus === 'shipped') badge = 'primary'; %>
-                                <% if (order.vendorStatus === 'delivered') badge = 'success'; %>
-                                <% if (order.vendorStatus === 'cancelled') badge = 'danger'; %>
+                                <%= order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online' %>
+                                |
+                                <%
+                                    let paymentBadge = 'secondary';
 
-                                <span class="badge badge-<%= badge %> text-uppercase px-3 py-2">
-                                    <%= order.vendorStatus %>
+                                    if (order.paymentStatus === 'pending') paymentBadge = 'warning';
+                                    if (order.paymentStatus === 'paid') paymentBadge = 'success';
+                                    if (order.paymentStatus === 'failed') paymentBadge = 'danger';
+                                    if (order.paymentStatus === 'refunded') paymentBadge = 'info';
+                                %>
+
+                                <span class="badge badge-<%= paymentBadge %> text-uppercase px-3 py-2">
+                                    <%= order.paymentStatus %>
                                 </span>
+
                             </td>
                         </tr>
                         <tr>
-                            <th>Payment Method</th>
+                            <th>Overall Status</th>
                             <td>
-                                <%= order.orderId.paymentMethod === 'cod'
-                                    ? 'Cash on Delivery'
-                                    : 'Online Payment'
-                                %>
+                                <%
+                                let statusBadge = 'secondary';
+
+                                if (order.overallStatus === 'pending') statusBadge = 'warning';
+                                if (order.overallStatus === 'partially_completed') statusBadge = 'info';
+                                if (order.overallStatus === 'completed') statusBadge = 'success';
+                                if (order.overallStatus === 'cancelled') statusBadge = 'danger';
+                            %>
+
+                            <span class="badge badge-<%= statusBadge %> text-uppercase px-3 py-2">
+                                <%= order.overallStatus.replace('_', ' ') %>
+                            </span>
+
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                <!-- Update Vendor Status Form -->
-                <% if (!['cancelled', 'delivered'].includes(order.vendorStatus)) { %>
-                    <form action="/vendor/orders/status/<%= order._id %>" method="POST" class="mt-3">
-                        <div class="form-group">
-                            <label><strong>Update Order Status</strong></label>
-                            <select name="vendorStatus" class="form-control" required>
-                                <option value="">Select status</option>
-                                <% if (order.vendorStatus === 'pending') { %>
-                                    <option value="accepted">Accept Order</option>
-                                <% } %>
-                                <% if (['accepted'].includes(order.vendorStatus)) { %>
-                                    <option value="shipped">Mark as Shipped</option>
-                                <% } %>
-                                <% if (order.vendorStatus === 'shipped') { %>
-                                    <option value="delivered">Mark as Delivered</option>
-                                <% } %>
-                                <option value="cancelled">Cancel Order</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary mt-2">Update Status</button>
-                    </form>
-                <% } %>
-            </div>
-
-            <div class="bg-light p-3 shadow my-4" style="max-height: 500px; overflow-y: scroll;">
-                <!-- ============================= -->
-                <!-- REVIEWS SECTION BELOW ORDER -->
-                <!-- ============================= -->
-                <h5 class="text-gray-800 mb-3"></i> Customer Reviews</h5>
                 <hr>
-                <% reviews.forEach(review => { %>
-                <div class="media mb-4 border-bottom pb-1">
-                    <img src="<%= (review.userId.profilePic) ? '/uploads/users/' + review.userId.profilePic : '/img/placeholder.png' %>" alt="User Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
-                    <div class="media-body">
-                        <!-- User Name and Review Date -->
-                        <h6>
-                            <%= review.userId.name %> 
-                            <small class="text-muted"> - <i><%= review.createdAt.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) %></i></small>
-                        </h6>
 
-                        <!-- Dynamic Star Rating -->
-                        <div class="text-warning mb-2">
-                            <% for(let i = 1; i <= 5; i++) { %>
-                                <% if (i <= review.rating) { %>
-                                    <i class="fas fa-star"></i>
-                                <% } else { %>
-                                    <i class="far fa-star"></i>
-                                <% } %>
-                            <% } %>
-                        </div>
-
-                        <!-- Review Comment -->
-                        <p><%= review.comment %></p>
-
-                        <!-- Vendor Reply (if exists) -->
-                        <% if (review.vendorReply) { %>
-                            <div class="ml-4 p-2 border-left border-primary">
-                                <strong>Vendor Reply:</strong>
-                                <p class="mb-0"><%= review.vendorReply %></p>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-                <% }) %>
-            </div>
-
-
-
-        </div>
-
-
-        <!-- RIGHT: ITEMS BY SHOP -->
-        <div class="col-lg-4">
-            <div class="bg-light">
-
-                <% itemsByShop.forEach(group => { %>
-
-                    <div class="mb-3 p-3 shadow">
-                        <h6 class="text-primary mb-2">
-                            <i class="fas fa-store"></i>
-                            <%= group.shop.name %>
-                        </h6>
-
-                        <% group.items.forEach(item => { %>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>
-                                    <%= item.name %> × <%= item.quantity %>
-                                </span>
-                                <span>
-                                    $<%= item.subtotal.toFixed(2) %>
-                                </span>
-                            </div>
-                        <% }) %>
-
-                        <div class="d-flex justify-content-between mt-2 font-weight-bold">
-                            <span>Shop Subtotal</span>
-                            <span>$<%= group.subtotal.toFixed(2) %></span>
-                        </div>
-                    </div>
-
-                <% }) %>
-                
-                <div class="p-3 mb-3 shadow">
-                    <div class="d-flex justify-content-between">
-                        <strong>Order Subtotal</strong>
-                        <strong>$<%= order.subtotal.toFixed(2) %></strong>
-                    </div>
-
-                    <div class="d-flex justify-content-between mt-2">
-                        <span>Commission</span>
-                        <span>$<%= order.commission.toFixed(2) %></span>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between mt-2 h5">
-                    <strong>Your Earning</strong>
-                    <small class="badge badge-<%= (order.vendorEarningStatus === 'paid' ? 'success' : 'danger') %> text-uppercase"><%= order.vendorEarningStatus %></small>
-                    <strong class="text-success">
-                        $<%= order.vendorEarning.toFixed(2) %>
-                    </strong>
-                </div>
-
+                <h6 class="text-primary">Shipping Address</h6>
+                <p class="mb-0">
+                    <%= order.shippingAddress.line1 %><br>
+                    <%= order.shippingAddress.city %>,
+                    <%= order.shippingAddress.state %><br>
+                    <%= order.shippingAddress.country %> - <%= order.shippingAddress.postalCode %>
+                </p>
             </div>
         </div>
 
+        <!-- RIGHT: ORDER SUMMARY -->
+        <div class="col-lg-5 mb-4">
+            <div class="bg-light p-3 shadow-sm">
+                <h6 class="text-primary mb-3">Order Summary</h6>
+
+                <div class="d-flex justify-content-between">
+                    <span>Total Quantity</span>
+                    <strong><%= order.totalQuantity %></strong>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span>Total Price</span>
+                    <strong>$<%= order.totalPrice.toFixed(2) %></strong>
+                </div>
+            </div>
+            <% if(order.overallStatus == 'pending' || order.overallStatus == 'partially_completed') { %>
+            <a class="btn btn-block btn-outline-danger mt-2" data-toggle="modal" data-target="#adminCancelOrderModal">Cancel Order</a>
+            <% } %>
+        </div>
 
     </div>
+
+    <!-- VENDOR BREAKDOWN -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h5 class="text-gray-800 mb-3">Vendor Orders</h5>
+
+            <% vendorOrders.forEach(vendorOrder => { %>
+                <div class="bg-light p-3 shadow-sm mb-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>
+                            Vendor: <%= vendorOrder.vendorId.name %>
+                        </strong>
+                        <%
+                            let vendorBadge = 'secondary';
+
+                            if (vendorOrder.vendorStatus === 'pending') vendorBadge = 'warning';
+                            if (vendorOrder.vendorStatus === 'accepted') vendorBadge = 'info';
+                            if (vendorOrder.vendorStatus === 'shipped') vendorBadge = 'primary';
+                            if (vendorOrder.vendorStatus === 'delivered') vendorBadge = 'success';
+                            if (vendorOrder.vendorStatus === 'cancelled') vendorBadge = 'danger';
+                        %>
+
+                        <span class="badge badge-<%= vendorBadge %> text-uppercase px-3 py-2">
+                            <%= vendorOrder.vendorStatus %>
+                        </span>
+
+                    </div>
+
+                    <table class="table table-sm table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Shop</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% vendorOrder.items.forEach(item => { %>
+                                <tr>
+                                    <td><%= item.name %></td>
+                                    <td><%= item.shopId.name %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>$<%= item.price.toFixed(2) %></td>
+                                    <td>$<%= item.subtotal.toFixed(2) %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>Vendor Subtotal</span>
+                        <strong>$<%= vendorOrder.subtotal.toFixed(2) %></strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Commission</span>
+                        <span>$<%= vendorOrder.commission.toFixed(2) %></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between font-weight-bold">
+                        <span>Vendor Earning</span>
+                        <span>$<%= vendorOrder.vendorEarning.toFixed(2) %></span>
+                    </div>
+
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
 </div>
+
+<%- include('../../partials/adminCancelOrderModal') %>

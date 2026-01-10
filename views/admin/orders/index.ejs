@@ -4,17 +4,13 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
-        <div class="ml-auto">
-        </div>
     </div>
 
-    <!-- Content Row -->
     <div class="row">
         <div id="crudTable" class="w-100 text-dark table-sm"></div>
     </div>
 
 </div>
-<!-- /.container-fluid -->
 
 <script src="/js/tabulator.min.js"></script>
 <script type="module">
@@ -23,55 +19,80 @@
     const tableData = <%- JSON.stringify(orders || []) %>;
 
     const columns = [
-        { title: "S.No.", formatter: "rownum", width: 60, hozAlign: "center", headerSort: false },
+        { title: "#", formatter: "rownum", width: 60, hozAlign: "center" },
+
         { title: "Order No", field: "orderNumber", headerFilter: "input" },
-        { title: "Total Quanity", field: "totalQuantity", hozAlign: "center" },
-        { title: "Total Price", field: "totalPrice", hozAlign: "center", formatter: (cell) => {
-                return `$${cell.getValue().toFixed(2)}`;
+
+        { title: "Customer", field: "userId.name", headerFilter: "input" },
+
+        { title: "Quantity", field: "totalQuantity", hozAlign: "center" },
+
+        {
+            title: "Total",
+            field: "totalPrice",
+            hozAlign: "center",
+            formatter: cell => `$${cell.getValue().toFixed(2)}`
+        },
+
+        {
+            title: "Payment",
+            field: "paymentMethod",
+            hozAlign: "center",
+            formatter: cell =>
+                cell.getValue() === "cod" ? "COD" : "Online"
+        },
+
+        {
+            title: "Payment Status",
+            field: "paymentStatus",
+            hozAlign: "center",
+            formatter: cell => {
+                const map = {
+                    pending: "warning",
+                    paid: "success",
+                    failed: "danger",
+                    refunded: "info"
+                };
+                return `<span class="badge badge-${map[cell.getValue()]} text-uppercase">${cell.getValue()}</span>`;
             }
         },
-        { title: "Payment", field: "paymentMethod", hozAlign: "center", formatter: (cell) => {
-                return cell.getValue() === "cod"
-                    ? "Cash on Delivery"
-                    : "Online";
-            }
-        },
-        { title: "Status", field: "overallStatus", hozAlign: "center", headerFilter: "select", headerFilterParams: {
+
+        {
+            title: "Order Status",
+            field: "overallStatus",
+            hozAlign: "center",
+            headerFilter: "select",
+            headerFilterParams: {
                 values: {
                     "": "All",
                     pending: "Pending",
-                    partially_completed: "Partially Completed",
+                    partially_completed: "Partial",
                     completed: "Completed",
                     cancelled: "Cancelled"
                 }
             },
-            formatter: (cell) => {
-                const status = cell.getValue();
-                let badge = "secondary";
-
-                if (status === "pending") badge = "warning";
-                if (status === "partially_completed") badge = "info";
-                if (status === "completed") badge = "success";
-                if (status === "cancelled") badge = "danger";
-
-                return `<span class="badge badge-${badge} text-uppercase px-3 py-2">${status}</span>`;
+            formatter: cell => {
+                const map = {
+                    pending: "warning",
+                    partially_completed: "info",
+                    completed: "success",
+                    cancelled: "danger"
+                };
+                return `<span class="badge badge-${map[cell.getValue()]} text-uppercase px-3">${cell.getValue()}</span>`;
             }
         },
-        { title: "Created", field: "createdAt", formatter: (cell) => {
-                return new Date(cell.getValue()).toLocaleDateString();
-            }
+
+        {
+            title: "Date",
+            field: "createdAt",
+            formatter: cell => new Date(cell.getValue()).toLocaleDateString()
         }
     ];
 
-    function actionsTemplate(rowData) {
-        return `
-            <a href="/admin/orders/view/${rowData._id}" 
-               class="btn btn-sm btn-primary text-white" 
-               title="View Order">
-                <i class="fas fa-eye"></i>
-            </a>
-        `;
-    }
+    const actionsTemplate = row =>
+        `<a href="/admin/orders/view/${row._id}" class="btn btn-sm btn-primary">
+            <i class="fas fa-eye"></i>
+        </a>`;
 
     initTabulator({
         tableId: "#crudTable",
@@ -84,7 +105,3 @@
 <%- contentFor('tabulatorCSS') %>
 <link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
 <link rel="stylesheet" href="/css/tabulator-custom.css" />
-
-
-
-

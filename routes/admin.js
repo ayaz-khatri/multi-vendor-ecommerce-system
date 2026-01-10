@@ -26,23 +26,78 @@ const uploadCategoryIcon = createUploader('categories');
 router.use(isLoggedIn);
 router.use(isAdmin);
 
-// User CRUD Routes
 router.get('/', async (req, res, next) => {
     try {
-        const vendors = await User.find({ role: 'vendor', isDeleted: false });
-        const customers = await User.find({ role: 'customer', isDeleted: false });
-        const shops = await Shop.find({ isDeleted: false });
-        const products = await Product.find({ isDeleted: false });
+        // User stats
+        const [vendors, customers] = await Promise.all([
+            User.countDocuments({ role: 'vendor', isDeleted: false }),
+            User.countDocuments({ role: 'customer', isDeleted: false })
+        ]);
+
+        // Shop & Product stats
+        const [shops, products, categories] = await Promise.all([
+            Shop.countDocuments({ isDeleted: false }),
+            Product.countDocuments({ isDeleted: false }),
+            Category.countDocuments({ isDeleted: false })
+        ]);
+
+        // Order stats
+        const orders = await Order.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalOrders: { $sum: 1 },
+                    completed: {
+                        $sum: {
+                            $cond: [{ $eq: ["$overallStatus", "completed"] }, 1, 0]
+                        }
+                    },
+                    cancelled: {
+                        $sum: {
+                            $cond: [{ $eq: ["$overallStatus", "cancelled"] }, 1, 0]
+                        }
+                    },
+                    partiallyCompleted: {
+                        $sum: {
+                            $cond: [{ $eq: ["$overallStatus", "partially_completed"] }, 1, 0]
+                        }
+                    },
+                    totalRevenue: {
+                        $sum: {
+                            $cond: [{ $eq: ["$overallStatus", "completed"] }, "$totalPrice", 0]
+                        }
+                    }
+                }
+            }
+        ]);
+
+        const stats = orders[0] || {
+            totalOrders: 0,
+            completed: 0,
+            cancelled: 0,
+            partiallyCompleted: 0,
+            totalRevenue: 0
+        };
+
         res.render('admin/dashboard', { 
-                        vendorCount: vendors.length, 
-                        customerCount: customers.length, 
-                        shopCount: shops.length, 
-                        productCount: products.length, 
-                        title: 'Dashboard' });
+            vendorCount: vendors,
+            customerCount: customers,
+            shopCount: shops,
+            productCount: products,
+            categoryCount: categories,
+            orderCount: stats.totalOrders,
+            completedOrderCount: stats.completed,
+            cancelledOrderCount: stats.cancelled,
+            partiallyCompletedOrderCount: stats.partiallyCompleted,
+            totalRevenue: stats.totalRevenue,
+            title: 'Dashboard'
+        });
+        
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 });
+
 
 // Vendor Routes
 router.get('/vendors', adminVendorController.index);
@@ -94,7 +149,7 @@ router.post('/products/approve/:id', adminProductController.approve);
 
 router.get('/orders', adminOrderController.index);
 router.get('/orders/view/:id', adminOrderController.view);
-router.post('/orders/status/:id', adminOrderController.updateStatus);
+router.post('/orders/cancel/:id', adminOrderController.cancel);
 
 // system reset script route
 router.get('/reset-system', async (req, res, next) => {

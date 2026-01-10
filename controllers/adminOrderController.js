@@ -1,87 +1,75 @@
-import VendorOrder from "../models/VendorOrder.js";
-import Review from "../models/Review.js";
 import Order from "../models/Order.js";
+import VendorOrder from "../models/VendorOrder.js";
+import Product from "../models/Product.js";
 import errorMessage from "../utils/error-message.js";
 import { timeAgo } from "../utils/helper.js";
 import { syncOverallOrderStatus } from '../services/orderSyncService.js';
 
 const index = async (req, res, next) => {
     try {
-        const orders = await Order.find().populate("userId", ["name", "profilePic"]).sort({ createdAt: -1 });
+        const orders = await Order.find({ isDeleted: false }).populate("userId", "name email profilePic").sort({ createdAt: -1 });
         res.render("admin/orders/index", { orders, timeAgo, title: "Orders" });
-    } catch (error) {
+    } catch (err) {
         next(errorMessage("Something went wrong", 500));
     }
 };
 
 const view = async (req, res, next) => {
     try {
-        const vendorOrder = await VendorOrder.findOne({ _id: req.params.id, vendorId: req.user.id })
-                                                .populate("orderId")
-                                                .populate("items.productId")
-                                                .populate("items.shopId");
-        if (!vendorOrder) { return next(errorMessage("Order not found", 404)); }
+        const order = await Order.findById(req.params.id).populate("userId", "name email profilePic");
+        if (!order) { return next(errorMessage("Order not found", 404)); }
 
-        const reviews = await Review.find({
-            orderId: vendorOrder.orderId._id,
-            vendorId: req.user.id,
-            isDeleted: false
-        }).populate("userId", ["name", "profilePic"]).populate("productId", "name").populate("shopId", "name").sort({ createdAt: -1 });
-
-        // Group items by shop
-        const itemsByShop = {};
-        vendorOrder.items.forEach(item => {
-            const shopId = item.shopId._id.toString();
-            if (!itemsByShop[shopId]) {
-                itemsByShop[shopId] = {
-                    shop: item.shopId,
-                    items: [],
-                    subtotal: 0
-                };
-            }
-            itemsByShop[shopId].items.push(item);
-            itemsByShop[shopId].subtotal += item.subtotal;
-        });
-        res.render("vendor/orders/view", { order: vendorOrder, itemsByShop: Object.values(itemsByShop), reviews, title: "Order Details" });
-    } catch (error) {
+        const vendorOrders = await VendorOrder.find({ orderId: order._id })
+                                                .populate("vendorId", "name email")
+                                                .populate("items.productId", "name")
+                                                .populate("items.shopId", "name");
+        res.render("admin/orders/view", { order, vendorOrders, title: `Order #${order.orderNumber}` });
+    } catch (err) {
         next(errorMessage("Something went wrong", 500));
     }
 };
 
-
-const updateStatus = async (req, res, next) => {
+const cancel = async (req, res, next) => {
     try {
-        const { vendorStatus } = req.body;
-        const vendorOrder = await VendorOrder.findOne({ _id: req.params.id, vendorId: req.user.id });
-        if (!vendorOrder) return next(errorMessage('Order not found', 404));
+        const { id } = req.params;
 
-        // Prevent invalid updates
-        if (['cancelled', 'delivered'].includes(vendorOrder.vendorStatus)) {
-            req.flash('error', 'Order status can no longer be changed.');
-            return res.redirect('/vendor/orders/view/' + req.params.id);
+        const order = await Order.findById(id);
+        if (!order) { return next(errorMessage("Order not found", 404)); }
+
+        // Block if order already completed
+        if (order.overallStatus === 'completed') {
+            req.flash("error", "Completed orders cannot be cancelled.");
+            res.redirect(`/admin/orders/view/${id}`);
         }
 
-        const allowedTransitions = {
-            pending: ['accepted', 'cancelled'],
-            accepted: ['shipped', 'cancelled'],
-            shipped: ['delivered'],
-        };
+        // Find vendor orders that can be cancelled
+        const vendorOrders = await VendorOrder.find({ orderId: id, vendorStatus: { $in: ['pending', 'accepted'] } });
 
-        if ( !allowedTransitions[vendorOrder.vendorStatus]?.includes(vendorStatus) ) {
-            req.flash('error', 'Invalid status change.');
-            return res.redirect('/vendor/orders/view/' + req.params.id);
+        // Cancel vendor orders + restore stock
+        for (const vo of vendorOrders) {
+
+            // Restore stock per item
+            for (const item of vo.items) {
+                const product = await Product.findById(item.productId);
+                if (product) {
+                    product.stock += item.quantity;
+                    await product.save();
+                }
+            }
+
+            // Cancel vendor order
+            vo.vendorStatus = 'cancelled';
+            await vo.save();
         }
 
-        vendorOrder.vendorStatus = vendorStatus;
-        await vendorOrder.save();
+        // Sync overall order status
+        await syncOverallOrderStatus(id);
 
-        // 🔁 Sync main order status
-        await syncOverallOrderStatus(vendorOrder.orderId);
+        req.flash("success", "Order cancelled successfully.");
+        res.redirect(`/admin/orders/view/${id}`);
 
-        req.flash('success', 'Order status updated successfully.');
-        res.redirect('/vendor/orders/view/' + req.params.id);
     } catch (error) {
-        next(errorMessage('Something went wrong', 500));
+        next(errorMessage("Something went wrong", 500));
     }
 };
 
@@ -89,5 +77,5 @@ const updateStatus = async (req, res, next) => {
 export default {
     index,
     view,
-    updateStatus
-}
+    cancel
+};
