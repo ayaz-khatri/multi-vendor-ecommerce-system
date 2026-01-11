@@ -46,6 +46,7 @@ router.get('/orders/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderC
 router.post('/orders/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.cancel);
 router.post('/orders/vendor/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.vendorOrderCancel);
 
+
 /* --------------------------------- Reviews -------------------------------- */
 router.post('/reviews', isLoggedIn, isCustomer, wishlist, cart, customerReviewController.submit);
 

@@ -3,119 +3,248 @@ import Order from "../models/Order.js";
 import VendorOrder from "../models/VendorOrder.js";
 import Review from "../models/Review.js";
 import Product from "../models/Product.js";
+import dotenv from 'dotenv';
+dotenv.config();
+import stripeLib from "stripe";
 import errorMessage from "../utils/error-message.js";
 import { generateOrderNumber } from "../utils/helper.js";
 import { syncOverallOrderStatus } from '../services/orderSyncService.js';
 
-const placeOrder = async (req, res, next) => {
-    try {
-        const userId = req.user.id;
-        const { shippingAddress, paymentMethod } = req.body;
+// const placeOrder = async (req, res, next) => {
+//     try {
+//         const userId = req.user.id;
+//         const { shippingAddress, paymentMethod } = req.body;
 
-        if (!shippingAddress || !paymentMethod) {
-            req.flash("error", "Invalid checkout details.");
-            return res.redirect("/cart/checkout");
-        }
+//         if (!shippingAddress || !paymentMethod) {
+//             req.flash("error", "Invalid checkout details.");
+//             return res.redirect("/cart/checkout");
+//         }
 
-        // Fetch cart
-        const cart = await Cart.findOne({ userId, isDeleted: false }).populate("items.productId");
-        if (!cart || cart.items.length === 0) {
-            req.flash("error", "Your cart is empty.");
-            return res.redirect("/cart/checkout");
-        }
+//         // Fetch cart
+//         const cart = await Cart.findOne({ userId, isDeleted: false }).populate("items.productId");
+//         if (!cart || cart.items.length === 0) {
+//             req.flash("error", "Your cart is empty.");
+//             return res.redirect("/cart/checkout");
+//         }
 
-        // Validate stock and prepare order items
-        const vendorMap = {}; // { vendorId: [itemData, ...] }
-        const orderItems = [];
+//         // Validate stock and prepare order items
+//         const vendorMap = {}; // { vendorId: [itemData, ...] }
+//         const orderItems = [];
 
-        for (const item of cart.items) {
-            const product = item.productId;
+//         for (const item of cart.items) {
+//             const product = item.productId;
 
-            if (!product || product.isDeleted) {
-                req.flash("error", "One or more products are unavailable.");
-                return res.redirect("/cart/checkout");
-            }
+//             if (!product || product.isDeleted) {
+//                 req.flash("error", "One or more products are unavailable.");
+//                 return res.redirect("/cart/checkout");
+//             }
 
-            if (product.stock < item.quantity) {
-                req.flash("error", `Insufficient stock for ${product.name}`);
-                return res.redirect("/cart/checkout");
-            }
+//             if (product.stock < item.quantity) {
+//                 req.flash("error", `Insufficient stock for ${product.name}`);
+//                 return res.redirect("/cart/checkout");
+//             }
 
-            // Deduct stock
-            product.stock -= item.quantity;
-            await product.save();
+//             // Deduct stock
+//             product.stock -= item.quantity;
+//             await product.save();
 
-            const itemData = {
-                productId: product._id,
-                shopId: product.shopId, // keep shop info per item
-                vendorId: product.vendorId,
-                name: product.name,
-                price: product.price,
-                quantity: item.quantity,
-                subtotal: product.price * item.quantity,
-                status: "pending" // optional for future
-            };
+//             const itemData = {
+//                 productId: product._id,
+//                 shopId: product.shopId, // keep shop info per item
+//                 vendorId: product.vendorId,
+//                 name: product.name,
+//                 price: product.price,
+//                 quantity: item.quantity,
+//                 subtotal: product.price * item.quantity,
+//                 status: "pending" // optional for future
+//             };
 
-            orderItems.push(itemData);
+//             orderItems.push(itemData);
 
-            const vendorIdStr = product.vendorId.toString();
-            if (!vendorMap[vendorIdStr]) vendorMap[vendorIdStr] = [];
-            vendorMap[vendorIdStr].push(itemData);
-        }
+//             const vendorIdStr = product.vendorId.toString();
+//             if (!vendorMap[vendorIdStr]) vendorMap[vendorIdStr] = [];
+//             vendorMap[vendorIdStr].push(itemData);
+//         }
 
-        // Calculate totals for parent Order
-        const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+//         // Calculate totals for parent Order
+//         const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0);
+//         const totalPrice = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-        // Create parent order
-        const order = new Order({
-            userId,
-            orderNumber: generateOrderNumber(),
-            totalQuantity,
-            totalPrice,
-            shippingAddress,
-            paymentMethod,
-            paymentStatus: "pending",
-            overallStatus: "pending"
-        });
+//         // Create parent order
+//         const order = new Order({
+//             userId,
+//             orderNumber: generateOrderNumber(),
+//             totalQuantity,
+//             totalPrice,
+//             shippingAddress,
+//             paymentMethod,
+//             paymentStatus: "pending",
+//             overallStatus: "pending"
+//         });
 
-        await order.save();
+//         await order.save();
 
-        // Create VendorOrders per vendor
-        const commissionRate = 0;
+//         // Create VendorOrders per vendor
+//         const commissionRate = 0;
 
-        for (const vendorId of Object.keys(vendorMap)) {
-            const items = vendorMap[vendorId];
-            const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+//         for (const vendorId of Object.keys(vendorMap)) {
+//             const items = vendorMap[vendorId];
+//             const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
 
-            const commission = subtotal * commissionRate;
-            const vendorEarning = subtotal - commission;
+//             const commission = subtotal * commissionRate;
+//             const vendorEarning = subtotal - commission;
 
-            const vendorOrder = new VendorOrder({
-                orderId: order._id,
-                vendorId,
-                items,
-                subtotal,
-                vendorStatus: "pending",
-                commission,
-                vendorEarning
-            });
+//             const vendorOrder = new VendorOrder({
+//                 orderId: order._id,
+//                 vendorId,
+//                 items,
+//                 subtotal,
+//                 vendorStatus: "pending",
+//                 commission,
+//                 vendorEarning
+//             });
 
-            await vendorOrder.save();
-        }
+//             await vendorOrder.save();
+//         }
 
-        // Clear cart
-        cart.items = [];
-        cart.totalQuantity = 0;
-        cart.totalPrice = 0;
-        await cart.save();
+//         // Clear cart
+//         cart.items = [];
+//         cart.totalQuantity = 0;
+//         cart.totalPrice = 0;
+//         await cart.save();
 
-        req.flash("success", "Order placed successfully.");
-        return res.redirect(`/orders/${order._id}`);
+//         req.flash("success", "Order placed successfully.");
+//         return res.redirect(`/orders/${order._id}`);
 
-    } catch (error) {
-        next(errorMessage("Something went wrong", 500));
+//     } catch (error) {
+//         next(errorMessage("Something went wrong", 500));
+//     }
+// };
+
+const stripe = stripeLib(process.env.STRIPE_SECRET_KEY);
+
+export const placeOrder = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { shippingAddress, paymentMethod } = req.body;
+
+    if (!shippingAddress || !paymentMethod) {
+      return res.status(400).json({ error: "Invalid checkout details" });
     }
+
+    // Fetch cart
+    const cart = await Cart.findOne({ userId, isDeleted: false }).populate("items.productId");
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    const vendorMap = {};
+    const orderItems = [];
+
+    // Validate stock & prepare order items
+    for (const item of cart.items) {
+      const product = item.productId;
+
+      if (!product || product.isDeleted) {
+        return res.status(400).json({ error: `Product ${item?.name || ""} unavailable` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
+      }
+
+      const itemData = {
+        productId: product._id,
+        shopId: product.shopId,
+        vendorId: product.vendorId,
+        name: product.name,
+        price: product.price,
+        quantity: item.quantity,
+        subtotal: product.price * item.quantity,
+        status: "pending",
+      };
+
+      orderItems.push(itemData);
+
+      const vendorIdStr = product.vendorId.toString();
+      if (!vendorMap[vendorIdStr]) vendorMap[vendorIdStr] = [];
+      vendorMap[vendorIdStr].push(itemData);
+    }
+
+    // Calculate totals
+    const totalQuantity = orderItems.reduce((sum, i) => sum + i.quantity, 0);
+    const totalPrice = orderItems.reduce((sum, i) => sum + i.subtotal, 0);
+
+    // Create main order
+    const order = await Order.create({
+      userId,
+      orderNumber: generateOrderNumber(),
+      totalQuantity,
+      totalPrice,
+      shippingAddress,
+      paymentMethod,
+      paymentStatus: paymentMethod === "stripe" ? "pending" : "paid",
+      overallStatus: "pending",
+    });
+
+    // Create VendorOrders
+    for (const vendorId of Object.keys(vendorMap)) {
+      const items = vendorMap[vendorId];
+      const subtotal = items.reduce((sum, i) => sum + i.subtotal, 0);
+
+      await VendorOrder.create({
+        orderId: order._id,
+        vendorId,
+        items,
+        subtotal,
+        commission: 0,
+        vendorEarning: subtotal,
+        vendorStatus: "pending",
+        vendorEarningStatus: paymentMethod === "stripe" ? "pending" : "paid",
+      });
+    }
+
+    // Deduct stock immediately for COD/other payments
+    if (paymentMethod !== "stripe") {
+      for (const item of orderItems) {
+        await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+      }
+    }
+
+    // Create Stripe PaymentIntent if payment method is Stripe
+    let clientSecret = null;
+    if (paymentMethod === "stripe") {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(totalPrice * 100), // Stripe expects amount in cents
+        currency: "usd",
+        metadata: {
+          orderId: order._id.toString(),
+          orderNumber: order.orderNumber,
+        },
+      });
+
+      order.stripePaymentIntentId = paymentIntent.id;
+      await order.save();
+
+      clientSecret = paymentIntent.client_secret;
+    }
+
+    // Clear cart
+    // cart.items = [];
+    // cart.totalQuantity = 0;
+    // cart.totalPrice = 0;
+    // await cart.save();
+
+    // Respond to frontend
+    return res.json({
+      clientSecret, // null for COD/PayPal
+      orderId: order._id,
+    });
+
+  } catch (err) {
+    console.error("PlaceOrder Error:", err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
 };
 
 
@@ -273,11 +402,78 @@ const vendorOrderCancel = async (req, res, next) => {
     }
 };
 
+const stripeWebhook = async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  console.log("Stripe Event:", event.type);
+
+  if (event.type === "payment_intent.succeeded") {
+    const intent = event.data.object;
+    const orderId = intent.metadata.orderId;
+
+    console.log("Order ID from Stripe:", orderId);
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.json({ received: true });
+
+    // ✅ Prevent double processing (VERY IMPORTANT)
+    if (order.paymentStatus === "paid") {
+      console.log("Order already paid, skipping");
+      return res.json({ received: true });
+    }
+
+    // ✅ Mark order paid
+    order.paymentStatus = "paid";
+    await order.save();
+
+    console.log("Order marked as PAID:", order._id);
+
+    // ✅ Deduct vendor stock
+    const vendorOrders = await VendorOrder.find({ orderId });
+
+    for (const vo of vendorOrders) {
+      for (const item of vo.items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity }
+        });
+      }
+    }
+
+    console.log("Stock updated");
+
+    // ✅ Clear cart
+    await Cart.findOneAndUpdate(
+      { userId: order.userId },
+      { items: [], totalQuantity: 0, totalPrice: 0 }
+    );
+
+    console.log("Cart cleared");
+  }
+
+  res.json({ received: true });
+};
+
+
+
+
 
 export default {
     placeOrder,
     orders,
     order,
     cancel,
-    vendorOrderCancel
+    vendorOrderCancel,
+    stripeWebhook
 }

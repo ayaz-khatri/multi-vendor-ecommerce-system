@@ -12,12 +12,15 @@ import auth from "./middlewares/auth.js";
 import vendorRoutes from './routes/vendor.js';
 import profileRoutes from './routes/profile.js';
 import frontendRoutes from './routes/frontend.js';
-// import customerRoutes from './routes/customer.js';
+import customerOrderController from './controllers/customerOrderController.js';
+import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
 /* ------------------------- Initialize Express App ------------------------- */
 const app = express();
+
+app.post("/webhook/stripe", bodyParser.raw({ type: "application/json" }), customerOrderController.stripeWebhook);
 
 /* ------------------------------- Middlewares ------------------------------ */
 app.use(express.json());

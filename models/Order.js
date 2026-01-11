@@ -53,6 +53,21 @@ const orderSchema = new mongoose.Schema({
         postalCode: String
     },
 
+    stripePaymentIntentId: {
+        type: String,
+        default: null
+    },
+
+    stripeChargeId: {
+        type: String,
+        default: null
+    },
+
+    currency: {
+        type: String,
+        default: 'usd'
+    },
+
     isDeleted: {
         type: Boolean,
         default: false

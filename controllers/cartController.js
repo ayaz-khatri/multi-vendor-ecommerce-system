@@ -1,5 +1,7 @@
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+import dotenv from 'dotenv';
+dotenv.config();
 import errorMessage from "../utils/error-message.js";
 
 const index = async (req, res, next) => {
@@ -147,7 +149,7 @@ const clear = async (req, res, next) => {
 
 const checkout = async (req, res, next) => {
     try {
-        return res.render("frontend/checkout", { title: "Checkout" });
+        return res.render("frontend/checkout", { title: "Checkout", stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }

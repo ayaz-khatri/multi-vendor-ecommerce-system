@@ -13,7 +13,7 @@
 <!-- Breadcrumb End -->
 
 
-<form action="/orders" method="POST">
+<form id="checkoutForm">
 
 <!-- Checkout Start -->
 <div class="container-fluid">
@@ -131,13 +131,12 @@
 
                     <div class="custom-control custom-radio mb-4">
                         <input type="radio" class="custom-control-input" name="paymentMethod" value="stripe" id="stripe">
-                        <label class="custom-control-label" for="stripe">Credit / Debit Card</label>
+                        <label class="custom-control-label" for="stripe">Credit/Debit Card</label>
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert" style="color:red; margin-top:10px;"></div>
                     </div>
 
-                    <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">
-                        Place Order
-                    </button>
-
+                    <input type="submit" class="btn btn-block btn-primary font-weight-bold py-3" value="Place Order">
                 </div>
             </div>
 
@@ -147,4 +146,58 @@
 <!-- Checkout End -->
 
 </form>
+<script src="https://js.stripe.com/v3/"></script>
 
+<script>
+const stripe = Stripe("<%= stripePublishableKey %>");
+const elements = stripe.elements();
+const card = elements.create("card");
+card.mount("#card-element");
+
+document.getElementById("checkoutForm").addEventListener("submit", async function (e) {
+  const stripeRadio = document.getElementById("stripe");
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+  // Only intercept Stripe payment
+  if (paymentMethod !== "stripe") return;
+
+  e.preventDefault();
+
+  // Collect shipping address
+  const shippingAddress = {
+    line1: document.querySelector('input[name="shippingAddress[line1]"]').value,
+    line2: document.querySelector('input[name="shippingAddress[line2]"]').value,
+    city: document.querySelector('input[name="shippingAddress[city]"]').value,
+    state: document.querySelector('input[name="shippingAddress[state]"]').value,
+    country: document.querySelector('input[name="shippingAddress[country]"]').value,
+    postalCode: document.querySelector('input[name="shippingAddress[postalCode]"]').value
+  };
+
+  // 1️⃣ Create PaymentIntent on backend
+  const res = await fetch("/orders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shippingAddress, paymentMethod })
+  });
+
+  const data = await res.json();
+
+  if (!data.clientSecret) {
+    return alert("Unable to create payment. Try again.");
+  }
+
+  // 2️⃣ Confirm card payment using CardElement
+  const result = await stripe.confirmCardPayment(data.clientSecret, {
+    payment_method: {
+      card: card
+    }
+  });
+
+  if (result.error) {
+    document.getElementById("card-errors").textContent = result.error.message;
+  } else if (result.paymentIntent.status === "succeeded") {
+    // Payment succeeded
+    window.location.href = `/orders/${data.orderId}`;
+  }
+});
+</script>
