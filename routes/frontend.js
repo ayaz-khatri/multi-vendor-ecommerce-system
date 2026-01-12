@@ -12,7 +12,6 @@ import wishlist from '../middlewares/wishlist.js';
 import cart from '../middlewares/cart.js';
 import isCustomer from '../middlewares/isCustomer.js';
 
-
 router.use(loadCategories);
 router.use(shareQueryParams);
 
@@ -46,11 +45,8 @@ router.get('/orders/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderC
 router.post('/orders/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.cancel);
 router.post('/orders/vendor/cancel/:id', isLoggedIn, isCustomer, wishlist, cart, customerOrderController.vendorOrderCancel);
 
-
 /* --------------------------------- Reviews -------------------------------- */
 router.post('/reviews', isLoggedIn, isCustomer, wishlist, cart, customerReviewController.submit);
-
-
 
 
 export default router;

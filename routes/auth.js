@@ -4,7 +4,6 @@ import authController from '../controllers/authController.js';
 import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
 import isValid from '../middlewares/validation.js';
 
-// use 'layouts/authLayout.js'
 router.use(authController.authLayout);
 
 // Login Routes
@@ -23,9 +22,5 @@ router.post('/reset-password/:token', isValid.resetPasswordValidation, authContr
 router.get('/logout', authController.logout);
 
 router.get('/verify-email/:token', authController.verifyEmail);
-
-
-// 404 Middleware
-
 
 export default router;

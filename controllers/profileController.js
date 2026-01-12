@@ -92,7 +92,6 @@ const passwordUpdate = async (req, res, next) => {
         res.redirect('/login');
 
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 }

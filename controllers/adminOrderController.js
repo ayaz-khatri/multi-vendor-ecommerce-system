@@ -9,7 +9,7 @@ const index = async (req, res, next) => {
     try {
         const orders = await Order.find({ isDeleted: false }).populate("userId", "name email profilePic").sort({ createdAt: -1 });
         res.render("admin/orders/index", { orders, timeAgo, title: "Orders" });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -24,7 +24,7 @@ const view = async (req, res, next) => {
                                                 .populate("items.productId", "name")
                                                 .populate("items.shopId", "name");
         res.render("admin/orders/view", { order, vendorOrders, title: `Order #${order.orderNumber}` });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };

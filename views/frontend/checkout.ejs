@@ -13,7 +13,7 @@
 <!-- Breadcrumb End -->
 
 
-<form id="checkoutForm">
+<form id="checkoutForm" action="/orders" method="POST">
 
 <!-- Checkout Start -->
 <div class="container-fluid">
@@ -146,6 +146,7 @@
 <!-- Checkout End -->
 
 </form>
+
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
@@ -155,15 +156,22 @@ const card = elements.create("card");
 card.mount("#card-element");
 
 document.getElementById("checkoutForm").addEventListener("submit", async function (e) {
-  const stripeRadio = document.getElementById("stripe");
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  const paymentMethod = document.querySelector(
+    'input[name="paymentMethod"]:checked'
+  ).value;
 
-  // Only intercept Stripe payment
-  if (paymentMethod !== "stripe") return;
+  // ==========================
+  // COD → NORMAL FORM SUBMIT
+  // ==========================
+  if (paymentMethod === "cod") {
+    return; // backend placeOrder will handle
+  }
 
+  // ==========================
+  // STRIPE → INTERCEPT
+  // ==========================
   e.preventDefault();
 
-  // Collect shipping address
   const shippingAddress = {
     line1: document.querySelector('input[name="shippingAddress[line1]"]').value,
     line2: document.querySelector('input[name="shippingAddress[line2]"]').value,
@@ -173,31 +181,37 @@ document.getElementById("checkoutForm").addEventListener("submit", async functio
     postalCode: document.querySelector('input[name="shippingAddress[postalCode]"]').value
   };
 
-  // 1️⃣ Create PaymentIntent on backend
+  // Create order + PaymentIntent
   const res = await fetch("/orders", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ shippingAddress, paymentMethod })
+    body: JSON.stringify({
+      shippingAddress,
+      paymentMethod: "stripe"
+    })
   });
 
   const data = await res.json();
 
   if (!data.clientSecret) {
-    return alert("Unable to create payment. Try again.");
+    alert("Unable to initiate payment");
+    return;
   }
 
-  // 2️⃣ Confirm card payment using CardElement
+  // Confirm card payment
   const result = await stripe.confirmCardPayment(data.clientSecret, {
-    payment_method: {
-      card: card
-    }
+    payment_method: { card }
   });
 
   if (result.error) {
     document.getElementById("card-errors").textContent = result.error.message;
-  } else if (result.paymentIntent.status === "succeeded") {
-    // Payment succeeded
+    return;
+  }
+
+  // Success → webhook will do the rest
+  if (result.paymentIntent.status === "succeeded") {
     window.location.href = `/orders/${data.orderId}`;
   }
 });
 </script>
+

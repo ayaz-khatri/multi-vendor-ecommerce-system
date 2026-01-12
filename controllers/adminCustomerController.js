@@ -7,9 +7,8 @@ const index = async (req, res, next) => {
     try {
         const customers = await Customer.find({ role: 'customer', isDeleted: false }).sort({ createdAt: -1 });
         res.render('admin/customers', { customers, title: 'Customers' });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
-        // next(errorMessage(err.message, 500));
     }
 };
 
@@ -18,7 +17,7 @@ const view = async (req, res, next) => {
         const customer = await Customer.findById(req.params.id);
         if (!customer || customer.isDeleted) return next(errorMessage('Customer not found.', 404));
         res.render('admin/customers/view', { customer, title: customer.name, timeAgo });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };

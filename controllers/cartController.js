@@ -78,7 +78,6 @@ const toggle = async (req, res, next) => {
         return res.redirect(req.get("Referer") || "/products");
 
     } catch (error) {
-        console.log(error)
         next(errorMessage("Something went wrong", 500));
     }
 };

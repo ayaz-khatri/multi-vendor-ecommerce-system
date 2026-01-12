@@ -4,9 +4,6 @@ import Shop from "../models/Shop.js";
 import Category from "../models/Category.js";
 import Review from "../models/Review.js";
 import errorMessage from "../utils/error-message.js";
-// import { validationResult } from "express-validator";
-// import path from 'path';
-// import fs from 'fs';
 
 const index = async (req, res, next) => {
     try {
@@ -19,7 +16,6 @@ const index = async (req, res, next) => {
         const shops = await Shop.find({ isDeleted: false, status: "approved" }).limit(10);
         res.render("frontend/index", { vendors, products, shops, title: "Ecommerce - Online Shopping Website" });
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -123,7 +119,6 @@ const products = async (req, res, next) => {
             });
         }
 
-
         /* -------------------- SHOP -------------------- */
         if (shop) {
             const sh = await Shop.findOne({ slug: shop, isDeleted: false, status: "approved" });
@@ -189,8 +184,6 @@ const products = async (req, res, next) => {
             return obj;
         });
 
-
-
         let message = "";
         if (products.docs.length === 0) {
             message = "No record found.";
@@ -221,7 +214,6 @@ const products = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log(error);
         next(errorMessage("Something went wrong", 500));
     }
 };

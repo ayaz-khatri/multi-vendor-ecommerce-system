@@ -1,6 +1,5 @@
 import VendorOrder from "../models/VendorOrder.js";
 import Review from "../models/Review.js";
-import Order from "../models/Order.js";
 import errorMessage from "../utils/error-message.js";
 import { timeAgo } from "../utils/helper.js";
 import { syncOverallOrderStatus } from '../services/orderSyncService.js';
@@ -8,7 +7,6 @@ import { syncOverallOrderStatus } from '../services/orderSyncService.js';
 const index = async (req, res, next) => {
     try {
         const vendorId = req.user.id;
-
         const vendorOrders = await VendorOrder.find({ vendorId, vendorStatus: { $ne: 'cancelled' } })
                                                 .populate("orderId", "orderNumber paymentMethod paymentStatus overallStatus createdAt")
                                                 .sort({ createdAt: -1 });
@@ -79,7 +77,7 @@ const updateStatus = async (req, res, next) => {
         vendorOrder.vendorStatus = vendorStatus;
         await vendorOrder.save();
 
-        // 🔁 Sync main order status
+        // Sync main order status
         await syncOverallOrderStatus(vendorOrder.orderId);
 
         req.flash('success', 'Order status updated successfully.');

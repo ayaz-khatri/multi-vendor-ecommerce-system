@@ -30,12 +30,10 @@ const submit = async (req, res, next) => {
         product.avgRating = avg;
         await product.save();
 
-
         req.flash("success","Thank you for your feedback. Review submitted successfully.");
         return res.redirect("orders");
 
     } catch (error) {
-        console.error(error);
         // Handle duplicate key race condition (extra safety)
         if (error.code === 11000) {
             req.flash("error","You have already submitted a review for this product.");

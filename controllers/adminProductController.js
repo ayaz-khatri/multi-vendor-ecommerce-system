@@ -1,8 +1,6 @@
 import Product from "../models/Product.js";
 import Shop from "../models/Shop.js";
-import Category from "../models/Category.js";
 import errorMessage from "../utils/error-message.js";
-import { validationResult } from "express-validator";
 import { timeAgo } from '../utils/helper.js';
 
 const index = async (req, res, next) => {

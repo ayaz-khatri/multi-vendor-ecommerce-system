@@ -20,7 +20,6 @@ import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
 import errorMessage from "../utils/error-message.js";
 import createUploader from '../middlewares/multer.js';
-import { generateOrderNumber } from '../utils/helper.js';
 const uploadCategoryIcon = createUploader('categories');
 
 router.use(isLoggedIn);

@@ -122,8 +122,6 @@ router.get('/', async (req, res, next) => {
 });
 
 
-
-
 // Shop Routes
 router.get('/shops', vendorShopController.index);
 router.get('/shops/view/:id', vendorShopController.view);

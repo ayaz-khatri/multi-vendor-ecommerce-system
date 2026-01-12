@@ -7,9 +7,8 @@ const index = async (req, res, next) => {
     try {
         const vendors = await Vendor.find({ role: 'vendor', isDeleted: false }).sort({ createdAt: -1 });
         res.render('admin/vendors', { vendors, title: 'Vendors' });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
-        // next(errorMessage(err.message, 500));
     }
 };
 
@@ -18,7 +17,7 @@ const view = async (req, res, next) => {
         const vendor = await Vendor.findById(req.params.id);
         if (!vendor || vendor.isDeleted) return next(errorMessage('Vendor not found.', 404));
         res.render('admin/vendors/view', { vendor, title: vendor.name, timeAgo });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };
@@ -123,7 +122,7 @@ const trashed = async (req, res, next) => {
     try {
         const vendors = await Vendor.find({ role: 'vendor', isDeleted: true }).sort({ createdAt: -1 });
         res.render('admin/vendors/trashed', { vendors, title: 'Trashed Vendors' });
-    } catch (err) {
+    } catch (error) {
         next(errorMessage("Something went wrong", 500));
     }
 };

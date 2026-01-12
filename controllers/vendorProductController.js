@@ -100,7 +100,6 @@ const store = async (req, res, next) => {
         return res.redirect("/vendor/products");
 
     } catch (error) {
-        console.error(error);
         if (error.code === 11000) {
             req.flash("error", "Product already exists.");
             req.flash("old", req.body);
@@ -110,16 +109,12 @@ const store = async (req, res, next) => {
     }
 };
 
-
-
-
 const edit = async (req, res, next) => {
     try {
         const product = await Product.findOne({ _id: req.params.id, vendorId: req.user.id }).populate('shopId', 'name').populate('categoryId', 'name');
         if (!product || product.isDeleted) return next(errorMessage('Product not found.', 404));
         const shops = await Shop.find({ isDeleted: false, vendorId: req.user.id });
         const categories = await Category.find({ isDeleted: false });
-
         res.render('vendor/products/edit', { product, shops, categories, title: 'Edit Product' });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));
@@ -199,7 +194,6 @@ const update = async (req, res, next) => {
         return res.redirect("/vendor/products");
 
     } catch (error) {
-        console.error(error);
         if (error.code === 11000) {
             req.flash("error", "Product already exists.");
             req.flash("old", req.body);
@@ -208,8 +202,6 @@ const update = async (req, res, next) => {
         next(errorMessage("Something went wrong", 500));
     }
 };
-
-
 
 const destroy = async (req, res, next) => {
     try {
