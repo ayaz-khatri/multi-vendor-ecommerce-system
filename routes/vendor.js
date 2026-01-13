@@ -18,6 +18,11 @@ const uploadProductImages = createUploader('products');
 router.use(isLoggedIn);
 router.use(isVendor);
 
+router.use((req, res, next) => {
+    res.locals.currentPath = req.path;
+    next();
+});
+
 router.get('/', async (req, res, next) => {
     try {
         const vendorId = new mongoose.Types.ObjectId(req.user.id);

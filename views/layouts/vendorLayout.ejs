@@ -48,7 +48,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <li class="nav-item active">
+            <li class="nav-item <%= currentPath === '/' ? 'active' : '' %>">
                 <a class="nav-link" href="/vendor">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
@@ -58,21 +58,21 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/shops') ? 'active' : '' %>">
                 <a class="nav-link" href="/vendor/shops">
                     <i class="fas fa-fw fa-store"></i>
                     <span>Shops</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/products') ? 'active' : '' %>">
                 <a class="nav-link" href="/vendor/products">
                     <i class="fas fa-fw fa-cubes"></i>
                     <span>Products</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/orders') ? 'active' : '' %>">
                 <a class="nav-link" href="/vendor/orders">
                     <i class="fas fa-fw fa-shopping-bag"></i>
                     <span>Orders</span>

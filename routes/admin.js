@@ -15,15 +15,22 @@ import adminCategoryController from '../controllers/adminCategoryController.js';
 import adminShopController from '../controllers/adminShopController.js';
 import adminProductController from '../controllers/adminProductController.js';
 import adminOrderController from '../controllers/adminOrderController.js';
+import adminReviewController from '../controllers/adminReviewController.js';
 import isLoggedIn from '../middlewares/isLoggedIn.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import isValid from '../middlewares/validation.js';
 import errorMessage from "../utils/error-message.js";
 import createUploader from '../middlewares/multer.js';
+import { totalmem } from 'os';
 const uploadCategoryIcon = createUploader('categories');
 
 router.use(isLoggedIn);
 router.use(isAdmin);
+
+router.use((req, res, next) => {
+    res.locals.currentPath = req.path;
+    next();
+});
 
 router.get('/', async (req, res, next) => {
     try {
@@ -34,10 +41,12 @@ router.get('/', async (req, res, next) => {
         ]);
 
         // Shop & Product stats
-        const [shops, products, categories] = await Promise.all([
+        const [shops, products, categories, approvedReviews, disapprovedReviews] = await Promise.all([
             Shop.countDocuments({ isDeleted: false }),
             Product.countDocuments({ isDeleted: false }),
-            Category.countDocuments({ isDeleted: false })
+            Category.countDocuments({ isDeleted: false }),
+            Review.countDocuments({ isDeleted: false, isApproved: true }),
+            Review.countDocuments({ isDeleted: false, isApproved: false })
         ]);
 
         // Order stats
@@ -89,6 +98,8 @@ router.get('/', async (req, res, next) => {
             cancelledOrderCount: stats.cancelled,
             partiallyCompletedOrderCount: stats.partiallyCompleted,
             totalRevenue: stats.totalRevenue,
+            approvedReviewsCount: approvedReviews,
+            disapprovedReviewsCount: disapprovedReviews,
             title: 'Dashboard'
         });
         
@@ -149,6 +160,9 @@ router.post('/products/approve/:id', adminProductController.approve);
 router.get('/orders', adminOrderController.index);
 router.get('/orders/view/:id', adminOrderController.view);
 router.post('/orders/cancel/:id', adminOrderController.cancel);
+
+router.get('/reviews', adminReviewController.index);
+router.post('/reviews/toggle/:id', adminReviewController.toggle);
 
 // system reset script route
 router.get('/reset-system', async (req, res, next) => {

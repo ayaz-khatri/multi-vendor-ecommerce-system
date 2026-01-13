@@ -1,0 +1,168 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><%= title %></h1>
+        <div class="ml-auto">
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div id="crudTable" class="w-100 text-dark table-sm"></div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+<%- include('../../partials/deleteModal.ejs') %>
+<%- include('../../partials/adminReviewApproveModal.ejs') %>
+
+
+<script src="/js/tabulator.min.js"></script>
+<script type="module">
+    import { initTabulator } from "/js/tabulator-helper.js";
+
+    const tableData = <%- JSON.stringify(reviews || []) %>;
+
+    const columns = [
+        {
+            title: "S.No.",
+            formatter: "rownum",
+            width: 60,
+            hozAlign: "center",
+            headerSort: false
+        },
+        {
+            title: "Order #",
+            field: "orderId.orderNumber",
+            headerFilter: "input"
+        },
+        {
+            title: "Product",
+            field: "productId.name",
+            headerFilter: "input"
+        },
+        {
+            title: "Customer",
+            field: "userId.name",
+            headerFilter: "input"
+        },
+        {
+            title: "Email",
+            field: "userId.email",
+            headerFilter: "input"
+        },
+        {
+            title: "Rating",
+            field: "rating",
+            hozAlign: "center",
+            formatter: function (cell) {
+                const rating = cell.getValue() || 0;
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= rating
+                        ? '<i class="fas fa-star text-warning"></i>'
+                        : '<i class="far fa-star text-muted"></i>';
+                }
+                return stars;
+            }
+        },
+        {
+            title: "Review",
+            field: "comment",
+            formatter: function (cell) {
+                const text = cell.getValue() || "";
+                return text.length > 50 ? text.substring(0, 50) + "..." : text;
+            }
+        },
+        {
+            title: "Status",
+            field: "isApproved",
+            hozAlign: "center",
+            formatter: function (cell) {
+                const isApproved = cell.getValue();
+                return isApproved
+                    ? '<span class="badge bg-success text-white">Approved</span>'
+                    : '<span class="badge bg-danger text-white">Pending</span>';
+            }
+        },
+        {
+            title: "Created At",
+            field: "createdAt",
+            formatter: "datetime",
+            formatterParams: {
+                inputFormat: "iso",
+                outputFormat: "DD MMM YYYY"
+            }
+        }
+    ];
+
+   function actionsTemplate(rowData) {
+
+        const approveBtn = rowData.isApproved
+            ? `
+                <button 
+                    class="btn btn-sm btn-danger text-white mx-1"
+                    title="Disapprove"
+                    onclick="openReviewApproveModal('${rowData._id}', false)">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            `
+            : `
+                <button 
+                    class="btn btn-sm btn-success text-white mx-1"
+                    title="Approve"
+                    onclick="openReviewApproveModal('${rowData._id}', true)">
+                    <i class="fas fa-check-circle"></i>
+                </button>
+            `;
+
+        return `
+            ${approveBtn}
+        `;
+    }
+
+
+    initTabulator({
+        tableId: "#crudTable",
+        data: tableData,
+        columns,
+        actions: actionsTemplate,
+        url: "/admin/reviews"
+    });
+
+    window.openReviewApproveModal = function (reviewId, approve) {
+
+        const modal = $('#adminReviewApproveModal');
+        const title = document.getElementById('reviewApproveTitle');
+        const message = document.getElementById('reviewApproveMessage');
+        const form = document.getElementById('reviewApproveForm');
+        const btn = document.getElementById('reviewApproveBtn');
+
+        if (approve) {
+            title.innerText = 'Approve Review';
+            message.innerText = 'Are you sure you want to approve this review?';
+            btn.innerText = 'Yes, Approve';
+        } else {
+            title.innerText = 'Disapprove Review';
+            message.innerText = 'Are you sure you want to disapprove this review?';
+            btn.innerText = 'Yes, Disapprove';
+        }
+
+        form.action = `/admin/reviews/toggle/${reviewId}`;
+
+        $('#adminReviewApproveModal').modal('show');
+    }
+</script>
+
+
+
+<%- contentFor('tabulatorCSS') %>
+<link rel="stylesheet" href="/css/tabulator_bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/tabulator-custom.css" />
+
+
+
+

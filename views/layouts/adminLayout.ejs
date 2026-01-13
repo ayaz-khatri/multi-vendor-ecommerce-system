@@ -48,7 +48,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <li class="nav-item active">
+            <li class="nav-item <%= currentPath === '/' ? 'active' : '' %>">
                 <a class="nav-link" href="/admin">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
@@ -63,14 +63,14 @@
                 Users
             </div>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/vendors') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/vendors">
                     <i class="fas fa-fw fa-user"></i>
                     <span>Vendors</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/customers') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/customers">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Customers</span>
@@ -85,21 +85,21 @@
                 Items
             </div>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/categories') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/categories">
                     <i class="fas fa-fw fa-list"></i>
                     <span>Categories</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/shops') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/shops">
                     <i class="fas fa-fw fa-store"></i>
                     <span>Shops</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/products') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/products">
                     <i class="fas fa-fw fa-cubes"></i>
                     <span>Products</span>
@@ -113,10 +113,17 @@
             <div class="sidebar-heading">
                 Revenue
             </div>
-            <li class="nav-item">
+            <li class="nav-item <%= currentPath.startsWith('/orders') ? 'active' : '' %>">
                 <a class="nav-link" href="/admin/orders">
                     <i class="fas fa-fw fa-shopping-bag"></i>
                     <span>Orders</span>
+                </a>
+            </li>
+
+            <li class="nav-item <%= currentPath.startsWith('/reviews') ? 'active' : '' %>">
+                <a class="nav-link" href="/admin/reviews">
+                    <i class="fas fa-fw fa-star"></i>
+                    <span>Reviews</span>
                 </a>
             </li>
 

@@ -237,7 +237,8 @@ const product = async (req, res, next) => {
         const reviews = await Review.find({ productId: product._id, isApproved: true, isDeleted: false })
                                     .populate('userId', ['name', 'profilePic'])
                                     .sort({ createdAt: -1 });
-        const reviewCount = reviews.length;
+        
+        const reviewCount = reviews.length || 0;
 
         /* -------------------- BREADCRUMBS -------------------- */
         let breadcrumbs = [
