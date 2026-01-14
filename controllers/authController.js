@@ -257,6 +257,35 @@ const resetPassword = async (req, res, next) => {
     }
 };
 
+const googleCallback = async (req, res, next) => {
+    try {
+        const user = req.user;
+
+        const jwtData = { id: user._id, role: user.role };
+        const token = jwt.sign(jwtData, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+
+        user.lastLogin = new Date();
+        await user.save({ validateBeforeSave: false });
+
+        const redirectMap = {
+            admin: "/admin",
+            vendor: "/vendor",
+            customer: "/"
+        };
+
+        res.redirect(redirectMap[user.role] || "/");
+
+    } catch (error) {
+        next(errorMessage("Google login failed", 500));
+    }
+};
+
 
 const verificationEmailTemplate = (name, url) => `
     <div style="font-family: Arial, sans-serif;">
@@ -303,5 +332,6 @@ export default {
     logout,
     verifyEmail,
     resetPasswordPage,
-    resetPassword
+    resetPassword,
+    googleCallback
 };

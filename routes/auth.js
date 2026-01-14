@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from 'passport';
 const router = express.Router();
 import authController from '../controllers/authController.js';
 import redirectIfLoggedIn from '../middlewares/redirectIfLoggedIn.js';
@@ -18,6 +19,17 @@ router.post('/forgot-password', redirectIfLoggedIn, isValid.forgotPasswordValida
 
 router.get('/reset-password/:token', authController.resetPasswordPage);
 router.post('/reset-password/:token', isValid.resetPasswordValidation, authController.resetPassword);
+
+// Google Login
+router.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+// Google Callback
+router.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    authController.googleCallback
+);
 
 router.get('/logout', authController.logout);
 

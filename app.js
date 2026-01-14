@@ -14,6 +14,8 @@ import profileRoutes from './routes/profile.js';
 import frontendRoutes from './routes/frontend.js';
 import customerOrderController from './controllers/customerOrderController.js';
 import bodyParser from 'body-parser';
+import passport from 'passport';
+import './config/passport.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -39,7 +41,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 /* ------------------------------ connect-flash ----------------------------- */
 app.use(session({
-    secret: "mySecretKey",
+    secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -53,6 +55,10 @@ app.use((req, res, next) => {
     res.locals.old = req.flash("old")[0] || {};
     next();
 });
+
+/* -------------------------------- passport -------------------------------- */
+app.use(passport.initialize());
+app.use(passport.session());
 
 /* --------------------------------- Routes --------------------------------- */
 
