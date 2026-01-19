@@ -34,7 +34,7 @@
                     <a href="/shops/<%= shop.slug %>" class="text-decoration-none btn-link">
                         <div class="bg-light p-4 shadow rounded text-center">
                             <div class="shop-logo-wrapper mx-auto mb-3">
-                                <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" alt="<%= shop.name %>">
+                                <img src="<%= shop.logo && shop.logo.url ? shop.logo.url : '/img/placeholder.png' %>" alt="<%= shop.name %>">
                             </div>
                             <span class="h5 text-dark"><%= shop.name %></span>
                         </div>

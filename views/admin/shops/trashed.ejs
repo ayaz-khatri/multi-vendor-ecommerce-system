@@ -29,7 +29,7 @@
         { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
         { title: "Image", field: "logo", formatter: function(cell, formatterParams) {
             const icon = cell.getValue();
-            const imgSrc = icon ? '/uploads/shops/' + icon : '/img/placeholder.png';
+            const imgSrc = icon ? icon.url : '/img/placeholder.png';
             return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
         }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },

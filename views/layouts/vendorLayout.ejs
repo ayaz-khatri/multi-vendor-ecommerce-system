@@ -117,7 +117,7 @@
                                                                             
                                 </span>
                                 <img class="img-profile rounded-circle"
-                                    src="<%= authUser.profilePic ? '/uploads/users/' + authUser.profilePic : '/img/undraw_profile.svg' %>">
+                                    src="<%= authUser.profilePic && authUser.profilePic.url ? authUser.profilePic.url : '/img/undraw_profile.svg' %>">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

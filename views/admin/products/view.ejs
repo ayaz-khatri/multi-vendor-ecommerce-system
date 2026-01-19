@@ -118,7 +118,7 @@
                     <div class="row">
                         <% product.images.forEach(image => { %>
                             <div class="col-md-3">
-                                <img src="/uploads/products/<%= image %>" alt="Image" class="mb-3 w-100 border border-3 border-secondary rounded shadow">
+                                <img src="<%= image.url %>" alt="Image" class="mb-3 w-100 border border-3 border-secondary rounded shadow">
                             </div>
                         <% }) %>
                     </div>

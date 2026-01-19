@@ -106,7 +106,7 @@
             <a class="text-decoration-none" href="/category/<%= category.slug %>">
                 <div class="cat-item d-flex align-items-center mb-4">
                     <div class="overflow-hidden" style="width: 100px; height: 80px;">
-                        <img class="img-fluid" style="width: 100px; height: 80px;" src="<%= (category.icon) ? '/uploads/categories/' + category.icon : '/img/placeholder.png' %>" alt="<%= category.name %>">
+                        <img class="img-fluid" style="width: 100px; height: 80px;" src="<%= (category.icon && category.icon.url) ? category.icon.url : '/img/placeholder.png' %>" alt="<%= category.name %>">
                     </div>
                     <div class="flex-fill pl-3">
                         <h6><%= category.name %></h6>
@@ -129,7 +129,7 @@
         <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
             <div class="product-item bg-light mb-4">
                 <div class="product-img position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="<%= (product.images[0]) ? '/uploads/products/' + product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>">
+                    <img class="img-fluid w-100" src="<%= (product.images[0] && product.images[0].url) ? product.images[0].url : '/img/placeholder.png' %>" alt="<%= product.name %>">
                     <div class="product-action">
                         <a class="btn btn-outline-dark btn-square" href="/products/<%= product.slug %>"><i class="fa fa-eye"></i></a>
                         <a
@@ -242,7 +242,7 @@
                 <a href="/shops/<%= shop.slug %>" class="text-decoration-none btn-link">
                     <div class="bg-light p-4 shadow rounded text-center">
                         <div class="shop-logo-wrapper mx-auto mb-3">
-                            <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" alt="<%= shop.name %>">
+                            <img src="<%= shop.logo && shop.logo.url ? shop.logo.url : '/img/placeholder.png' %>" alt="<%= shop.name %>">
                         </div>
                         <span class="h5 text-dark"><%= shop.name %></span>
                     </div>
@@ -262,7 +262,7 @@
                 <% vendors.forEach(vendor => { %>
                 <a href="/vendors/<%= vendor.id %>" class="text-decoration-none">
                     <div class="bg-light p-4 shadow rounded text-center">
-                        <img style="height: 150px;" src="<%= (vendor.profilePic) ? '/uploads/users/' + vendor.profilePic : '/img/placeholder.png' %>" alt="<%= vendor.name %>">
+                        <img style="height: 150px;" src="<%= (vendor.profilePic && vendor.profilePic.url) ? vendor.profilePic.url : '/img/placeholder.png' %>" alt="<%= vendor.name %>">
                         <span class="text-dark"><%= vendor.name %></span>
                     </div>
                 </a>

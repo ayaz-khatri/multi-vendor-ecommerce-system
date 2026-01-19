@@ -92,13 +92,13 @@
                     </table>
                 </div>
                 <div class="col-md-6">
-                    <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" 
+                    <img src="<%= shop.logo && shop.logo.url ? shop.logo.url : '/img/placeholder.png' %>" 
                         alt="<%= shop.name %>" class="mb-3 w-50 border border-3 border-secondary rounded shadow">
                 </div>
             </div>
             <div class="row">
                 <p><strong>Banner:</strong></p>
-                <img src="<%= shop.banner ? '/uploads/shops/' + shop.banner : '/img/placeholder-banner.png' %>" 
+                <img src="<%= shop.banner && shop.banner.url ? shop.banner.url : '/img/placeholder-banner.png' %>" 
                         alt="<%= shop.name %>" class="mb-3 w-100 border border-3 border-secondary rounded shadow">
             </div>
             

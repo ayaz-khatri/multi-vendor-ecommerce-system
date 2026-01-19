@@ -48,7 +48,7 @@
                                     <i class="fas fa-times"></i>
                             </a>
                         </td>
-                        <td class="align-middle"><img src="<%= (item.productId.images[0]) ? '/uploads/products/' + item.productId.images[0] : '/img/placeholder.png' %>" style="width: 50px;"></td>
+                        <td class="align-middle"><img src="<%= (item.productId.images[0] && item.productId.images[0].url) ? item.productId.images[0].url : '/img/placeholder.png' %>" style="width: 50px;"></td>
                         <td class="align-middle"><a class="text-dark" href="/products/<%= item.productId.slug %>"><%= item.productId.name %></a></td>
                         <td class="align-middle">$<%= item.productId.price %></td>
                         <td class="align-middle">

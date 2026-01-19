@@ -123,7 +123,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4 shadow">
                         <div class="product-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="<%= (product.images[0]) ? '/uploads/products/' + product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>">
+                            <img class="img-fluid w-100" src="<%= (product.images[0] && product.images[0].url) ? product.images[0].url : '/img/placeholder.png' %>" alt="<%= product.name %>">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href="/products/<%= product.slug %>"><i class="fa fa-eye"></i></a>
                                 <a

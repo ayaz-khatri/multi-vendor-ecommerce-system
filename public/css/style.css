@@ -9687,6 +9687,33 @@ a.text-dark:hover, a.text-dark:focus {
   color: #FFD333 !important;
 }
 
+.product-img {
+    height: 300px;
+    overflow: hidden;
+}
+
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-carousel {
+    height: 500px; 
+}
+
+.product-carousel .carousel-inner,
+.product-carousel .carousel-item {
+    height: 100%;
+}
+
+.carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
 .table.table-borderless thead tr,
 .table.table-borderless tbody tr:not(:last-child) {
   border-bottom: 15px solid #F5F5F5;

@@ -63,7 +63,7 @@
 
                 </div>
                 <div class="col-md-6">
-                    <img src="<%= category.icon ? '/uploads/categories/' + category.icon : '/img/placeholder.png' %>" 
+                    <img src="<%= category.icon && category.icon.url ? category.icon.url : '/img/placeholder.png' %>" 
                         alt="<%= category.name %>" class="mb-3 w-50 border border-3 border-secondary rounded shadow">
                 </div>
             </div>

@@ -33,7 +33,7 @@
                 <div class="col-lg-4 col-sm-6 pb-1 my-2">
                     <a href="/vendors/<%= vendor.id %>" class="text-decoration-none">
                         <div class="bg-light p-4 shadow rounded text-center">
-                            <img class="img img-fluid" style="height: 200px;" src="<%= (vendor.profilePic) ? '/uploads/users/' + vendor.profilePic : '/img/placeholder.png' %>" alt="<%= vendor.name %>">
+                            <img class="img img-fluid" style="height: 200px;" src="<%= (vendor.profilePic && vendor.profilePic.url) ? vendor.profilePic.url : '/img/placeholder.png' %>" alt="<%= vendor.name %>">
                             <br>
                             <span class="text-dark"><%= vendor.name %></span>
                         </div>

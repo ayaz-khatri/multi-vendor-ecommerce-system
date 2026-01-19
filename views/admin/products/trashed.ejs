@@ -27,9 +27,10 @@
 
     const columns = [
         { title: "S.No.", formatter: "rownum", width: 50, hozAlign: "center", headerSort: false },
-        { title: "Image", field: "images[0]", formatter: function(cell, formatterParams) {
-            const image = cell.getValue();
-            const imgSrc = image ? '/uploads/products/' + images : '/img/placeholder.png';
+        { title: "Image", field: "images", formatter: function(cell, formatterParams) {
+            const images = cell.getValue();
+            const image = (Array.isArray(images) && images.length > 0) ? images[0] : null;
+            const imgSrc = image ? image.url : '/img/placeholder.png';
             return `<img src="${imgSrc}" alt="Icon" class="w-50 border border-2 border-secondary rounded shadow">`;
         }, hozAlign: "center", headerSort: false, width: 100 },
         { title: "Name", field: "name", headerFilter: "input" },

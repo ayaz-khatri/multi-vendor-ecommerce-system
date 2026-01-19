@@ -25,20 +25,26 @@
 <div class="container-fluid pb-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 mb-30">
-            <div id="product-carousel" class="carousel slide" data-ride="carousel">
+            <div id="product-carousel" class="carousel slide product-carousel" data-ride="carousel">
                 <div class="carousel-inner bg-light">
+
                     <% if (product.images && product.images.length > 0) { %>
                         <% product.images.forEach((image, index) => { %>
-                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                            <img class="w-100 h-100" src="<%= (image) ? '/uploads/products/' + image : '/img/placeholder.png' %>" alt="<%= product.name %>">
-                        </div>
+                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                <img 
+                                    class="carousel-img"
+                                    src="<%= (image && image.url) ? image.url : '/img/placeholder.png' %>" 
+                                    alt="<%= product.name %>">
+                            </div>
                         <% }); %>
                     <% } else { %>
-                    <div class="carousel-item active">
-                        <img class="w-100 h-100" src="/img/placeholder.png" alt="<%= product.name %>">
-                    </div>
+                        <div class="carousel-item active">
+                            <img class="carousel-img" src="/img/placeholder.png" alt="<%= product.name %>">
+                        </div>
                     <% } %>
+
                 </div>
+
                 <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
                     <i class="fa fa-2x fa-angle-left text-dark"></i>
                 </a>
@@ -162,7 +168,7 @@
                                 <h4 class="mb-4"><%= reviewCount %> review for "<%= product.name %>"</h4>
                                 <% reviews.forEach(review => { %>
                                 <div class="media mb-4 border-bottom pb-1">
-                                    <img src="<%= (review.userId.profilePic) ? '/uploads/users/' + review.userId.profilePic : '/img/placeholder.png' %>" alt="User Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                    <img src="<%= (review.userId.profilePic && review.userId.profilePic.url) ? review.userId.profilePic.url : '/img/placeholder.png' %>" alt="User Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
                                     <div class="media-body">
                                         <!-- User Name and Review Date -->
                                         <h6>

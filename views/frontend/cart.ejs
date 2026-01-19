@@ -32,7 +32,7 @@
                     <% if (cart && cart.items && cart.items.length > 0) { %>
                     <% cart.items.forEach(item => { %>
                     <tr>
-                        <td class="align-middle"><img src="<%= (item.productId.images[0]) ? '/uploads/products/' + item.productId.images[0] : '/img/placeholder.png' %>" alt="" style="width: 50px;"></td>
+                        <td class="align-middle"><img src="<%= (item.productId.images[0] && item.productId.images[0].url) ? item.productId.images[0].url : '/img/placeholder.png' %>" alt="" style="width: 50px;"></td>
                         <td class="align-middle"><%= item.productId.name %></td>
                         <td class="align-middle">$<%= item.price %></td>
                         <td class="align-middle">

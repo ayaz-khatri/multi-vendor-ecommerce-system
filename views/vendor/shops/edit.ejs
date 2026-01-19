@@ -57,14 +57,14 @@
                 <label class="form-label">Logo</label>
                 <input type="file" name="logo" class="form-control">
                 <br>
-                <img src="<%= shop.logo ? '/uploads/shops/' + shop.logo : '/img/placeholder.png' %>" 
+                <img src="<%= shop.logo && shop.logo.url ? shop.logo.url : '/img/placeholder.png' %>" 
                     alt="<%= shop.name %>" class="mb-3 w-25 border border-3 border-secondary rounded shadow">
             </div>
             <div class="col-12 mb-3">
                 <label class="form-label">Banner</label>
                 <input type="file" name="banner" class="form-control">
                 <br>
-                <img src="<%= shop.banner ? '/uploads/shops/' + shop.banner : '/img/placeholder.png' %>" 
+                <img src="<%= shop.banner && shop.banner.url ? shop.banner.url : '/img/placeholder.png' %>" 
                     alt="<%= shop.name %>" class="mb-3 w-100 border border-3 border-secondary rounded shadow">
             </div>
         </div>
