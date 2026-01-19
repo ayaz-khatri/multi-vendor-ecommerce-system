@@ -26,13 +26,13 @@ const shopSchema = new mongoose.Schema(
     description: String,
 
     logo: { 
-        type: String, 
-        default: null 
+        url: { type: String, default: null },
+        publicId: { type: String, default: null}
     },
 
     banner: { 
-        type: String, 
-        default: null 
+        url: { type: String, default: null },
+        publicId: { type: String, default: null}
     },
 
     email: {

@@ -81,10 +81,12 @@
                     <div class="row mt-3">
                         <% product.images.forEach((img, index) => { %>
                             <div class="col-md-3 text-center mb-3">
-                                <img src="/uploads/products/<%= img %>" class="w-100 mb-1 border rounded">
+                                <!-- Use Cloudinary URL -->
+                                <img src="<%= img.url %>" class="w-100 mb-1 border rounded">
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="removeImages[]" value="<%= img %>" id="remove_<%= index %>">
+                                    <!-- Use publicId for removal -->
+                                    <input class="form-check-input" type="checkbox" name="removeImages[]" value="<%= img.publicId %>" id="remove_<%= index %>">
                                     <label class="form-check-label text-danger" for="remove_<%= index %>">Remove</label>
                                 </div>
                             </div>

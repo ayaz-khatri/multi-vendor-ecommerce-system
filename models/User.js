@@ -49,8 +49,8 @@ const userSchema = new mongoose.Schema(
     },
 
     profilePic: { 
-        type: String, 
-        default: null 
+        url: { type: String, default: null },
+        publicId: { type: String, default: null}
     },
 
     isDeleted: {

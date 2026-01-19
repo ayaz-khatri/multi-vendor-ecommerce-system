@@ -67,10 +67,12 @@ const productSchema = new mongoose.Schema(
         unique: true
     },
 
-    images: {
-        type: [String],
-        default: []
-    },
+    images: [
+        {
+            url: { type: String, required: true },
+            publicId: { type: String, required: true }
+        }
+    ],
 
     attributes: [
         {

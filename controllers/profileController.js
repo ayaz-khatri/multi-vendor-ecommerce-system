@@ -1,10 +1,8 @@
 import User from "../models/User.js";
 import errorMessage from "../utils/error-message.js";
 import { validationResult } from "express-validator";
+import { uploadImage, destroyImage } from '../services/cloudinaryFileUpload.js';
 import bcrypt from "bcryptjs";
-import path from 'path';
-import fs from 'fs';
-
 
 const edit = async (req, res, next) => {
     try {
@@ -25,34 +23,41 @@ const update = async (req, res, next) => {
     }
 
     const { name, phone } = req.body;
+
     try {
         const user = await User.findById(req.params.id);
-        if (!user || user.isDeleted) return next(errorMessage('User not found.', 404));
+        if (!user || user.isDeleted) {
+            return next(errorMessage('User not found.', 404));
+        }
 
         user.name = name || user.name;
         user.phone = phone || user.phone;
 
-         if (req.file && user.profilePic) {
-            const imagePath = path.join('./public/uploads/users', user.profilePic);
-            try {
-                await fs.promises.unlink(imagePath);
-            } catch (error) {
-                req.flash("error", "Failed to delete previous profile pic.");
-                req.flash("old", req.body);
-                return res.redirect(`/profile/edit/${req.params.id}`);
+        // Profile image handling (Cloudinary)
+        if (req.file) {
+            // Delete old image if exists
+            if (user.profilePic?.publicId) {
+                await destroyImage(user.profilePic.publicId);
             }
-        }
-        user.profilePic = req.file ? req.file.filename : user.profilePic;
 
-        const saved = await user.save();
+            const image = await uploadImage(req.file, 'users');
+
+            user.profilePic = {
+                url: image?.url,
+                publicId: image?.publicId
+            };
+        }
+
+        await user.save();
 
         req.flash("success", "Profile updated successfully.");
-        res.redirect("/profile/edit/" + req.params.id);
+        return res.redirect(`/profile/edit/${req.params.id}`);
 
     } catch (error) {
-        next(errorMessage("Something went wrong", 500));
+        return next(errorMessage("Something went wrong", 500));
     }
-}
+};
+
 
 const passwordForm = async (req, res, next) => {
     try {

@@ -25,8 +25,8 @@ const categorySchema = new mongoose.Schema(
     description: String,
 
     icon: { 
-        type: String, 
-        default: null 
+        url: { type: String, default: null },
+        publicId: { type: String, default: null}
     },
 
     isDeleted: {

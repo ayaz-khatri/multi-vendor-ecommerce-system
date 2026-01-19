@@ -3,9 +3,8 @@ import Shop from "../models/Shop.js";
 import Category from "../models/Category.js";
 import errorMessage from "../utils/error-message.js";
 import { validationResult } from "express-validator";
+import { uploadImage, destroyImage } from '../services/cloudinaryFileUpload.js';
 import { timeAgo } from '../utils/helper.js';
-import path from 'path';
-import fs from 'fs';
 
 const MAX_IMAGES = 8;
 
@@ -41,6 +40,7 @@ const create = async (req, res, next) => {
     }
 };
 
+
 const store = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -68,32 +68,34 @@ const store = async (req, res, next) => {
         // Handle multiple images
         if (req.files && req.files.length > 0) {
             if (req.files.length > MAX_IMAGES) {
-                // Delete uploaded files to avoid orphan files
-                req.files.forEach(file => {
-                    fs.unlinkSync(path.join('./public/uploads/products', file.filename));
-                });
                 req.flash("error", `You can upload a maximum of ${MAX_IMAGES} images per product.`);
                 req.flash("old", req.body);
                 return res.redirect("/vendor/products/create");
             }
 
-            product.images = req.files.map(file => file.filename);
+            const uploadedImages = [];
+            for (const file of req.files) {
+                const img = await uploadImage(file, 'products');
+                uploadedImages.push({
+                    url: img.url,
+                    publicId: img.publicId
+                });
+            }
+            product.images = uploadedImages;
         }
 
         // Handle attributes array
         if (attributes) {
             const attrsArray = Array.isArray(attributes) ? attributes : [attributes];
-            // Filter out empty attributes
             const filteredAttrs = attrsArray.filter(attr => attr.key?.trim() || attr.value?.trim());
             product.attributes = filteredAttrs.map(attr => ({
                 key: attr.key,
                 value: attr.value
             }));
         } else {
-            // If attributes not sent, remove all existing attributes
             product.attributes = [];
         }
-        
+
         await product.save();
 
         req.flash("success", "Product created successfully.");
@@ -108,6 +110,7 @@ const store = async (req, res, next) => {
         next(errorMessage("Something went wrong", 500));
     }
 };
+
 
 const edit = async (req, res, next) => {
     try {
@@ -135,7 +138,6 @@ const update = async (req, res, next) => {
 
         const { name, description, shopId, price, discountPrice, status, stock, categoryId, sku, attributes } = req.body;
 
-        // Update basic fields
         product.name = name || product.name;
         product.description = description || product.description;
         product.shopId = shopId || product.shopId;
@@ -151,45 +153,50 @@ const update = async (req, res, next) => {
             const totalImages = product.images.length + req.files.length;
 
             if (totalImages > MAX_IMAGES) {
-                // Delete uploaded files to avoid orphan files
-                req.files.forEach(file => {
-                    fs.unlinkSync(path.join('./public/uploads/products', file.filename));
-                });
-
                 req.flash("error", `You can upload a maximum of ${MAX_IMAGES} images per product.`);
                 req.flash("old", req.body);
                 return res.redirect(`/vendor/products/edit/${req.params.id}`);
             }
 
-            const newImages = req.files.map(file => file.filename);
-            product.images = product.images.concat(newImages);
+            const uploadedImages = [];
+            for (const file of req.files) {
+                const img = await uploadImage(file, 'products');
+                uploadedImages.push({
+                    url: img.url,
+                    publicId: img.publicId
+                });
+            }
+
+            product.images = product.images.concat(uploadedImages);
+        }
+
+        // Handle removed images
+        if (req.body.removeImages) {
+            const removeImages = Array.isArray(req.body.removeImages)
+                ? req.body.removeImages
+                : [req.body.removeImages];
+
+            product.images = product.images.filter(img => !removeImages.includes(img.publicId));
+
+            for (const publicId of removeImages) {
+                await destroyImage(publicId);
+            }
         }
 
         // Handle attributes array
         if (attributes) {
             const attrsArray = Array.isArray(attributes) ? attributes : [attributes];
-            // Filter out empty attributes
             const filteredAttrs = attrsArray.filter(attr => attr.key?.trim() || attr.value?.trim());
             product.attributes = filteredAttrs.map(attr => ({
                 key: attr.key,
                 value: attr.value
             }));
         } else {
-            // Remove all attributes if not sent
             product.attributes = [];
         }
 
-        if (req.body.removeImages) {
-            const removeImages = Array.isArray(req.body.removeImages) ? req.body.removeImages : [req.body.removeImages];
-            product.images = product.images.filter(img => !removeImages.includes(img));
-            removeImages.forEach(img => {
-                const imgPath = path.join('./public/uploads/products', img);
-                if (fs.existsSync(imgPath)) {
-                    fs.unlinkSync(imgPath);
-                }
-            });
-        }
         await product.save();
+
         req.flash("success", "Product updated successfully.");
         return res.redirect("/vendor/products");
 
@@ -202,6 +209,7 @@ const update = async (req, res, next) => {
         next(errorMessage("Something went wrong", 500));
     }
 };
+
 
 const destroy = async (req, res, next) => {
     try {

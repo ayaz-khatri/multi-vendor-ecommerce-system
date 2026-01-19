@@ -1,9 +1,8 @@
 import Category from "../models/Category.js";
 import errorMessage from "../utils/error-message.js";
 import { validationResult } from "express-validator";
+import { uploadImage, destroyImage } from '../services/cloudinaryFileUpload.js';
 import { timeAgo } from '../utils/helper.js';
-import path from 'path';
-import fs from 'fs';
 
 const index = async (req, res, next) => {
     try {
@@ -45,6 +44,13 @@ const store = async (req, res, next) => {
         const category = new Category(req.body); 
         category.parentCategory = req.body.parentCategory || null;
         category.icon = req.file ? req.file.filename : null;
+
+        const image = await uploadImage(req.file, 'categories');
+        category.icon = {
+            url: image?.url,
+            publicId: image?.publicId
+        };
+
         const saved = await category.save();
         req.flash("success", "Category created successfully.");
         return res.redirect("/admin/categories");
@@ -82,44 +88,50 @@ const update = async (req, res, next) => {
     }
 
     const { name, description, parentCategory } = req.body;
+
     try {
         const category = await Category.findById(req.params.id);
-        if (!category || category.isDeleted) return next(errorMessage('Category not found.', 404));
-        
+        if (!category || category.isDeleted) {
+            return next(errorMessage('Category not found.', 404));
+        }
+
         category.name = name || category.name;
         category.description = description !== undefined ? description : category.description;
+
         if (parentCategory === '') {
             category.parentCategory = null;
         } else if (parentCategory) {
             category.parentCategory = parentCategory;
         }
 
-        if (req.file && category.icon) {
-            const imagePath = path.join('./public/uploads/categories', category.icon);
-            try {
-                await fs.promises.unlink(imagePath);
-            } catch (error) {
-                req.flash("error", "Failed to delete previous icon.");
-                req.flash("old", req.body);
-                return res.redirect(`/admin/categories/edit/${req.params.id}`);
+        if (req.file) {
+            // delete old image if exists
+            if (category.icon?.publicId) {
+                await destroyImage(category.icon.publicId);
             }
-        }
-        category.icon = req.file ? req.file.filename : category.icon;
 
-        const saved = await category.save();
+            const image = await uploadImage(req.file, 'categories');
+
+            category.icon = {
+                url: image?.url,
+                publicId: image?.publicId
+            };
+        }
+
+        await category.save();
 
         req.flash("success", "Category updated successfully.");
         return res.redirect("/admin/categories");
+
     } catch (error) {
         if (error.code === 11000) {
             req.flash("error", "Category already exists in this level.");
             req.flash("old", req.body);
             return res.redirect(`/admin/categories/edit/${req.params.id}`);
         }
-        next(errorMessage("Something went wrong", 500));
+        return next(errorMessage("Something went wrong", 500));
     }
 };
-
 
 const destroy = async (req, res, next) => {
     try {
