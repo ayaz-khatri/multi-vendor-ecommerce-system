@@ -44,6 +44,38 @@
         <div class="text-center">
             <a class="small" href="/">Home Page</a>
         </div>
+        <div class="row mt-3">
+            <div class="col">
+                <button type="button" id="adminLogin" class="btn btn-outline-secondary btn-sm btn-user btn-block">Admin</button>
+            </div>
+            <div class="col">
+                <button type="button" id="VendorLogin" class="btn btn-outline-secondary btn-sm btn-user btn-block">Vendor</button>
+            </div>
+            <div class="col">
+                <button type="button" id="CustomerLogin" class="btn btn-outline-secondary btn-sm btn-user btn-block">Customer</button>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    const emailInput = document.getElementById('exampleInputEmail');
+    const passwordInput = document.getElementById('exampleInputPassword');
+
+    document.getElementById('adminLogin').addEventListener('click', function () {
+        emailInput.value = 'admin@admin.com';
+        passwordInput.value = 'password';
+    });
+
+    document.getElementById('VendorLogin').addEventListener('click', function () {
+        emailInput.value = 'ali@vendors.com';
+        passwordInput.value = 'password';
+    });
+
+    document.getElementById('CustomerLogin').addEventListener('click', function () {
+        emailInput.value = 'ahmed@gmail.com';
+        passwordInput.value = 'password';
+    });
+</script>
+
                        

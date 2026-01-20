@@ -148,6 +148,12 @@ const clear = async (req, res, next) => {
 
 const checkout = async (req, res, next) => {
     try {
+        const userId = req.user.id;
+        const cart = await Cart.findOne({ userId }).populate("items.productId");
+        if (!cart || cart.items.length === 0) {
+            req.flash("error", "Your cart is empty.");
+            return res.redirect("/cart");
+        }
         return res.render("frontend/checkout", { title: "Checkout", stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY });
     } catch (error) {
         next(errorMessage("Something went wrong", 500));

@@ -198,8 +198,8 @@ router.get('/reset-system', async (req, res, next) => {
 
       // Vendors
       {
-        name: 'Ali Electronics',
-        email: 'ali@vendors.com',
+        name: 'John Electronics',
+        email: 'john@vendors.com',
         phone: '03000000002',
         password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva',
         role: 'vendor',
@@ -214,8 +214,8 @@ router.get('/reset-system', async (req, res, next) => {
         isEmailVerified: true
       },
       {
-        name: 'Usman Home',
-        email: 'usman@vendors.com',
+        name: 'David Home',
+        email: 'david@vendors.com',
         phone: '03000000004',
         password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva',
         role: 'vendor',
@@ -223,12 +223,13 @@ router.get('/reset-system', async (req, res, next) => {
       },
 
       // Customers (6)
-      { name: 'Ahmed Khan', email: 'ahmed@gmail.com', phone: '03000000005', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
-      { name: 'Ayesha Malik', email: 'ayesha@gmail.com', phone: '03000000006', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
-      { name: 'Bilal Ahmad', email: 'bilal@gmail.com', phone: '03000000007', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
-      { name: 'Fatima Noor', email: 'fatima@gmail.com', phone: '03000000008', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
-      { name: 'Hassan Raza', email: 'hassan@gmail.com', phone: '03000000009', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
-      { name: 'Zain Ali', email: 'zain@gmail.com', phone: '03000000010', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true }
+      { name: 'Harry Smith', email: 'harry@gmail.com', phone: '03000000005', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
+      { name: 'Emily Johnson', email: 'emily@gmail.com', phone: '03000000006', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
+      { name: 'Michael Brown', email: 'michael@gmail.com', phone: '03000000007', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
+      { name: 'Sophia Davis', email: 'sophia@gmail.com', phone: '03000000008', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
+      { name: 'Daniel Wilson', email: 'daniel@gmail.com', phone: '03000000009', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true },
+      { name: 'Olivia Miller', email: 'olivia@gmail.com', phone: '03000000010', password: '$2b$10$zF1b.xlISR7TXjfFkIYLzuZuLB8iA0z0eWw4qT9KvBti7cYM5SSva', role: 'customer', isEmailVerified: true }
+
     ]);
 
     const vendors = users.filter(u => u.role === 'vendor');
