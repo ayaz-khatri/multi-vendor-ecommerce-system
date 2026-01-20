@@ -16,6 +16,8 @@ router.use(loadCategories);
 router.use(shareQueryParams);
 
 router.get("/", wishlist, cart, frontendController.index);
+router.get("/about", wishlist, cart, frontendController.about);
+router.get("/contact", wishlist, cart, frontendController.contact);
 router.get("/products", wishlist, cart, frontendController.products);
 router.get("/products/:slug", wishlist, cart, frontendController.product);
 

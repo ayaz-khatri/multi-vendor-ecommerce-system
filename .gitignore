@@ -6,6 +6,9 @@
 # Node modules
 node_modules/
 
+# Dump files
+dump/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

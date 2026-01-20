@@ -20,6 +20,22 @@ const index = async (req, res, next) => {
     }
 };
 
+const about = async (req, res, next) => {
+    try {
+        res.render("frontend/about", { title: "About Us" });
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
+};
+
+const contact = async (req, res, next) => {
+    try {
+        res.render("frontend/contact", { title: "Contact Us" });
+    } catch (error) {
+        next(errorMessage("Something went wrong", 500));
+    }
+};
+
 const products = async (req, res, next) => {
     try {
 
@@ -423,6 +439,8 @@ const vendors = async (req, res, next) => {
 
 export default {
     index,
+    about,
+    contact,
     products,
     product,
     categoryRedirect,
